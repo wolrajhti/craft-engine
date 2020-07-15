@@ -1,3 +1,3 @@
 export interface IItem {
-  kind: string;
+  getKind(): string;
 }
