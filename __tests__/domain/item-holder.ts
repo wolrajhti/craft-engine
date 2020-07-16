@@ -1,14 +1,14 @@
-import { ItemFake } from './helpers/item.fake';
-import { ItemHolderFake } from './helpers/item-holder.fake';
+import { Item } from '../../src/domain/item';
+import { ItemHolder } from '../../src/domain/item-holder';
 
 describe('ItemHolder', () => {
 
-  const itemHolder = new ItemHolderFake();
-  const item1 = new ItemFake('kind1');
-  const item2 = new ItemFake('kind1');
-  const item3 = new ItemFake('kind2');
-  const item4 = new ItemFake('kind3');
-  const item5 = new ItemFake('kind3');
+  const itemHolder = new ItemHolder();
+  const item1 = new Item('kind1');
+  const item2 = new Item('kind1');
+  const item3 = new Item('kind2');
+  const item4 = new Item('kind3');
+  const item5 = new Item('kind3');
 
   beforeEach(() => {
     itemHolder.clear();
@@ -27,7 +27,7 @@ describe('ItemHolder', () => {
     expect(() => itemHolder.removeItems(item4.getKind())).toThrow('Missing item');
   });
 
-  test('contains', () => {
+  test('contains()', () => {
     expect(itemHolder.contains(item1.getKind(), item2.getKind())).toBeFalsy();
     expect(itemHolder.contains(item3.getKind(), item4.getKind())).toBeFalsy();
     itemHolder.addItems(item1, item2);

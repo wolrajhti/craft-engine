@@ -1,17 +1,15 @@
-import { ITask } from '../../src/task';
-import { ITaskManager } from '../../src/task-manager';
-import { IItem } from '../../src/item';
-import { IItemHolder } from '../../src/item-holder';
+import { ITask } from './interfaces/task';
+import { ITaskManager } from './interfaces/task-manager';
+import { IItem } from './interfaces/item';
+import { IItemHolder } from './interfaces/item-holder';
 
 export class TaskManager implements ITaskManager {
   constructor(
     private _itemHolders: IItemHolder[],
   ) {}
-  execute(task: ITask): IItem[] {
-    // const items = itemHolder.removeItems(...this.inputs);
-    // const item = {} as IItem;
-    // return item; 
-    return [];
+  execute(task: ITask, itemHolder: IItemHolder): IItem[] {
+    itemHolder.removeItems(...task.getInputs());
+    return task.getOutputs();
   }
   getValidCandidates(task: ITask): IItemHolder[] {
     const inputs = task.getInputs();
@@ -23,11 +21,11 @@ export class TaskManager implements ITaskManager {
     inputs.forEach(input => {
       this._itemHolders.forEach(itemHolder => {
         if (itemHolder.contains(input)) {
-          scores.set(itemHolder, scores.get(itemHolder) + 1);
+          scores.set(itemHolder, (scores.get(itemHolder) || 0) + 1);
         }
       });
     });
-    const itemHolders = [...scores.entries()]
+    const itemHolders = [...scores]
       .sort(([, score1], [, score2]) => score1 - score2)
       .map(([itemHolder]) => itemHolder);
     const result = new Map<IItemHolder, IItemHolder>();

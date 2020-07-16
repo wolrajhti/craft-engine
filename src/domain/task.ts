@@ -1,4 +1,5 @@
-import { ITask } from '../../src/task';
+import { Item } from './item';
+import { ITask } from './interfaces/task';
 
 export class Task implements ITask {
   constructor(
@@ -9,6 +10,6 @@ export class Task implements ITask {
     return this._inputs;
   }
   getOutputs() {
-    return this._outputs;
+    return this._outputs.map(kind => new Item(kind));
   }
 }

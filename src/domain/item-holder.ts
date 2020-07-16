@@ -1,7 +1,7 @@
-import { IItemHolder } from '../../src/item-holder';
-import { IItem } from '../../src/item';
+import { IItemHolder } from './interfaces/item-holder';
+import { IItem } from './interfaces/item';
 
-export class ItemHolderFake implements IItemHolder {
+export class ItemHolder implements IItemHolder {
   private _items: Map<string, IItem[]>;
   constructor() {
     this._items = new Map();
