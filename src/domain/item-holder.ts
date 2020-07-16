@@ -20,6 +20,9 @@ export class ItemHolder implements IItemHolder {
       return false;
     });
   }
+  getMissing(...kinds: string[]): string[] {
+    return kinds.filter(kind => !this.contains(kind));
+  }
   addItems(...items: IItem[]): void {
     items.forEach(item => this._addItem(item));
   }

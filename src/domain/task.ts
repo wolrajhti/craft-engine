@@ -1,4 +1,5 @@
 import { Item } from './item';
+import { IItem } from './interfaces/item';
 import { ITask } from './interfaces/task';
 
 export class Task implements ITask {
@@ -6,10 +7,10 @@ export class Task implements ITask {
     private _inputs: string[],
     private _outputs: string[],
   ) {}
-  getInputs() {
+  getInputs(): string[] {
     return this._inputs;
   }
-  getOutputs() {
+  getOutputs(): IItem[] {
     return this._outputs.map(kind => new Item(kind));
   }
 }

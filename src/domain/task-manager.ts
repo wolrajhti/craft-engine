@@ -6,6 +6,7 @@ import { IItemHolder } from './interfaces/item-holder';
 export class TaskManager implements ITaskManager {
   constructor(
     private _itemHolders: IItemHolder[],
+    private _tasks: ITask[],
   ) {}
   execute(task: ITask, itemHolder: IItemHolder): IItem[] {
     itemHolder.removeItems(...task.getInputs());
@@ -41,6 +42,18 @@ export class TaskManager implements ITaskManager {
     if (check) {
       return [...result.keys()];
     }
+    return [];
+  }
+  contains(...kinds: string[]): boolean {
+    return kinds.every(kind => this._itemHolders.some(itemHolder => itemHolder.contains(kind)));
+  }
+  getMissing(...kinds: string[]): string[] {
+    this._itemHolders.forEach(itemHolder => {
+      kinds = itemHolder.getMissing(...kinds);
+    });
+    return kinds;
+  }
+  split(task: ITask): ITask[] {
     return [];
   }
 }
