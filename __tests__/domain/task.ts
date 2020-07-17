@@ -1,16 +1,15 @@
-import { Task } from '../../src/domain/task';
+import { Recipe } from '../../src/domain/recipe';
 
-describe('Task', () => {
+describe('Recipe', () => {
   const inputs = ['a', 'b', 'c'];
   const outputs = ['d', 'e', 'f'];
-  const task = new Task(inputs, outputs);
+  const recipe = new Recipe(inputs, outputs);
 
   test('getInputs()', () => {
-    expect(task.getInputs()).toStrictEqual(inputs);
+    expect(recipe.getInputs()).toStrictEqual(inputs);
   });
 
   test('getOutputs()', () => {
-    const items = task.getOutputs();
-    expect(items.every((item, i) => item.getKind() === outputs[i])).toBeTruthy();
+    expect(recipe.getOutputs()).toStrictEqual(outputs);
   });
 });

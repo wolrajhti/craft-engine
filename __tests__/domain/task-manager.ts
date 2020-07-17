@@ -1,7 +1,7 @@
 import { TaskManager } from '../../src/domain/task-manager';
 import { ItemHolder } from '../../src/domain/item-holder';
 import { Item } from '../../src/domain/item';
-import { Task } from '../../src/domain/task';
+import { Recipe } from '../../src/domain/recipe';
 
 describe('TaskManager', () => {
   const itemHolder1 = new ItemHolder();
@@ -16,15 +16,15 @@ describe('TaskManager', () => {
     itemHolder3.clear();
   });
 
-  describe('getCandidates() & getValidCandidates()', () => {
+  describe('getBestItemHoldersFor()', () => {
     test('2 items in 1 holder', () => {
       const kind1 = 'a';
       const kind2 = 'b';
       const item1 = new Item(kind1);
       const item2 = new Item(kind2);
       itemHolder1.addItems(item1, item2);
-      const task = new Task([kind1, kind2], []);
-      expect(taskManager.getValidCandidates(task)).toStrictEqual([itemHolder1]);
+      const recipe = new Recipe([kind1, kind2], []);
+      expect(taskManager.getBestItemHoldersFor(recipe)).toStrictEqual([itemHolder1]);
     });
 
     test('2 items in 2 holders', () => {
@@ -34,9 +34,8 @@ describe('TaskManager', () => {
       const item2 = new Item(kind2);
       itemHolder1.addItems(item1);
       itemHolder2.addItems(item2);
-      const task = new Task([kind1, kind2], []);
-      expect(taskManager.getValidCandidates(task)).toStrictEqual([]);
-      expect(taskManager.getCandidates(task)).toStrictEqual([itemHolder1, itemHolder2]);
+      const recipe = new Recipe([kind1, kind2], []);
+      expect(taskManager.getBestItemHoldersFor(recipe)).toStrictEqual([itemHolder1, itemHolder2]);
     });
 
     test('3 items in 2 holders', () => {
@@ -48,9 +47,8 @@ describe('TaskManager', () => {
       const item3 = new Item(kind3);
       itemHolder1.addItems(item1);
       itemHolder2.addItems(item2, item3);
-      const task = new Task([kind1, kind2, kind3], []);
-      expect(taskManager.getValidCandidates(task)).toStrictEqual([]);
-      expect(taskManager.getCandidates(task)).toStrictEqual([itemHolder1, itemHolder2]);
+      const recipe = new Recipe([kind1, kind2, kind3], []);
+      expect(taskManager.getBestItemHoldersFor(recipe)).toStrictEqual([itemHolder1, itemHolder2]);
     });
 
     test('3 items with 1 missing', () => {
@@ -61,15 +59,15 @@ describe('TaskManager', () => {
       const item2 = new Item(kind2);
       itemHolder1.addItems(item1);
       itemHolder2.addItems(item2);
-      const task = new Task([kind1, kind2, kind3], []);
-      expect(taskManager.getCandidates(task)).toStrictEqual([]);
+      const recipe = new Recipe([kind1, kind2, kind3], []);
+      expect(taskManager.getBestItemHoldersFor(recipe)).toStrictEqual([]);
     });
   });
 
   describe('execute()', () => {
     test('missing item', () => {
-      const task = new Task(['a', 'b'], []);
-      expect(() => taskManager.execute(task, itemHolder1)).toThrow('Missing item');
+      const recipe = new Recipe(['a', 'b'], []);
+      expect(() => taskManager.execute(recipe, itemHolder1)).toThrow('Missing item');
     });
 
     test('2 inputs 1 output', () => {
@@ -79,8 +77,8 @@ describe('TaskManager', () => {
       const item1 = new Item(kind1);
       const item2 = new Item(kind2);
       itemHolder1.addItems(item1, item2);
-      const task = new Task([kind1, kind2], [kind3]);
-      const items = taskManager.execute(task, itemHolder1);
+      const recipe = new Recipe([kind1, kind2], [kind3]);
+      const items = taskManager.execute(recipe, itemHolder1);
       expect(items.length).toStrictEqual(1);
       expect(items[0].getKind()).toStrictEqual(kind3);
     });
@@ -108,6 +106,12 @@ describe('TaskManager', () => {
     expect(taskManager.getMissing('a', 'b', 'c')).toStrictEqual(['c']);
     itemHolder1.addItems(new Item('c'));
     expect(taskManager.getMissing('a', 'b', 'c')).toStrictEqual([]);
+  });
+
+  describe('getBestTasksFor()', () => {
+    test('', () => {
+
+    });
   });
 
 });

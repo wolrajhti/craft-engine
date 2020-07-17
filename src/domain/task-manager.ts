@@ -1,4 +1,4 @@
-import { ITask } from './interfaces/task';
+import { IRecipe } from './interfaces/recipe';
 import { ITaskManager } from './interfaces/task-manager';
 import { IItem } from './interfaces/item';
 import { IItemHolder } from './interfaces/item-holder';
@@ -6,18 +6,14 @@ import { IItemHolder } from './interfaces/item-holder';
 export class TaskManager implements ITaskManager {
   constructor(
     private _itemHolders: IItemHolder[],
-    private _tasks: ITask[],
+    private _recipes: IRecipe[],
   ) {}
-  execute(task: ITask, itemHolder: IItemHolder): IItem[] {
-    itemHolder.removeItems(...task.getInputs());
-    return task.getOutputs();
+  execute(recipe: IRecipe, itemHolder: IItemHolder): IItem[] {
+    const items = itemHolder.removeItems(...recipe.getInputs());
+    return recipe.execute(...items);
   }
-  getValidCandidates(task: ITask): IItemHolder[] {
-    const inputs = task.getInputs();
-    return this._itemHolders.filter(itemHolder => itemHolder.contains(...inputs));
-  }
-  getCandidates(task: ITask): IItemHolder[] {
-    const inputs = task.getInputs();
+  getBestItemHoldersFor(recipe: IRecipe): IItemHolder[] {
+    const inputs = recipe.getInputs();
     const scores = new Map<IItemHolder, number>(this._itemHolders.map(itemHolder => [itemHolder, 0]));
     inputs.forEach(input => {
       this._itemHolders.forEach(itemHolder => {
@@ -53,7 +49,12 @@ export class TaskManager implements ITaskManager {
     });
     return kinds;
   }
-  split(task: ITask): ITask[] {
-    return [];
+  getBestTasksFor(recipe: IRecipe): IRecipe[] {
+    const missings = this.getMissing(...recipe.getInputs());
+    const subTasks: IRecipe[] = [];
+    while (missings.length) {
+      this._recipes.filter(recipe => recipe.getOutputs().includes);
+    }
+    return subTasks;
   }
 }

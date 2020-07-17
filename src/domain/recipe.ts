@@ -1,8 +1,8 @@
 import { Item } from './item';
 import { IItem } from './interfaces/item';
-import { ITask } from './interfaces/task';
+import { IRecipe } from './interfaces/recipe';
 
-export class Task implements ITask {
+export class Recipe implements IRecipe {
   constructor(
     private _inputs: string[],
     private _outputs: string[],
@@ -10,7 +10,10 @@ export class Task implements ITask {
   getInputs(): string[] {
     return this._inputs;
   }
-  getOutputs(): IItem[] {
+  getOutputs(): string[] {
+    return this._outputs;
+  }
+  execute(...inputs: IItem[]): IItem[] {
     return this._outputs.map(kind => new Item(kind));
   }
 }
