@@ -4,8 +4,9 @@
   "description": "",
   "main": "dist/main.js",
   "scripts": {
-    "test": "npm run coverage",
-    "coverage": "jest --coverage"
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:clearCache": "jest --clearCache"
   },
   "repository": {
     "type": "git",
