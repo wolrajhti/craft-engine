@@ -2,9 +2,9 @@
   "name": "craft-engine",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/main.js",
+  "main": "dist/app/main.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --no-cache",
     "test:coverage": "jest --coverage",
     "test:clearCache": "jest --clearCache"
   },

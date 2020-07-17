@@ -23,8 +23,7 @@ describe('TaskManager', () => {
       const item1 = new Item(kind1);
       const item2 = new Item(kind2);
       itemHolder1.addItems(item1, item2);
-      const recipe = new Recipe([kind1, kind2], []);
-      expect(taskManager.getBestItemHoldersFor(recipe)).toStrictEqual([itemHolder1]);
+      expect(taskManager.getBestItemHoldersFor(kind1, kind2)).toStrictEqual([itemHolder1]);
     });
 
     test('2 items in 2 holders', () => {
@@ -34,8 +33,7 @@ describe('TaskManager', () => {
       const item2 = new Item(kind2);
       itemHolder1.addItems(item1);
       itemHolder2.addItems(item2);
-      const recipe = new Recipe([kind1, kind2], []);
-      expect(taskManager.getBestItemHoldersFor(recipe)).toStrictEqual([itemHolder1, itemHolder2]);
+      expect(taskManager.getBestItemHoldersFor(kind1, kind2)).toStrictEqual([itemHolder1, itemHolder2]);
     });
 
     test('3 items in 2 holders', () => {
@@ -47,8 +45,7 @@ describe('TaskManager', () => {
       const item3 = new Item(kind3);
       itemHolder1.addItems(item1);
       itemHolder2.addItems(item2, item3);
-      const recipe = new Recipe([kind1, kind2, kind3], []);
-      expect(taskManager.getBestItemHoldersFor(recipe)).toStrictEqual([itemHolder1, itemHolder2]);
+      expect(taskManager.getBestItemHoldersFor(kind1, kind2, kind3)).toStrictEqual([itemHolder1, itemHolder2]);
     });
 
     test('3 items with 1 missing', () => {
@@ -59,8 +56,7 @@ describe('TaskManager', () => {
       const item2 = new Item(kind2);
       itemHolder1.addItems(item1);
       itemHolder2.addItems(item2);
-      const recipe = new Recipe([kind1, kind2, kind3], []);
-      expect(taskManager.getBestItemHoldersFor(recipe)).toStrictEqual([]);
+      expect(taskManager.getBestItemHoldersFor(kind1, kind2, kind3)).toStrictEqual([]);
     });
   });
 
@@ -78,9 +74,10 @@ describe('TaskManager', () => {
       const item2 = new Item(kind2);
       itemHolder1.addItems(item1, item2);
       const recipe = new Recipe([kind1, kind2], [kind3]);
-      const items = taskManager.execute(recipe, itemHolder1);
-      expect(items.length).toStrictEqual(1);
-      expect(items[0].getKind()).toStrictEqual(kind3);
+      expect(itemHolder1.contains(kind3)).toBeFalsy();
+      taskManager.execute(recipe, itemHolder1);
+      expect(itemHolder1.contains(kind3)).toBeTruthy();
+      expect(itemHolder1.contains(kind3, kind3)).toBeFalsy();
     });
   });
 

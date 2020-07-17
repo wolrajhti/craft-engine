@@ -1,8 +1,7 @@
 import { IItem } from './item';
+import { IContainer } from './container';
 
-export interface IItemHolder {
-  contains(...kinds: string[]): boolean;
-  getMissing(...kinds: string[]): string[];
+export interface IItemHolder extends IContainer {
   addItems(...items: IItem[]): void;
   removeItems(...kinds: string[]): IItem[];
 }

@@ -1,44 +1,17 @@
 import { IRecipe } from './interfaces/recipe';
 import { ITaskManager } from './interfaces/task-manager';
-import { IItem } from './interfaces/item';
 import { IItemHolder } from './interfaces/item-holder';
+import { IContainer } from './interfaces/container';
 
 export class TaskManager implements ITaskManager {
   constructor(
     private _itemHolders: IItemHolder[],
     private _recipes: IRecipe[],
   ) {}
-  execute(recipe: IRecipe, itemHolder: IItemHolder): IItem[] {
-    const items = itemHolder.removeItems(...recipe.getInputs());
-    return recipe.execute(...items);
-  }
-  getBestItemHoldersFor(recipe: IRecipe): IItemHolder[] {
-    const inputs = recipe.getInputs();
-    const scores = new Map<IItemHolder, number>(this._itemHolders.map(itemHolder => [itemHolder, 0]));
-    inputs.forEach(input => {
-      this._itemHolders.forEach(itemHolder => {
-        if (itemHolder.contains(input)) {
-          scores.set(itemHolder, (scores.get(itemHolder) || 0) + 1);
-        }
-      });
-    });
-    const itemHolders = [...scores]
-      .sort(([, score1], [, score2]) => score1 - score2)
-      .map(([itemHolder]) => itemHolder);
-    const result = new Map<IItemHolder, IItemHolder>();
-    let check = true;
-    inputs.forEach(input => {
-      const itemHolder = itemHolders.find(itemHolder => itemHolder.contains(input));
-      if (itemHolder) {
-        result.set(itemHolder, itemHolder);
-      } else {
-        check = false;
-      }
-    });
-    if (check) {
-      return [...result.keys()];
-    }
-    return [];
+  execute(recipe: IRecipe, itemHolder: IItemHolder): void {
+    const inputs = itemHolder.removeItems(...recipe.getInputs());
+    const outputs = recipe.execute(...inputs);
+    itemHolder.addItems(...outputs);
   }
   contains(...kinds: string[]): boolean {
     return kinds.every(kind => this._itemHolders.some(itemHolder => itemHolder.contains(kind)));
@@ -49,12 +22,37 @@ export class TaskManager implements ITaskManager {
     });
     return kinds;
   }
-  getBestTasksFor(recipe: IRecipe): IRecipe[] {
-    const missings = this.getMissing(...recipe.getInputs());
-    const subTasks: IRecipe[] = [];
-    while (missings.length) {
-      this._recipes.filter(recipe => recipe.getOutputs().includes);
+  private static getBestFor<T extends IContainer>(containers: T[], ...kinds: string[]): T[] {
+    const scores = new Map<T, number>(containers.map(container => [container, 0]));
+    kinds.forEach(kind => {
+      containers.forEach(container => {
+        if (container.contains(kind)) {
+          scores.set(container, (scores.get(container) || 0) + 1);
+        }
+      });
+    });
+    const sortedContainers = [...scores]
+      .sort(([, score1], [, score2]) => score1 - score2)
+      .map(([container]) => container);
+    const result = new Map<T, T>();
+    let check = true;
+    kinds.forEach(kind => {
+      const container = sortedContainers.find(container => container.contains(kind));
+      if (container) {
+        result.set(container, container);
+      } else {
+        check = false;
+      }
+    });
+    if (check) {
+      return [...result.keys()];
     }
-    return subTasks;
+    return [];
+  }
+  getBestItemHoldersFor(...kinds: string[]): IItemHolder[] {
+    return TaskManager.getBestFor<IItemHolder>(this._itemHolders, ...kinds);
+  }
+  getBestRecipesFor(...kinds: string[]): IRecipe[] {
+    return TaskManager.getBestFor<IRecipe>(this._recipes, ...kinds);
   }
 }

@@ -1,11 +1,9 @@
-import { IItem } from './item';
 import { IItemHolder } from './item-holder';
-import { IRecipe } from './task';
+import { IRecipe } from './recipe';
+import { IContainer } from './container';
 
-export interface ITaskManager {
-  execute(task: IRecipe, itemHolder: IItemHolder): IItem[];
-  getBestItemHoldersFor(task: IRecipe): IItemHolder[];
-  contains(...kinds: string[]): boolean;
-  getMissing(...kinds: string[]): string[];
-  getBestTasksFor(task: IRecipe): IRecipe[];
+export interface ITaskManager extends IContainer {
+  execute(recipe: IRecipe, itemHolder: IItemHolder): void;
+  getBestItemHoldersFor(...kinds: string[]): IItemHolder[];
+  getBestRecipesFor(...kinds: string[]): IRecipe[];
 }
