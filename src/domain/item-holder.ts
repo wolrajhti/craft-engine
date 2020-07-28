@@ -10,8 +10,8 @@ export class ItemHolder implements IItemHolder {
     const kind = item.getKind();
     this._items.set(kind, [...(this._items.get(kind) || []), item]);
   }
-  contains(...kinds: string[]): boolean {
-    const count = new Map<string, number>();
+  private _contains(kinds: string[], count = new Map<string, number>()): boolean {
+    count = count || new Map<string, number>();
     return kinds.every(kind => {
       if ((this._items.get(kind) || []).length - (count.get(kind) || 0)) {
         count.set(kind, (count.get(kind) || 0) + 1);
@@ -20,8 +20,12 @@ export class ItemHolder implements IItemHolder {
       return false;
     });
   }
+  contains(...kinds: string[]): boolean {
+    return this._contains(kinds);
+  }
   getMissing(...kinds: string[]): string[] {
-    return kinds.filter(kind => !this.contains(kind));
+    const count = new Map<string, number>();
+    return kinds.filter(kind => !this._contains([kind], count));
   }
   addItems(...items: IItem[]): void {
     items.forEach(item => this._addItem(item));

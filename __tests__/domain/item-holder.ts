@@ -37,4 +37,15 @@ describe('ItemHolder', () => {
     expect(itemHolder.contains(item3.getKind(), item4.getKind())).toBeFalsy();
     expect(itemHolder.contains(item4.getKind())).toBeTruthy();
   });
+
+  test('getMissing()', () => {
+    expect(itemHolder.getMissing(item1.getKind())).toStrictEqual([item1.getKind()]);
+    itemHolder.addItems(item1, item2, item3);
+    expect(itemHolder.getMissing(
+      item1.getKind(), item2.getKind(), item3.getKind()
+    )).toStrictEqual([]);
+    expect(itemHolder.getMissing(
+      item1.getKind(), item2.getKind(), item3.getKind(), item3.getKind()
+    )).toStrictEqual([item3.getKind()]);
+  });
 });
