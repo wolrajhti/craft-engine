@@ -13,10 +13,18 @@ export class TaskManager implements ITaskManager {
     private _itemHolders: IItemHolder[],
     private _recipes: IRecipe[],
   ) {}
-  execute(recipe: IRecipe, itemHolder: IItemHolder): void {
-    const inputs = itemHolder.removeItems(...recipe.getInputs());
+  execute(recipe: IRecipe, src: IItemHolder[], dest: IItemHolder): void {
+    const inputs: IItem[] = [];
+    recipe.getInputs().forEach(input => {
+      const itemHolder = src.find(itemHolder => itemHolder.contains(input));
+      if (itemHolder) {
+        inputs.push(...itemHolder.removeItems(input));
+      } else {
+        throw 'Missing item';
+      }
+    });
     const outputs = recipe.execute(...inputs);
-    itemHolder.addItems(...outputs);
+    dest.addItems(...outputs);
   }
   contains(...kinds: string[]): boolean {
     return kinds.every(kind => this._itemHolders.some(itemHolder => itemHolder.contains(kind)));
@@ -70,9 +78,11 @@ export class TaskManager implements ITaskManager {
     this._itemHolders.push(itemHolder);
     return itemHolder;
   }
-  createItemIn(itemHolder: IItemHolder, kind: string): IItem {
-    const item = new Item(kind);
-    itemHolder.addItems(item);
-    return item;
+  createItemsIn(itemHolder: IItemHolder, ...kinds: string[]): IItem[] {
+    return kinds.map(kind => {
+      const item = new Item(kind);
+      itemHolder.addItems(item);
+      return item;
+    });
   }
 }

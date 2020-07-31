@@ -3,6 +3,7 @@ import { IItem } from './interfaces/item';
 import { IRecipe } from './interfaces/recipe';
 
 export class Recipe implements IRecipe {
+  private _isSplitted = false;
   constructor(
     private _inputs: string[],
     private _outputs: string[],
@@ -21,5 +22,14 @@ export class Recipe implements IRecipe {
   }
   execute(...inputs: IItem[]): IItem[] {
     return this._outputs.map(kind => new Item(kind));
+  }
+  log(): string {
+    return `${this._inputs.join(', ')} => ${this._outputs.join(', ')}`;
+  }
+  markAsSplitted(): void {
+    this._isSplitted = true;
+  }
+  isSplitted(): boolean {
+    return this._isSplitted;
   }
 }

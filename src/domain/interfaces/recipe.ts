@@ -5,4 +5,6 @@ export interface IRecipe extends IContainer {
   getInputs(): string[];
   getOutputs(): string[];
   execute(...inputs: IItem[]): IItem[];
+  markAsSplitted(): void;
+  isSplitted(): boolean;
 }

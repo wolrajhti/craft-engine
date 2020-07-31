@@ -63,7 +63,7 @@ describe('TaskManager', () => {
   describe('execute()', () => {
     test('missing item', () => {
       const recipe = new Recipe(['a', 'b'], []);
-      expect(() => taskManager.execute(recipe, itemHolder1)).toThrow('Missing item');
+      expect(() => taskManager.execute(recipe, [itemHolder1], itemHolder1)).toThrow('Missing item');
     });
 
     test('2 inputs 1 output', () => {
@@ -75,7 +75,7 @@ describe('TaskManager', () => {
       itemHolder1.addItems(item1, item2);
       const recipe = new Recipe([kind1, kind2], [kind3]);
       expect(itemHolder1.contains(kind3)).toBeFalsy();
-      taskManager.execute(recipe, itemHolder1);
+      taskManager.execute(recipe, [itemHolder1], itemHolder1);
       expect(itemHolder1.contains(kind3)).toBeTruthy();
       expect(itemHolder1.contains(kind3, kind3)).toBeFalsy();
     });
