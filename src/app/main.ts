@@ -1,45 +1,29 @@
-import { Item } from '../domain/item';
-import { ItemHolder } from '../domain/item-holder';
-import { Recipe } from '../domain/recipe';
 import { TaskManager } from '../domain/task-manager';
 
+const taskManager = new TaskManager([], []);
+
+taskManager.createRecipe(['a', 'b', 'c', 'd'], ['e']);
+taskManager.createRecipe(['a', 'b', 'e', 'f'], ['g']);
+taskManager.createRecipe(['a', 'b', 'g', 'h'], ['i']);
+
 // cuistot
-const itemHolder1 = new ItemHolder();
-itemHolder1.addItems(new Item('a'));
-
+const itemHolder1 = taskManager.createItemHolder();
+taskManager.createItemIn(itemHolder1, 'a');
 // plan de travail
-const itemHolder2 = new ItemHolder();
-itemHolder2.addItems(new Item('b'));
-
+const itemHolder2 = taskManager.createItemHolder();
+taskManager.createItemIn(itemHolder2, 'b');
 // réfrigérateur 1
-const itemHolder3 = new ItemHolder();
-itemHolder3.addItems(new Item('c'));
+const itemHolder3 = taskManager.createItemHolder();
+taskManager.createItemIn(itemHolder3, 'c');
 // réfrigérateur 2
-const itemHolder4 = new ItemHolder();
-itemHolder4.addItems(new Item('d'));
+const itemHolder4 = taskManager.createItemHolder();
+taskManager.createItemIn(itemHolder4, 'd');
 // réfrigérateur 3
-const itemHolder5 = new ItemHolder();
-itemHolder5.addItems(new Item('f'));
+const itemHolder5 = taskManager.createItemHolder();
+taskManager.createItemIn(itemHolder5, 'f');
 // réfrigérateur 4
-const itemHolder6 = new ItemHolder();
-itemHolder6.addItems(new Item('h'));
-
-const recipe1 = new Recipe(['a', 'b', 'c', 'd'], ['e']);
-const recipe2 = new Recipe(['a', 'b', 'e', 'f'], ['g']);
-const recipe3 = new Recipe(['a', 'b', 'g', 'h'], ['i']);
-
-const taskManager = new TaskManager([
-  itemHolder1,
-  itemHolder2,
-  itemHolder3,
-  itemHolder4,
-  itemHolder5,
-  itemHolder6
-], [
-  recipe1,
-  recipe2,
-  recipe3
-]);
+const itemHolder6 = taskManager.createItemHolder();
+taskManager.createItemIn(itemHolder6, 'h');
 
 const list = [];
 const todo = [['i']];

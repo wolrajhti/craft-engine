@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/app/main.js",
   "scripts": {
+    "start": "tsc && node .",
     "test": "jest --no-cache",
     "test:coverage": "jest --coverage",
     "test:clearCache": "jest --clearCache"

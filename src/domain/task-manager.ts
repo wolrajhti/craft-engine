@@ -2,6 +2,11 @@ import { IRecipe } from './interfaces/recipe';
 import { ITaskManager } from './interfaces/task-manager';
 import { IItemHolder } from './interfaces/item-holder';
 import { IContainer } from './interfaces/container';
+import { IItem } from './interfaces/item';
+
+import { ItemHolder } from './item-holder';
+import { Item } from './item';
+import { Recipe } from './recipe';
 
 export class TaskManager implements ITaskManager {
   constructor(
@@ -54,5 +59,20 @@ export class TaskManager implements ITaskManager {
   }
   getBestRecipesFor(...kinds: string[]): IRecipe[] {
     return TaskManager.getBestFor<IRecipe>(this._recipes, ...kinds);
+  }
+  createRecipe(inputs: string[], outputs: string[]): IRecipe {
+    const recipe = new Recipe(inputs, outputs);
+    this._recipes.push(recipe);
+    return recipe;
+  }
+  createItemHolder(): IItemHolder {
+    const itemHolder = new ItemHolder();
+    this._itemHolders.push(itemHolder);
+    return itemHolder;
+  }
+  createItemIn(itemHolder: IItemHolder, kind: string): IItem {
+    const item = new Item(kind);
+    itemHolder.addItems(item);
+    return item;
   }
 }
