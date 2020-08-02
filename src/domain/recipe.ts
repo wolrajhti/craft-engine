@@ -1,30 +1,41 @@
-import { Item } from './item';
-import { IItem } from './interfaces/item';
 import { IRecipe } from './interfaces/recipe';
 
-export class Recipe implements IRecipe {
+import { Ingredients } from './ingredients';
+import { Proportions } from './proportions';
+import { Item } from './item';
+import { Container } from './container';
+
+export class Recipe extends Container implements IRecipe {
   private _isSplitted = false;
   constructor(
-    private _inputs: string[],
-    private _outputs: string[],
-  ) {}
-  contains(...kinds: string[]): boolean {
-    return kinds.every(kind => this._outputs.includes(kind));
+    private _inputs: Proportions,
+    private _outputs: Proportions,
+  ) {
+    super()
   }
-  getMissing(...kinds: string[]): string[] {
-    return kinds.filter(kind => !this.contains(kind));
-  }
-  getInputs(): string[] {
-    return this._inputs;
-  }
-  getOutputs(): string[] {
+  getProportions(): Proportions {
     return this._outputs;
   }
-  execute(...inputs: IItem[]): IItem[] {
-    return this._outputs.map(kind => new Item(kind));
+  getInputs(): Proportions {
+    return this._inputs;
+  }
+  getOutputs(): Proportions {
+    return this._outputs;
+  }
+  execute(ingredients: Ingredients): Ingredients {
+    return new Ingredients(
+      [...this._outputs]
+        .map(([kind, quantity]) => {
+          const items: Item[] = [];
+          for (let i = 0; i < quantity; i++) {
+            items.push(new Item(kind));
+          }
+          return [kind, items];
+        })
+    );
   }
   log(): string {
-    return `${this._inputs.join(', ')} => ${this._outputs.join(', ')}`;
+    return `${[...this._inputs].join(', ')} => ${[...this._outputs].join(', ')}`;
   }
   markAsSplitted(): void {
     this._isSplitted = true;

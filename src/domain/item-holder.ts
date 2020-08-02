@@ -1,43 +1,50 @@
 import { IItemHolder } from './interfaces/item-holder';
-import { IItem } from './interfaces/item';
 
-export class ItemHolder implements IItemHolder {
-  private _items: Map<string, IItem[]>;
+import { Ingredients } from './ingredients';
+import { Proportions } from './proportions';
+import { Item } from './item';
+import { Container } from './container';
+
+export class ItemHolder extends Container implements IItemHolder {
+  private _items: Map<string, Item[]>;
   constructor() {
+    super();
     this._items = new Map();
   }
-  private _addItem(item: IItem): void {
+  private _addItem(item: Item): void {
     const kind = item.getKind();
     this._items.set(kind, [...(this._items.get(kind) || []), item]);
   }
-  private _contains(kinds: string[], count = new Map<string, number>()): boolean {
-    count = count || new Map<string, number>();
-    return kinds.every(kind => {
-      if ((this._items.get(kind) || []).length - (count.get(kind) || 0)) {
-        count.set(kind, (count.get(kind) || 0) + 1);
-        return true;
-      }
-      return false;
-    });
+  getProportions(): Proportions {
+    return new Proportions([...this._items].map(([kind, items]) => [kind, items.length]));
   }
-  contains(...kinds: string[]): boolean {
-    return this._contains(kinds);
+  addItem(item: Item): void {
+    this._addItem(item);
   }
-  getMissing(...kinds: string[]): string[] {
-    const count = new Map<string, number>();
-    return kinds.filter(kind => !this._contains([kind], count));
-  }
-  addItems(...items: IItem[]): void {
+  addItems(items: Item[]): void {
     items.forEach(item => this._addItem(item));
   }
-  removeItems(...kinds: string[]): IItem[] {
-    return kinds.map(kind => {
-      const items = this._items.get(kind);
-      if (items && items.length) {
-        return items.shift() as IItem;
-      }
-      throw new Error('Missing item');
-    });
+  removeItems(proportions: Proportions): Ingredients {
+    return new Ingredients(
+      [...proportions]
+        .map(([kind, quantity]) => {
+          const items = this._items.get(kind);
+          if (items) {
+            const collected: Item[] = [];
+            for (let i = 0; i < quantity; i++) {
+              const item = items.shift();
+              if (item) {
+                collected.push(item);
+              } else {
+                throw new Error('Missing item');
+              }
+            }
+            return [kind, collected];
+          } else {
+            throw new Error('Missing item');
+          }
+        })
+    );
   }
   clear(): void {
     this._items.clear();

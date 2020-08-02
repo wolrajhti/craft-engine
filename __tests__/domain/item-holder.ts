@@ -1,51 +1,48 @@
 import { Item } from '../../src/domain/item';
 import { ItemHolder } from '../../src/domain/item-holder';
+import { Proportions } from '../../src/domain/proportions';
+import { Ingredients } from '../../src/domain/ingredients';
 
 describe('ItemHolder', () => {
 
   const itemHolder = new ItemHolder();
-  const item1 = new Item('kind1');
-  const item2 = new Item('kind1');
-  const item3 = new Item('kind2');
-  const item4 = new Item('kind3');
-  const item5 = new Item('kind3');
+  const item1 = new Item('a');
+  const item2 = new Item('a');
+  const item3 = new Item('b');
+  const item4 = new Item('c');
+  const item5 = new Item('c');
 
   beforeEach(() => {
     itemHolder.clear();
   });
 
   test('addItems and removeItems', () => {
-    expect(itemHolder.addItems(item1)).toBeUndefined();
-    expect(itemHolder.removeItems(item1.getKind())).toStrictEqual([item1]);
-    expect(() => itemHolder.removeItems(item1.getKind())).toThrow('Missing item');
-    itemHolder.addItems(item2, item3);
-    expect(itemHolder.removeItems(item2.getKind(), item3.getKind())).toStrictEqual([item2, item3]);
-    itemHolder.addItems(item1, item2, item3, item4, item5);
-    expect(itemHolder.removeItems(item4.getKind(), item2.getKind(), item1.getKind(), item3.getKind(), item5.getKind()))
-      .toStrictEqual([item4, item2, item1, item3, item5]);
-    expect(() => itemHolder.removeItems(item3.getKind())).toThrow('Missing item');
-    expect(() => itemHolder.removeItems(item4.getKind())).toThrow('Missing item');
+    expect(itemHolder.addItem(item1)).toBeUndefined();
+
+    expect(
+      itemHolder.removeItems(new Proportions('a'))
+                     .equals(new Ingredients([['a', [item1]]]))
+    ).toBeTruthy();
+
+    expect(() => itemHolder.removeItems(new Proportions('a'))).toThrow('Missing item');
+
+    itemHolder.addItems([item2, item3]);
+
+    expect(itemHolder.removeItems(new Proportions(['a', 'b']))
+                          .equals(new Ingredients([['a', [item2]], ['b', [item3]]]))
+    ).toBeTruthy();
+
+    itemHolder.addItems([item1, item2, item3, item4, item5]);
+
+    expect(itemHolder.removeItems(new Proportions([['a', 2], ['b', 1], ['c', 2]]))
+                          .equals(new Ingredients([['a', [item1, item2]], ['b', [item3]], ['c', [item4, item5]]]))
+    ).toBeTruthy();
+
+    expect(() => itemHolder.removeItems(new Proportions('b'))).toThrow('Missing item');
+
+    expect(() => itemHolder.removeItems(new Proportions('c'))).toThrow('Missing item');
   });
 
-  test('contains()', () => {
-    expect(itemHolder.contains(item1.getKind(), item2.getKind())).toBeFalsy();
-    expect(itemHolder.contains(item3.getKind(), item4.getKind())).toBeFalsy();
-    itemHolder.addItems(item1, item2);
-    expect(itemHolder.contains(item1.getKind(), item2.getKind())).toBeTruthy();
-    expect(itemHolder.contains(item3.getKind(), item4.getKind())).toBeFalsy();
-    itemHolder.addItems(item4, item5);
-    expect(itemHolder.contains(item3.getKind(), item4.getKind())).toBeFalsy();
-    expect(itemHolder.contains(item4.getKind())).toBeTruthy();
-  });
-
-  test('getMissing()', () => {
-    expect(itemHolder.getMissing(item1.getKind())).toStrictEqual([item1.getKind()]);
-    itemHolder.addItems(item1, item2, item3);
-    expect(itemHolder.getMissing(
-      item1.getKind(), item2.getKind(), item3.getKind()
-    )).toStrictEqual([]);
-    expect(itemHolder.getMissing(
-      item1.getKind(), item2.getKind(), item3.getKind(), item3.getKind()
-    )).toStrictEqual([item3.getKind()]);
-  });
+  // test('getProportions()', () => {
+  // });
 });

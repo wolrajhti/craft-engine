@@ -7,4 +7,7 @@ export class Item implements IItem {
   getKind(): string {
     return this._kind;
   }
+  equals(other: Item): boolean {
+    return this._kind === other._kind;
+  }
 }
