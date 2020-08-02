@@ -34,7 +34,7 @@ while (todo.length) {
   if (recipe) {
     console.log('---', recipe.log(), '---');
     const missing = taskManager.getProportions().getMissing(recipe.getInputs());
-    console.log('missing', missing);
+    console.log('missing', missing.log(), missing.getNorm());
     if (!missing.getNorm()) {
       taskManager.execute(recipe, taskManager.getBestItemHoldersFor(recipe.getInputs()), itemHolder6);
       console.log('recipe executed !');

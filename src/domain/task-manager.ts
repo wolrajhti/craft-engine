@@ -45,7 +45,10 @@ export class TaskManager implements ITaskManager {
     const result = new Source<T>();
     sortedContainers.forEach(container => {
       const missing = container.getProportions().getMissing(proportions);
-      result.set(container, proportions.sub(missing));
+      const partial = proportions.sub(missing);
+      if (!partial.isEmpty()) {
+        result.set(container, partial);
+      }
       proportions = missing;
     });
     if (proportions.isEmpty()) {

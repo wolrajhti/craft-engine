@@ -35,7 +35,12 @@ export class Proportions extends Map<string, number> implements IProportions {
       result.set(kind, quantity);
     });
     other.forEach((quantity, kind) => {
-      result.set(kind, (result.get(kind) || 0) + sign * quantity);
+      const q = (result.get(kind) || 0) + sign * quantity;
+      if (!q) {
+        result.delete(kind);
+      } else {
+        result.set(kind, q);
+      }
     });
     return result;
   }
@@ -67,5 +72,8 @@ export class Proportions extends Map<string, number> implements IProportions {
     ]
       .filter(([kind, quantity]) => quantity < 0)
     ).mul(-1);
+  }
+  log(): string {
+    return [...this].join(', ');
   }
 }

@@ -35,7 +35,7 @@ export class Recipe extends Container implements IRecipe {
     );
   }
   log(): string {
-    return `${[...this._inputs].join(', ')} => ${[...this._outputs].join(', ')}`;
+    return `${this._inputs.log()} => ${this._outputs.log()}`;
   }
   markAsSplitted(): void {
     this._isSplitted = true;
