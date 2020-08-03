@@ -1,14 +1,12 @@
-import { ITaskManager } from './interfaces/task-manager';
-
 import { Ingredients } from './ingredients';
 import { Source } from './source';
 import { ItemHolder } from './item-holder';
 import { Item } from './item';
 import { Recipe } from './recipe';
-import { Proportions } from './proportions';
+import { Proportions, TProportionsData } from './proportions';
 import { Container } from './container';
 
-export class TaskManager implements ITaskManager {
+export class TaskManager {
   constructor(
     private _itemHolders: ItemHolder[],
     private _recipes: Recipe[],
@@ -33,7 +31,10 @@ export class TaskManager implements ITaskManager {
     });
     return result;
   }
-  private static getBestFor<T extends Container>(containers: T[], proportions: Proportions): Source<T> {
+  private static getBestFor<T extends Container>(containers: T[], proportions: TProportionsData): Source<T> {
+    if (!(proportions instanceof Proportions)) {
+      proportions = new Proportions(proportions);
+    }
     const scores = new Map<T, number>(containers.map(container => [container, 0]));
     containers.forEach(container => {
       const missing = container.getProportions().getMissing(proportions);
@@ -43,27 +44,27 @@ export class TaskManager implements ITaskManager {
       .sort(([, score1], [, score2]) => score1 - score2)
       .map(([container]) => container);
     const result = new Source<T>();
-    sortedContainers.forEach(container => {
+    for (const container of sortedContainers) {
       const missing = container.getProportions().getMissing(proportions);
       const partial = proportions.sub(missing);
       if (!partial.isEmpty()) {
         result.set(container, partial);
       }
       proportions = missing;
-    });
+    }
     if (proportions.isEmpty()) {
       return result;
     } else {
       return new Source<T>();
     }
   }
-  getBestItemHoldersFor(proportions: Proportions): Source<ItemHolder> {
+  getBestItemHoldersFor(proportions: TProportionsData): Source<ItemHolder> {
     return TaskManager.getBestFor<ItemHolder>(this._itemHolders, proportions);
   }
-  getBestRecipesFor(proportions: Proportions): Source<Recipe> {
+  getBestRecipesFor(proportions: TProportionsData): Source<Recipe> {
     return TaskManager.getBestFor<Recipe>(this._recipes, proportions);
   }
-  createRecipe(inputs: Proportions, outputs: Proportions): Recipe {
+  createRecipe(inputs: TProportionsData, outputs: TProportionsData = new Proportions()): Recipe {
     const recipe = new Recipe(inputs, outputs);
     this._recipes.push(recipe);
     return recipe;
@@ -73,7 +74,10 @@ export class TaskManager implements ITaskManager {
     this._itemHolders.push(itemHolder);
     return itemHolder;
   }
-  createItemsIn(itemHolder: ItemHolder, proportions: Proportions): Ingredients {
+  createItemsIn(itemHolder: ItemHolder, proportions: TProportionsData): Ingredients {
+    if (!(proportions instanceof Proportions)) {
+      proportions = new Proportions(proportions);
+    }
     return new Ingredients(
       [...proportions]
         .map(([kind, quantity]) => {

@@ -1,33 +1,34 @@
 import { TaskManager } from '../domain/task-manager';
 import { Recipe } from '../domain/recipe';
-import { Proportions } from '../domain/proportions';
 
 const taskManager = new TaskManager([], []);
 
-taskManager.createRecipe(new Proportions(['a', 'b', 'c', 'd']), new Proportions('e'));
-taskManager.createRecipe(new Proportions(['a', 'b', 'e', 'f']), new Proportions('g'));
-taskManager.createRecipe(new Proportions(['a', 'b', 'g', 'h']), new Proportions('i'));
+taskManager.createRecipe(['a', 'b', 'c', 'd'], 'e');
+taskManager.createRecipe(['a', 'b', 'e', 'f'], 'g');
+taskManager.createRecipe(['a', 'b', 'g', 'h'], 'i');
 
 // cuistot
 const itemHolder1 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder1, new Proportions([['a', 3]]));
+taskManager.createItemsIn(itemHolder1, [['a', 3]]);
 // plan de travail
 const itemHolder2 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder2, new Proportions([['b', 3]]));
+taskManager.createItemsIn(itemHolder2, [['b', 3]]);
 // réfrigérateur 1
 const itemHolder3 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder3, new Proportions('c'));
+taskManager.createItemsIn(itemHolder3, 'c');
 // réfrigérateur 2
 const itemHolder4 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder4, new Proportions('d'));
+taskManager.createItemsIn(itemHolder4, 'd');
 // réfrigérateur 3
 const itemHolder5 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder5, new Proportions('f'));
+taskManager.createItemsIn(itemHolder5, 'f');
 // réfrigérateur 4
 const itemHolder6 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder6, new Proportions('h'));
+taskManager.createItemsIn(itemHolder6, 'h');
 
-const todo: Recipe[] = [new Recipe(new Proportions('i'), new Proportions())];
+const todo = [
+  new Recipe('i')
+];
 
 while (todo.length) {
   const recipe = todo.shift();

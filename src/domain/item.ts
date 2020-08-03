@@ -1,6 +1,4 @@
-import { IItem } from './interfaces/item';
-
-export class Item implements IItem {
+export class Item {
   constructor(
     private _kind: string,
   ) {}

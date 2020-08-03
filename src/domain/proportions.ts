@@ -1,9 +1,9 @@
-import { IProportions } from './interfaces/proportions';
+type _ = string | (string | [string, number])[];
 
-type TProportionsData = string | (string | [string, number])[];
+export type TProportionsData = _ | Proportions;
 
-export class Proportions extends Map<string, number> implements IProportions {
-  constructor(data: TProportionsData = []) {
+export class Proportions extends Map<string, number> {
+  constructor(data: _ = []) {
     const entries: [string, number][] = [];
     if (!Array.isArray(data)) {
       data = [data];
@@ -29,7 +29,10 @@ export class Proportions extends Map<string, number> implements IProportions {
   isEmpty(): boolean {
     return this.getNorm() === 0;
   }
-  private _add(other: Proportions, sign: -1 | 1 = 1): Proportions {
+  private _add(other: TProportionsData, sign: -1 | 1 = 1): Proportions {
+    if (!(other instanceof Proportions)) {
+      other = new Proportions(other);
+    }
     const result = new Proportions();
     this.forEach((quantity, kind) => {
       result.set(kind, quantity);
@@ -44,10 +47,16 @@ export class Proportions extends Map<string, number> implements IProportions {
     });
     return result;
   }
-  add(other: Proportions): Proportions {
+  add(other: TProportionsData): Proportions {
+    if (!(other instanceof Proportions)) {
+      other = new Proportions(other);
+    }
     return this._add(other);
   }
-  sub(other: Proportions): Proportions {
+  sub(other: TProportionsData): Proportions {
+    if (!(other instanceof Proportions)) {
+      other = new Proportions(other);
+    }
     return this._add(other, -1);
   }
   mul(scale: number): Proportions {
@@ -60,15 +69,24 @@ export class Proportions extends Map<string, number> implements IProportions {
     });
     return result;
   }
-  equals(other: Proportions): boolean {
+  equals(other: TProportionsData): boolean {
+    if (!(other instanceof Proportions)) {
+      other = new Proportions(other);
+    }
     return this.sub(other).isEmpty();
   }
-  contains(proportions: Proportions): boolean {
-    return this.getMissing(proportions).isEmpty();
+  contains(other: TProportionsData): boolean {
+    if (!(other instanceof Proportions)) {
+      other = new Proportions(other);
+    }
+    return this.getMissing(other).isEmpty();
   }
-  getMissing(proportions: Proportions): Proportions {
+  getMissing(other: TProportionsData): Proportions {
+    if (!(other instanceof Proportions)) {
+      other = new Proportions(other);
+    }
     return new Proportions([
-      ...this.sub(proportions)
+      ...this.sub(other)
     ]
       .filter(([kind, quantity]) => quantity < 0)
     ).mul(-1);

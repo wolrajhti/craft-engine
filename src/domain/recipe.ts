@@ -1,17 +1,25 @@
-import { IRecipe } from './interfaces/recipe';
-
 import { Ingredients } from './ingredients';
-import { Proportions } from './proportions';
+import { Proportions, TProportionsData } from './proportions';
 import { Item } from './item';
 import { Container } from './container';
 
-export class Recipe extends Container implements IRecipe {
+export class Recipe extends Container {
   private _isSplitted = false;
+  private _inputs: Proportions;
+  private _outputs: Proportions;
   constructor(
-    private _inputs: Proportions,
-    private _outputs: Proportions,
+    inputs: TProportionsData = new Proportions(),
+    outputs: TProportionsData = new Proportions(),
   ) {
     super()
+    if (!(inputs instanceof Proportions)) {
+      inputs = new Proportions(inputs);
+    }
+    if (!(outputs instanceof Proportions)) {
+      outputs = new Proportions(outputs);
+    }
+    this._inputs = inputs;
+    this._outputs = outputs;
   }
   getProportions(): Proportions {
     return this._outputs;

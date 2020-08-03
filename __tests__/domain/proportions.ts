@@ -2,7 +2,7 @@ import { Proportions } from '../../src/domain/proportions';
 
 describe('Proportions', () => {
   test('equals', () => {
-    expect(new Proportions('a').equals(new Proportions([['a', 1], ['b', 0]]))).toBeTruthy();
+    expect(new Proportions('a').equals([['a', 1], ['b', 0]])).toBeTruthy();
   });
 
   test('getNorm()', () => {
@@ -14,22 +14,22 @@ describe('Proportions', () => {
   });
 
   test('contains', () => {
-    expect(new Proportions().contains(new Proportions('a'))).toBeFalsy();
+    expect(new Proportions().contains('a')).toBeFalsy();
 
-    expect(new Proportions('a').contains(new Proportions('a'))).toBeTruthy();
-    expect(new Proportions(['a']).contains(new Proportions('a'))).toBeTruthy();
-    expect(new Proportions([['a', 1]]).contains(new Proportions('a'))).toBeTruthy();
-    expect(new Proportions([['a', 2]]).contains(new Proportions('a'))).toBeTruthy();
+    expect(new Proportions('a').contains('a')).toBeTruthy();
+    expect(new Proportions(['a']).contains('a')).toBeTruthy();
+    expect(new Proportions([['a', 1]]).contains('a')).toBeTruthy();
+    expect(new Proportions([['a', 2]]).contains('a')).toBeTruthy();
 
-    expect(new Proportions('b').contains(new Proportions('a'))).toBeFalsy();
-    expect(new Proportions(['b']).contains(new Proportions('a'))).toBeFalsy();
-    expect(new Proportions([['b', 1]]).contains(new Proportions('a'))).toBeFalsy();
-    expect(new Proportions([['b', 2]]).contains(new Proportions('a'))).toBeFalsy();
+    expect(new Proportions('b').contains('a')).toBeFalsy();
+    expect(new Proportions(['b']).contains('a')).toBeFalsy();
+    expect(new Proportions([['b', 1]]).contains('a')).toBeFalsy();
+    expect(new Proportions([['b', 2]]).contains('a')).toBeFalsy();
 
-    expect(new Proportions(['a', 'b']).contains(new Proportions('a'))).toBeTruthy();
-    expect(new Proportions([['a', 1], 'b']).contains(new Proportions(['a', 'b']))).toBeTruthy();
-    expect(new Proportions(['a', ['b', 1], ['c', 1]]).contains(new Proportions(['a', ['c', 2]]))).toBeFalsy();
-    expect(new Proportions(['a', ['b', 1], ['c', 2]]).contains(new Proportions('a'))).toBeTruthy();
+    expect(new Proportions(['a', 'b']).contains('a')).toBeTruthy();
+    expect(new Proportions([['a', 1], 'b']).contains(['a', 'b'])).toBeTruthy();
+    expect(new Proportions(['a', ['b', 1], ['c', 1]]).contains(['a', ['c', 2]])).toBeFalsy();
+    expect(new Proportions(['a', ['b', 1], ['c', 2]]).contains('a')).toBeTruthy();
   });
 
   test('getMissing()', () => {

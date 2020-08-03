@@ -1,9 +1,7 @@
-import { ISource } from './interfaces/source';
-import { IContainer } from './interfaces/container';
-
 import { Proportions } from './proportions';
+import { Container } from './container';
 
-export class Source<T extends IContainer> extends Map<T, Proportions> implements ISource<T> {
+export class Source<T extends Container> extends Map<T, Proportions> {
   private _half_equals(other: Source<T>): boolean {
     let result = true;
     this.forEach((proportions, kind) => {
