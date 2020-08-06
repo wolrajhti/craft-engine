@@ -51,7 +51,7 @@ export class Ingredients extends Map<string, Item[]> {
     }
     return new Ingredients(
       [...proportions]
-        .filter(([kind, quantity]) => !!quantity)
+        .filter(([kind, quantity]) => quantity > 0)
         .map(([kind, quantity]) => {
           const items = this.get(kind);
           if (items && quantity <= items.length) {
