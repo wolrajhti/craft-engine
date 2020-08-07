@@ -1,11 +1,14 @@
 export class Item {
+  readonly kinds: string[];
   constructor(
-    private _kind: string,
-  ) {}
-  getKind(): string {
-    return this._kind;
+    kinds: string | string[],
+  ) {
+    if (!Array.isArray(kinds)) {
+      kinds = [kinds];
+    }
+    this.kinds = kinds;
   }
   equals(other: Item): boolean {
-    return this._kind === other._kind;
+    return this === other;
   }
 }

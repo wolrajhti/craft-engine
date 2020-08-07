@@ -12,11 +12,11 @@ export class ItemHolder extends Container {
   getProportions(): Proportions {
     return this._items.getProportions();
   }
-  addItem(item: Item): void {
-    this._items.addItem(item);
+  addItem(kind: string, item: Item): void {
+    this._items.addItem(kind, item);
   }
-  addItems(items: Item[]): void {
-    this._items.addItems(items);
+  addItems(entries: [string, Item[]][]): void {
+    this._items.addItems(entries);
   }
   removeItems(proportions: TProportionsData): Ingredients {
     return this._items.removeItems(proportions);

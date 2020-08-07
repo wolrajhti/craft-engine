@@ -1,5 +1,5 @@
 import { Ingredients } from './ingredients';
-import { Source } from './source';
+import { Source, TSourceData } from './source';
 import { ItemHolder } from './item-holder';
 import { Item } from './item';
 import { Recipe } from './recipe';
@@ -11,8 +11,11 @@ export class TaskManager {
     private _itemHolders: ItemHolder[],
     private _recipes: Recipe[],
   ) {}
-  execute(recipe: Recipe, src: Source<ItemHolder>, dest: ItemHolder): void {
+  execute(recipe: Recipe, src: TSourceData<ItemHolder>, dest: ItemHolder): void {
     const result = new Ingredients();
+    if (!(src instanceof Source)) {
+      src = new Source(src);
+    }
     src.forEach((proportions, itemHolder) => {
       const ingredients = itemHolder.removeItems(proportions);
       ingredients.forEach((items, kind) => {
@@ -21,7 +24,7 @@ export class TaskManager {
     });
     const outputs = recipe.execute(result);
     outputs.forEach((items, kind) => {
-      dest.addItems(items);
+      dest.addItems([[kind, items]]);
     });
   }
   getProportions(): Proportions {
@@ -86,7 +89,7 @@ export class TaskManager {
             const item = new Item(kind);
             items.push(item);
           }
-          itemHolder.addItems(items);
+          itemHolder.addItems([[kind, items]]);
           return [kind, items];
         })
     );

@@ -2,8 +2,6 @@ import { TaskManager } from '../../src/domain/task-manager';
 import { ItemHolder } from '../../src/domain/item-holder';
 import { Item } from '../../src/domain/item';
 import { Recipe } from '../../src/domain/recipe';
-import { Proportions } from '../../src/domain/proportions';
-import { Source } from '../../src/domain/source';
 
 describe('TaskManager', () => {
   const itemHolder1 = new ItemHolder();
@@ -20,41 +18,41 @@ describe('TaskManager', () => {
 
   describe('getBestItemHoldersFor()', () => {
     test('2 items in 1 holder', () => {
-      itemHolder1.addItems([new Item('a'), new Item('b')]);
+      itemHolder1.addItems([['a', [new Item('a')]], ['b', [new Item('b')]]]);
       expect(taskManager.getBestItemHoldersFor(['a', 'b'])
-                                       .equals(new Source([
-                                         [itemHolder1, new Proportions(['a', 'b'])]
-                                       ]))
+                                       .equals([
+                                         [itemHolder1, ['a', 'b']]
+                                       ])
       ).toBeTruthy();
     });
 
     test('2 items in 2 holders', () => {
-      itemHolder1.addItem(new Item('a'));
-      itemHolder2.addItem(new Item('b'));
+      itemHolder1.addItem('a', new Item('a'));
+      itemHolder2.addItem('b', new Item('b'));
       expect(taskManager.getBestItemHoldersFor(['a', 'b'])
-                                       .equals(new Source([
-                                         [itemHolder1, new Proportions('a')],
-                                         [itemHolder2, new Proportions('b')]
-                                       ]))
+                                       .equals([
+                                         [itemHolder1, 'a'],
+                                         [itemHolder2, 'b']
+                                       ])
       ).toBeTruthy();
     });
 
     test('3 items in 2 holders', () => {
-      itemHolder1.addItem(new Item('a'));
-      itemHolder2.addItems([new Item('b'), new Item('c')]);
+      itemHolder1.addItem('a', new Item('a'));
+      itemHolder2.addItems([['b', [new Item('b')]], ['c', [new Item('c')]]]);
       expect(taskManager.getBestItemHoldersFor(['a', 'b', 'c'])
-                                       .equals(new Source([
-                                         [itemHolder1, new Proportions('a')],
-                                         [itemHolder2, new Proportions(['b', 'c'])]
-                                       ]))
+                                       .equals([
+                                         [itemHolder1, 'a'],
+                                         [itemHolder2, ['b', 'c']]
+                                       ])
       ).toBeTruthy();
     });
 
     test('3 items with 1 missing', () => {
-      itemHolder1.addItem(new Item('a'));
-      itemHolder2.addItem(new Item('b'));
+      itemHolder1.addItem('a', new Item('a'));
+      itemHolder2.addItem('b', new Item('b'));
       expect(taskManager.getBestItemHoldersFor(['a', 'b', 'c'])
-                                       .equals(new Source([]))
+                                       .equals([])
       ).toBeTruthy();
     });
   });
@@ -64,18 +62,18 @@ describe('TaskManager', () => {
       const recipe = new Recipe(['a', 'b']);
       expect(() => taskManager.execute(
         recipe,
-        new Source([[itemHolder1, new Proportions('a')]]),
+        [[itemHolder1, 'a']],
         itemHolder1
       )).toThrow('Missing item');
     });
 
     test('2 inputs 1 output', () => {
-      itemHolder1.addItems([new Item('a'), new Item('b')]);
+      itemHolder1.addItems([['a', [new Item('a')]], ['b', [new Item('b')]]]);
       const recipe = new Recipe(['a', 'b'], 'c');
       expect(itemHolder1.getProportions().contains('c')).toBeFalsy();
       taskManager.execute(
         recipe,
-        new Source([[itemHolder1, new Proportions(['a', 'b'])]]),
+        [[itemHolder1, ['a', 'b']]],
         itemHolder1
       );
       const proportions = itemHolder1.getProportions();

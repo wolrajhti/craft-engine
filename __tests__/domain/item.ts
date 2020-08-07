@@ -2,9 +2,10 @@ import { Item } from '../../src/domain/item';
 
 describe('Item', () => {
   const kind = 'kind';
-  const item = new Item(kind);
+  const item1 = new Item(kind, 42, 10);
+  const item2 = new Item(kind, 42, 10);
 
-  test('getKind()', () => {
-    expect(item.getKind()).toStrictEqual(kind);
+  test('equals()', () => {
+    expect(item1.equals(item2)).toBeFalsy();
   });
 });

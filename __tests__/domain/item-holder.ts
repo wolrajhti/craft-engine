@@ -15,7 +15,7 @@ describe('ItemHolder', () => {
   });
 
   test('addItems and removeItems', () => {
-    expect(itemHolder.addItem(item1)).toBeUndefined();
+    expect(itemHolder.addItem('a', item1)).toBeUndefined();
 
     expect(
       itemHolder.removeItems('a')
@@ -24,13 +24,13 @@ describe('ItemHolder', () => {
 
     expect(() => itemHolder.removeItems('a')).toThrow('Missing item');
 
-    itemHolder.addItems([item2, item3]);
+    itemHolder.addItems([['a', [item2]], ['b', [item3]]]);
 
     expect(itemHolder.removeItems(['a', 'b'])
                           .equals([['a', [item2]], ['b', [item3]]])
     ).toBeTruthy();
 
-    itemHolder.addItems([item1, item2, item3, item4, item5]);
+    itemHolder.addItems([['a', [item1, item2]], ['b', [item3]], ['c', [item4, item5]]]);
 
     expect(itemHolder.removeItems([['a', 2], ['b', 1], ['c', 2]])
                           .equals([['a', [item1, item2]], ['b', [item3]], ['c', [item4, item5]]])

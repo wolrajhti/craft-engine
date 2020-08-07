@@ -35,15 +35,18 @@ export class Ingredients extends Map<string, Item[]> {
         .map(([kind, items]) => [kind, items.length])
     );
   }
-  private _addItem(item: Item): void {
-    const kind = item.getKind();
+  addItem(kind: string, item: Item): void {
+    if (!item.kinds.includes(kind)) {
+      throw new Error('Given item is not of given kind');
+    }
     this.set(kind, [...(this.get(kind) || []), item]);
   }
-  addItem(item: Item): void {
-    this._addItem(item);
-  }
-  addItems(items: Item[]): void {
-    items.forEach(item => this._addItem(item));
+  addItems(entries: [string, Item[]][]): void {
+    entries.forEach(([kind, items]) => {
+      items.forEach(item => {
+        this.addItem(kind, item);
+      });
+    });
   }
   removeItems(proportions: TProportionsData): Ingredients {
     if (!(proportions instanceof Proportions)) {
