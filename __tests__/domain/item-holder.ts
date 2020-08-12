@@ -4,11 +4,9 @@ import { ItemHolder } from '../../src/domain/item-holder';
 describe('ItemHolder', () => {
 
   const itemHolder = new ItemHolder();
-  const item1 = new Item('a');
-  const item2 = new Item('a');
-  const item3 = new Item('b');
-  const item4 = new Item('c');
-  const item5 = new Item('c');
+  const item1 = new Item('a', 4);
+  const item2 = new Item('b', 2);
+  const item3 = new Item('c', 2);
 
   beforeEach(() => {
     itemHolder.clear();
@@ -16,25 +14,28 @@ describe('ItemHolder', () => {
 
   test('addItems and removeItems', () => {
     expect(itemHolder.addItem('a', item1)).toBeUndefined();
+    expect(itemHolder.addItem('b', item2)).toBeUndefined();
+    expect(itemHolder.addItems([['c', [item3]]])).toBeUndefined();
 
     expect(
       itemHolder.removeItems('a')
-                     .equals([['a', [item1]]])
+                     .equals([['a', [new Item('a')]]])
+    ).toBeTruthy();
+
+    expect(
+      itemHolder.removeItems(['a', 'b'])
+                     .equals([['a', [new Item('a')]], ['b', [new Item('b')]]])
+    ).toBeTruthy();
+
+    expect(itemHolder.removeItems([['a', 2], 'b', ['c', 2]])
+                          .equals([
+                            ['a', [new Item('a', 2)]],
+                            ['b', [new Item('b')]],
+                            ['c', [new Item('c', 2)]]
+                          ])
     ).toBeTruthy();
 
     expect(() => itemHolder.removeItems('a')).toThrow('Missing item');
-
-    itemHolder.addItems([['a', [item2]], ['b', [item3]]]);
-
-    expect(itemHolder.removeItems(['a', 'b'])
-                          .equals([['a', [item2]], ['b', [item3]]])
-    ).toBeTruthy();
-
-    itemHolder.addItems([['a', [item1, item2]], ['b', [item3]], ['c', [item4, item5]]]);
-
-    expect(itemHolder.removeItems([['a', 2], ['b', 1], ['c', 2]])
-                          .equals([['a', [item1, item2]], ['b', [item3]], ['c', [item4, item5]]])
-    ).toBeTruthy();
 
     expect(() => itemHolder.removeItems('b')).toThrow('Missing item');
 

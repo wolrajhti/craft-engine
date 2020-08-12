@@ -32,7 +32,9 @@ export class Ingredients extends Map<string, Item[]> {
     return new Proportions(
       [...this]
         .filter(([kind, items]) => !!items.length)
-        .map(([kind, items]) => [kind, items.length])
+        .map(([kind, items]) => [kind, items.reduce((acc, item) => {
+          return acc + item.quantity;
+        }, 0)])
     );
   }
   addItem(kind: string, item: Item): void {
@@ -57,11 +59,23 @@ export class Ingredients extends Map<string, Item[]> {
         .filter(([kind, quantity]) => quantity > 0)
         .map(([kind, quantity]) => {
           const items = this.get(kind);
-          if (items && quantity <= items.length) {
-            return [kind, items.splice(0, quantity)];
-          } else {
-            throw new Error('Missing item');
+          if (items) {
+            const collected: Item[] = [];
+            let collectedQuantity = 0;
+            while (collectedQuantity < quantity && !!items.length) {
+              const item = items.shift() as Item;
+              const collecting = Math.min(item.quantity, quantity - collectedQuantity);
+              collectedQuantity += collecting;
+              collected.push(item.remove(collecting));
+              if (item.quantity > 0) {
+                items.unshift(item);
+              }
+            }
+            if (collectedQuantity === quantity) {
+              return [kind, collected];
+            }
           }
+          throw new Error('Missing item');
         })
     );
   }

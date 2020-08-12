@@ -84,13 +84,9 @@ export class TaskManager {
     return new Ingredients(
       [...proportions]
         .map(([kind, quantity]) => {
-          const items: Item[] = [];
-          for (let i = 0; i < quantity; i++) {
-            const item = new Item(kind);
-            items.push(item);
-          }
-          itemHolder.addItems([[kind, items]]);
-          return [kind, items];
+          const item = new Item(kind, quantity);
+          itemHolder.addItem(kind, item);
+          return [kind, [item]];
         })
     );
   }
