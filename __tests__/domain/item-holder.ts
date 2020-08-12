@@ -4,9 +4,9 @@ import { ItemHolder } from '../../src/domain/item-holder';
 describe('ItemHolder', () => {
 
   const itemHolder = new ItemHolder();
-  const item1 = new Item('a', 4);
-  const item2 = new Item('b', 2);
-  const item3 = new Item('c', 2);
+  const item1 = new Item({kinds: 'a', quantity: 4});
+  const item2 = new Item({kinds: 'b', quantity: 2});
+  const item3 = new Item({kinds: 'c', quantity: 2});
 
   beforeEach(() => {
     itemHolder.clear();
@@ -19,19 +19,19 @@ describe('ItemHolder', () => {
 
     expect(
       itemHolder.removeItems('a')
-                     .equals([['a', [new Item('a')]]])
+                     .equals([['a', ['a']]])
     ).toBeTruthy();
 
     expect(
       itemHolder.removeItems(['a', 'b'])
-                     .equals([['a', [new Item('a')]], ['b', [new Item('b')]]])
+                     .equals([['a', ['a']], ['b', ['b']]])
     ).toBeTruthy();
 
     expect(itemHolder.removeItems([['a', 2], 'b', ['c', 2]])
                           .equals([
-                            ['a', [new Item('a', 2)]],
-                            ['b', [new Item('b')]],
-                            ['c', [new Item('c', 2)]]
+                            ['a', [{kinds: 'a', quantity: 2}]],
+                            ['b', ['b']],
+                            ['c', [{kinds: 'c', quantity: 2}]]
                           ])
     ).toBeTruthy();
 

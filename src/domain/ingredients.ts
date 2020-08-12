@@ -1,9 +1,21 @@
-import { Item } from './item';
+import { Item, TItemData } from './item';
 import { Proportions, TProportionsData } from './proportions';
 
-export type TIngredientsData = [string, Item[]][] | Ingredients;
+type _ = [string, TItemData[]][];
+
+export type TIngredientsData = _ | Ingredients;
 
 export class Ingredients extends Map<string, Item[]> {
+  constructor(data: _ = []) {
+    super(data.map(([kind, itemDatas]) => {
+      return [kind, itemDatas.map(itemData => {
+        if (!(itemData instanceof Item)) {
+          itemData = new Item(itemData);
+        }
+        return itemData as Item;
+      })];
+    }));
+  }
   private _half_equals(other: Ingredients): boolean {
     let result = true;
     this.forEach((items, kind) => {
