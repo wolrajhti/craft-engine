@@ -2,7 +2,8 @@ type _ = string | (string | [string, number])[];
 
 export type TProportionsData = _ | Proportions;
 
-export class Proportions extends Map<string, number> {
+export class Proportions {
+  private _data: Map<string, number>;
   constructor(data: _ = []) {
     const entries: [string, number][] = [];
     if (!Array.isArray(data)) {
@@ -21,10 +22,10 @@ export class Proportions extends Map<string, number> {
       }
       entries.push([kind, quantity]);
     });
-    super(entries);
+    this._data = new Map(entries);
   }
   getNorm(): number {
-    return Math.sqrt([...this.values()].reduce((acc, quantity) => acc + quantity * quantity, 0));
+    return Math.sqrt(this.quantities().reduce((acc, quantity) => acc + quantity * quantity, 0));
   }
   isEmpty(): boolean {
     return this.getNorm() === 0;
@@ -34,15 +35,15 @@ export class Proportions extends Map<string, number> {
       other = new Proportions(other);
     }
     const result = new Proportions();
-    this.forEach((quantity, kind) => {
-      result.set(kind, quantity);
+    this._data.forEach((quantity, kind) => {
+      result._data.set(kind, quantity);
     });
-    other.forEach((quantity, kind) => {
-      const q = (result.get(kind) || 0) + sign * quantity;
+    other._data.forEach((quantity, kind) => {
+      const q = result.ofKind(kind) + sign * quantity;
       if (!q) {
-        result.delete(kind);
+        result._data.delete(kind);
       } else {
-        result.set(kind, q);
+        result._data.set(kind, q);
       }
     });
     return result;
@@ -64,8 +65,8 @@ export class Proportions extends Map<string, number> {
       throw new Error('scale must be a integer');
     }
     const result = new Proportions();
-    this.forEach((quantity, kind) => {
-      result.set(kind, quantity * scale);
+    this._data.forEach((quantity, kind) => {
+      result._data.set(kind, quantity * scale);
     });
     return result;
   }
@@ -85,13 +86,18 @@ export class Proportions extends Map<string, number> {
     if (!(other instanceof Proportions)) {
       other = new Proportions(other);
     }
-    return new Proportions([
-      ...this.sub(other)
-    ]
-      .filter(([kind, quantity]) => quantity < 0)
-    ).mul(-1);
+    return new Proportions(other.sub(this).content());
   }
   log(): string {
-    return [...this].join(', ');
+    return this.content().join(', ');
+  }
+  content(): [string, number][] {
+    return [...this._data].filter(([kind, quantity]) => quantity > 0);
+  }
+  ofKind(kind: string): number {
+    return this._data.get(kind) || 0;
+  }
+  quantities(): number[] {
+    return [...this._data.values()];
   }
 }

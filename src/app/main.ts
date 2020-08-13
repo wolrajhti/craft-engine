@@ -42,9 +42,9 @@ while (todo.length) {
     } else {
       if (!recipe.isSplitted()) {
         const recipes = taskManager.getBestRecipesFor(missing);
-        console.log('splitting task into :', [...recipes.keys()].map(r => r.log()));
+        console.log('splitting task into :', [...recipes.containers()].map(r => r.log()));
         recipe.markAsSplitted();
-        todo.push(...recipes.keys());
+        todo.push(...recipes.containers());
       }
       todo.push(recipe);
     }

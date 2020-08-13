@@ -32,7 +32,7 @@ export class Recipe extends Container {
   }
   execute(ingredients: Ingredients): Ingredients {
     return new Ingredients(
-      [...this._outputs]
+      this._outputs.content()
         .map(([kind, quantity]) => {
           const items: Item[] = [];
           for (let i = 0; i < quantity; i++) {

@@ -16,14 +16,14 @@ export class TaskManager {
     if (!(src instanceof Source)) {
       src = new Source(src);
     }
-    src.forEach((proportions, itemHolder) => {
+    src.forEachContainer((proportions, itemHolder) => {
       const ingredients = itemHolder.removeItems(proportions);
-      ingredients.forEach((items, kind) => {
-        result.set(kind, [...(result.get(kind) || []), ...items])
+      ingredients.forEachKind((items, kind) => {
+        result.addItem(kind, ...items);
       });
     });
     const outputs = recipe.execute(result);
-    outputs.forEach((items, kind) => {
+    outputs.forEachKind((items, kind) => {
       dest.addItems([[kind, items]]);
     });
   }
@@ -46,17 +46,17 @@ export class TaskManager {
     const sortedContainers = [...scores]
       .sort(([, score1], [, score2]) => score1 - score2)
       .map(([container]) => container);
-    const result = new Source<T>();
+    const result: [T, Proportions][] = [];
     for (const container of sortedContainers) {
       const missing = container.getProportions().getMissing(proportions);
       const partial = proportions.sub(missing);
       if (!partial.isEmpty()) {
-        result.set(container, partial);
+        result.push([container, partial]);
       }
       proportions = missing;
     }
     if (proportions.isEmpty()) {
-      return result;
+      return new Source<T>(result);
     } else {
       return new Source<T>();
     }
@@ -82,7 +82,7 @@ export class TaskManager {
       proportions = new Proportions(proportions);
     }
     return new Ingredients(
-      [...proportions]
+      proportions.content()
         .map(([kind, quantity]) => {
           const item = new Item({kinds: [kind], quantity});
           itemHolder.addItem(kind, item);

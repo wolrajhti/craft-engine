@@ -5,9 +5,10 @@ type _<T> = [T, TProportionsData][];
 
 export type TSourceData<T extends Container> = _<T> | Source<T>;
 
-export class Source<T extends Container> extends Map<T, Proportions> {
+export class Source<T extends Container> {
+  private _data: Map<T, Proportions>;
   constructor(data: _<T> = []) {
-    super(data.map(([container, proportionsData]) => {
+    this._data = new Map(data.map(([container, proportionsData]) => {
       if (!(proportionsData instanceof Proportions)) {
         proportionsData = new Proportions(proportionsData);
       }
@@ -16,11 +17,10 @@ export class Source<T extends Container> extends Map<T, Proportions> {
   }
   private _half_equals(other: Source<T>): boolean {
     let result = true;
-    this.forEach((proportions, kind) => {
+    this._data.forEach((proportions, container) => {
       if (result && !proportions.isEmpty()) {
-        const otherProportions = other.get(kind);
+        const otherProportions = other.ofContainer(container);
         if (
-          !otherProportions ||
           !proportions.equals(otherProportions)
         ) {
           result = false;
@@ -34,5 +34,14 @@ export class Source<T extends Container> extends Map<T, Proportions> {
       other = new Source(other);
     }
     return this._half_equals(other) && other._half_equals(this);
+  }
+  ofContainer(container: T): Proportions {
+    return this._data.get(container) || new Proportions();
+  }
+  forEachContainer(callbackfn: (value: Proportions, key: T) => void) {
+    this._data.forEach(callbackfn);
+  }
+  containers(): T[] {
+    return [...this._data.keys()];
   }
 }
