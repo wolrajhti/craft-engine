@@ -4,7 +4,6 @@ import { Item } from './item';
 import { Container } from './container';
 
 export class Recipe extends Container {
-  private _isSplitted = false;
   private _inputs: Proportions;
   private _outputs: Proportions;
   constructor(
@@ -44,11 +43,5 @@ export class Recipe extends Container {
   }
   log(): string {
     return `${this._inputs.log()} => ${this._outputs.log()}`;
-  }
-  markAsSplitted(): void {
-    this._isSplitted = true;
-  }
-  isSplitted(): boolean {
-    return this._isSplitted;
   }
 }

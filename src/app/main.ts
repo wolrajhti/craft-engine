@@ -1,5 +1,6 @@
 import { TaskManager } from '../domain/task-manager';
 import { Recipe } from '../domain/recipe';
+import { Job } from '../domain/job';
 
 const taskManager = new TaskManager([], []);
 
@@ -23,27 +24,27 @@ taskManager.createItemsIn(itemHolder4, ['d', 'f']);
 const itemHolder5 = taskManager.createItemHolder();
 taskManager.createItemsIn(itemHolder5, 'h');
 
-const todo = [
-  new Recipe('i')
-];
+const jobs = [new Job(new Recipe('i'))];
 
-while (todo.length) {
-  const recipe = todo.shift();
-  if (recipe) {
-    console.log('---', recipe.log(), '---');
-    const missing = taskManager.getProportions().getMissing(recipe.getInputs());
-    console.log('missing', missing.log(), missing.getNorm());
-    if (!missing.getNorm()) {
-      taskManager.execute(recipe, taskManager.getBestItemHoldersFor(recipe.getInputs()), itemHolder5);
-      console.log('recipe executed !');
-    } else {
-      if (!recipe.isSplitted()) {
-        const recipes = taskManager.getBestRecipesFor(missing);
-        console.log('splitting task into :', [...recipes.containers()].map(r => r.log()));
-        recipe.markAsSplitted();
-        todo.push(...recipes.containers());
-      }
-      todo.push(recipe);
+while (!!jobs.length) {
+  const job = jobs.shift() as Job;
+  const recipe = job.recipe;
+  console.log('---', recipe.log(), '---');
+  const missing = taskManager.getProportions().getMissing(recipe.getInputs());
+  console.log('missing', missing.log(), missing.getNorm());
+  if (!missing.getNorm()) {
+    taskManager.execute(recipe, taskManager.getBestItemHoldersFor(recipe.getInputs()), itemHolder5);
+    console.log('recipe executed !');
+  } else {
+    if (!job.isSplitted()) {
+      const recipes = taskManager.getBestRecipesFor(missing);
+      console.log('splitting task into :', [...recipes.containers()].map(r => r.log()));
+      job.markAsSplitted();
+      jobs.push(
+        ...recipes.containers()
+          .map(recipe => new Job(recipe))
+      );
     }
+    jobs.push(job);
   }
 }
