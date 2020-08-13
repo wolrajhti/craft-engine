@@ -9,22 +9,19 @@ taskManager.createRecipe(['a', 'b', 'g', 'h'], 'i');
 
 // cuistot
 const itemHolder1 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder1, [['a', 3]]);
+taskManager.createItemsIn(itemHolder1, 'a');
 // plan de travail
 const itemHolder2 = taskManager.createItemHolder();
 taskManager.createItemsIn(itemHolder2, [['b', 3]]);
 // réfrigérateur 1
 const itemHolder3 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder3, 'c');
+taskManager.createItemsIn(itemHolder3, [['a', 2], 'c']);
 // réfrigérateur 2
 const itemHolder4 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder4, 'd');
+taskManager.createItemsIn(itemHolder4, ['d', 'f']);
 // réfrigérateur 3
 const itemHolder5 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder5, 'f');
-// réfrigérateur 4
-const itemHolder6 = taskManager.createItemHolder();
-taskManager.createItemsIn(itemHolder6, 'h');
+taskManager.createItemsIn(itemHolder5, 'h');
 
 const todo = [
   new Recipe('i')
@@ -37,7 +34,7 @@ while (todo.length) {
     const missing = taskManager.getProportions().getMissing(recipe.getInputs());
     console.log('missing', missing.log(), missing.getNorm());
     if (!missing.getNorm()) {
-      taskManager.execute(recipe, taskManager.getBestItemHoldersFor(recipe.getInputs()), itemHolder6);
+      taskManager.execute(recipe, taskManager.getBestItemHoldersFor(recipe.getInputs()), itemHolder5);
       console.log('recipe executed !');
     } else {
       if (!recipe.isSplitted()) {
