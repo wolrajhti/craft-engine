@@ -34,14 +34,13 @@ export class TaskManager {
     });
     return result;
   }
-  private static getBestFor<T extends Container>(containers: T[], proportions: TProportionsData): Source<T> {
+  private static getBestFor<T extends Container>(containers: T[], proportions: TProportionsData, x = 0, y = 0): Source<T> {
     if (!(proportions instanceof Proportions)) {
       proportions = new Proportions(proportions);
     }
     const scores = new Map<T, number>(containers.map(container => [container, 0]));
     containers.forEach(container => {
-      const missing = container.getProportions().getMissing(proportions);
-      scores.set(container, missing.getNorm());
+      scores.set(container, container.scoreFor(proportions as Proportions, x, y));
     });
     const sortedContainers = [...scores]
       .sort(([, score1], [, score2]) => score1 - score2)
@@ -61,8 +60,8 @@ export class TaskManager {
       return new Source<T>();
     }
   }
-  getBestItemHoldersFor(proportions: TProportionsData): Source<ItemHolder> {
-    return TaskManager.getBestFor<ItemHolder>(this._itemHolders, proportions);
+  getBestItemHoldersFor(proportions: TProportionsData, x: number, y: number): Source<ItemHolder> {
+    return TaskManager.getBestFor<ItemHolder>(this._itemHolders, proportions, x, y);
   }
   getBestRecipesFor(proportions: TProportionsData): Source<Recipe> {
     return TaskManager.getBestFor<Recipe>(this._recipes, proportions);

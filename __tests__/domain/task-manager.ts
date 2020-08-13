@@ -19,7 +19,7 @@ describe('TaskManager', () => {
   describe('getBestItemHoldersFor()', () => {
     test('2 items in 1 holder', () => {
       itemHolder1.addItems([['a', [new Item('a')]], ['b', [new Item('b')]]]);
-      expect(taskManager.getBestItemHoldersFor(['a', 'b'])
+      expect(taskManager.getBestItemHoldersFor(['a', 'b'], 0, 0)
                                        .equals([
                                          [itemHolder1, ['a', 'b']]
                                        ])
@@ -29,7 +29,7 @@ describe('TaskManager', () => {
     test('2 items in 2 holders', () => {
       itemHolder1.addItem('a', new Item('a'));
       itemHolder2.addItem('b', new Item('b'));
-      expect(taskManager.getBestItemHoldersFor(['a', 'b'])
+      expect(taskManager.getBestItemHoldersFor(['a', 'b'], 0, 0)
                                        .equals([
                                          [itemHolder1, 'a'],
                                          [itemHolder2, 'b']
@@ -40,7 +40,7 @@ describe('TaskManager', () => {
     test('3 items in 2 holders', () => {
       itemHolder1.addItem('a', new Item('a'));
       itemHolder2.addItems([['b', [new Item('b')]], ['c', [new Item('c')]]]);
-      expect(taskManager.getBestItemHoldersFor(['a', 'b', 'c'])
+      expect(taskManager.getBestItemHoldersFor(['a', 'b', 'c'], 0, 0)
                                        .equals([
                                          [itemHolder1, 'a'],
                                          [itemHolder2, ['b', 'c']]
@@ -51,7 +51,7 @@ describe('TaskManager', () => {
     test('3 items with 1 missing', () => {
       itemHolder1.addItem('a', new Item('a'));
       itemHolder2.addItem('b', new Item('b'));
-      expect(taskManager.getBestItemHoldersFor(['a', 'b', 'c'])
+      expect(taskManager.getBestItemHoldersFor(['a', 'b', 'c'], 0, 0)
                                        .equals([])
       ).toBeTruthy();
     });

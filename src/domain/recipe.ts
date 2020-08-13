@@ -44,4 +44,7 @@ export class Recipe extends Container {
   log(): string {
     return `${this._inputs.log()} => ${this._outputs.log()}`;
   }
+  scoreFor(proportions: Proportions): number {
+    return this.getProportions().getMissing(proportions).getNorm();
+  }
 }

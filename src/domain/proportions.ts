@@ -24,8 +24,11 @@ export class Proportions {
     });
     this._data = new Map(entries);
   }
+  getNorm2(): number {
+    return this.quantities().reduce((acc, quantity) => acc + quantity * quantity, 0);
+  }
   getNorm(): number {
-    return Math.sqrt(this.quantities().reduce((acc, quantity) => acc + quantity * quantity, 0));
+    return Math.sqrt(this.getNorm2());
   }
   isEmpty(): boolean {
     return this.getNorm() === 0;

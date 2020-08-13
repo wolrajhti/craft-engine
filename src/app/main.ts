@@ -33,7 +33,7 @@ while (!!jobs.length) {
   const missing = taskManager.getProportions().getMissing(recipe.getInputs());
   console.log('missing', missing.log(), missing.getNorm());
   if (!missing.getNorm()) {
-    taskManager.execute(recipe, taskManager.getBestItemHoldersFor(recipe.getInputs()), itemHolder5);
+    taskManager.execute(recipe, taskManager.getBestItemHoldersFor(recipe.getInputs(), job.x, job.y), itemHolder5);
     console.log('recipe executed !');
   } else {
     if (!job.isSplitted()) {
