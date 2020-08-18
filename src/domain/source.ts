@@ -38,9 +38,6 @@ export class Source<T extends Container> {
   ofContainer(container: T): Proportions {
     return this._data.get(container) || new Proportions();
   }
-  forEachContainer(callbackfn: (value: Proportions, key: T) => void) {
-    this._data.forEach(callbackfn);
-  }
   containers(): T[] {
     return [...this._data.keys()];
   }

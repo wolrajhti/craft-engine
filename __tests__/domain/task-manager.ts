@@ -2,9 +2,11 @@ import { TaskManager } from '../../src/domain/task-manager';
 import { ItemHolder } from '../../src/domain/item-holder';
 import { Item } from '../../src/domain/item';
 import { Recipe } from '../../src/domain/recipe';
+import { Job } from '../../src/domain/job';
+import { Cook } from '../../src/domain/cook';
 
 describe('TaskManager', () => {
-  const itemHolder1 = new ItemHolder();
+  const itemHolder1 = new Cook();
   const itemHolder2 = new ItemHolder();
   const itemHolder3 = new ItemHolder();
 
@@ -58,22 +60,24 @@ describe('TaskManager', () => {
   });
 
   describe('execute()', () => {
-    test('missing item', () => {
+    test('missing item', async () => {
       const recipe = new Recipe(['a', 'b']);
-      expect(() => taskManager.execute(
-        recipe,
+      await expect(taskManager.execute(
+        new Job(recipe),
         [[itemHolder1, 'a']],
+        itemHolder1,
         itemHolder1
-      )).toThrow('Missing item');
+      )).rejects.toThrow('Missing item');
     });
 
-    test('2 inputs 1 output', () => {
+    test('2 inputs 1 output', async () => {
       itemHolder1.addItems([['a', [new Item('a')]], ['b', [new Item('b')]]]);
       const recipe = new Recipe(['a', 'b'], 'c');
       expect(itemHolder1.getProportions().contains('c')).toBeFalsy();
-      taskManager.execute(
-        recipe,
+      await taskManager.execute(
+        new Job(recipe),
         [[itemHolder1, ['a', 'b']]],
+        itemHolder1,
         itemHolder1
       );
       const proportions = itemHolder1.getProportions();

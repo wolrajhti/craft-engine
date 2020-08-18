@@ -5,24 +5,37 @@ import { Item } from './item';
 import { Recipe } from './recipe';
 import { Proportions, TProportionsData } from './proportions';
 import { Container } from './container';
+import { Cook } from './cook';
+import { Furniture } from './furniture';
+import { Stock } from './stock';
+import { Job } from './job';
 
 export class TaskManager {
   constructor(
     private _itemHolders: ItemHolder[],
     private _recipes: Recipe[],
   ) {}
-  execute(recipe: Recipe, src: TSourceData<ItemHolder>, dest: ItemHolder): void {
+  static GetTheCook(itemHolders: ItemHolder[]): Cook {
+    const cook = itemHolders.find(itemHolder => itemHolder instanceof Cook);
+    if (!cook) {
+      throw new Error('Missing cook');
+    }
+    return cook as Cook;
+  }
+  async execute(job: Job, src: TSourceData<ItemHolder>, cook: Cook, dest: ItemHolder): Promise<void> {
     const result = new Ingredients();
     if (!(src instanceof Source)) {
       src = new Source(src);
     }
-    src.forEachContainer((proportions, itemHolder) => {
-      const ingredients = itemHolder.removeItems(proportions);
+    for (const container of src.containers()) {
+      await cook.goTo(container);
+      const ingredients = container.removeItems(src.ofContainer(container));
       ingredients.forEachKind((items, kind) => {
         result.addItem(kind, ...items);
       });
-    });
-    const outputs = recipe.execute(result);
+    }
+    const outputs = job.recipe.execute(result);
+    await cook.goTo(dest);
     outputs.forEachKind((items, kind) => {
       dest.addItems([[kind, items]]);
     });
@@ -71,8 +84,22 @@ export class TaskManager {
     this._recipes.push(recipe);
     return recipe;
   }
-  createItemHolder(): ItemHolder {
-    const itemHolder = new ItemHolder();
+  createItemHolder(type: 'c' | 's' | 'f'): ItemHolder {
+    let itemHolder: ItemHolder;
+    switch(type) {
+      case 'c': {
+        itemHolder = new Cook();
+        break;
+      }
+      case 's': {
+        itemHolder = new Stock();
+        break;
+      }
+      case 'f': {
+        itemHolder = new Furniture();
+        break;
+      }
+    }
     this._itemHolders.push(itemHolder);
     return itemHolder;
   }

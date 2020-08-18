@@ -3,6 +3,8 @@ import { Proportions } from '../../src/domain/proportions';
 describe('Proportions', () => {
   test('equals', () => {
     expect(new Proportions('a').equals([['a', 1], ['b', 0]])).toBeTruthy();
+    expect(new Proportions(['a', 'b']).equals([])).toBeFalsy();
+    expect(new Proportions([]).equals(['a', 'b'])).toBeFalsy();
   });
 
   test('getNorm()', () => {

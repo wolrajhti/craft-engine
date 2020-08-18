@@ -30,6 +30,9 @@ export class Recipe extends Container {
     return this._outputs;
   }
   execute(ingredients: Ingredients): Ingredients {
+    if (!ingredients.getProportions().equals(this._inputs)) {
+      throw new Error('Missing item');
+    }
     return new Ingredients(
       this._outputs.content()
         .map(([kind, quantity]) => {
