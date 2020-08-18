@@ -9,20 +9,20 @@ taskManager.createRecipe(['a', 'b', 'e', 'f'], 'g');
 taskManager.createRecipe(['a', 'b', 'g', 'h'], 'i');
 
 // cuistot
-const itemHolder1 = taskManager.createItemHolder('c');
-taskManager.createItemsIn(itemHolder1, [['a', 3]]);
+const cook = taskManager.createItemHolder('c');
+taskManager.createItemsIn(cook, [['a', 3]]);
 // plan de travail
-const itemHolder2 = taskManager.createItemHolder('f');
-taskManager.createItemsIn(itemHolder2, [['b', 3]]);
+const furniture = taskManager.createItemHolder('f');
+taskManager.createItemsIn(furniture, [['b', 3]]);
 // réfrigérateur 1
-const itemHolder3 = taskManager.createItemHolder('s');
-taskManager.createItemsIn(itemHolder3, [['b', 2], 'c']);
+const stock1 = taskManager.createItemHolder('s');
+taskManager.createItemsIn(stock1, [['b', 2], 'c']);
 // réfrigérateur 2
-const itemHolder4 = taskManager.createItemHolder('s');
-taskManager.createItemsIn(itemHolder4, ['d', 'f']);
+const stock2 = taskManager.createItemHolder('s');
+taskManager.createItemsIn(stock2, ['d', 'f']);
 // réfrigérateur 3
-const itemHolder5 = taskManager.createItemHolder('s');
-taskManager.createItemsIn(itemHolder5, 'h');
+const stock3 = taskManager.createItemHolder('s');
+taskManager.createItemsIn(stock3, 'h');
 
 const jobs = [new Job(new Recipe('i'))];
 

@@ -7,8 +7,8 @@ export class ItemHolder extends Container {
   private _items: Ingredients;
   constructor(
     data: [string, Item[]][] = [],
-    private _x = 0,
-    private _y = 0
+    protected _x = 0,
+    protected _y = 0
   ) {
     super();
     this._items = new Ingredients(data);

@@ -1,7 +1,23 @@
 import { ItemHolder } from './item-holder';
 import { Item } from './item';
 
+
+export type GoToCallbackFn = (
+  x1: number, y1: number,
+  x2: number, y2: number,
+  speed: number
+) => Promise<void>;
+
 export class Cook extends ItemHolder {
+  private static readonly defaultGoToCallbackFn: GoToCallbackFn = async (
+    x1: number, y1: number,
+    x2: number, y2: number,
+    speed: number
+  ): Promise<void> => {
+    const dist = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+    await new Promise(resolve => setTimeout(resolve, dist * speed));
+  };
+
   constructor(
     data: [string, Item[]][] = [],
     x?: number,
@@ -10,11 +26,9 @@ export class Cook extends ItemHolder {
   ) {
     super(data, x, y);
   }
-  async goTo(itemHolder: ItemHolder): Promise<void> {
-    const dist = Math.sqrt(
-      (itemHolder.x - this.x) * (itemHolder.x - this.x) +
-      (itemHolder.y - this.y) * (itemHolder.y - this.y)
-    );
-    await new Promise(resolve => setTimeout(resolve, dist * this.speed));
+  async goTo(itemHolder: ItemHolder, callbackFn: GoToCallbackFn = Cook.defaultGoToCallbackFn): Promise<void> {
+    await callbackFn(this.x, this.y, itemHolder.x, itemHolder.y, this.speed);
+    this._x = itemHolder.x;
+    this._y = itemHolder.y;
   }
 }

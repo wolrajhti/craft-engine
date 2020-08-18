@@ -5,7 +5,7 @@ import { Item } from './item';
 import { Recipe } from './recipe';
 import { Proportions, TProportionsData } from './proportions';
 import { Container } from './container';
-import { Cook } from './cook';
+import { Cook, GoToCallbackFn } from './cook';
 import { Furniture } from './furniture';
 import { Stock } from './stock';
 import { Job } from './job';
@@ -22,20 +22,26 @@ export class TaskManager {
     }
     return cook as Cook;
   }
-  async execute(job: Job, src: TSourceData<ItemHolder>, cook: Cook, dest: ItemHolder): Promise<void> {
+  async execute(
+    job: Job,
+    src: TSourceData<ItemHolder>,
+    cook: Cook,
+    dest: ItemHolder,
+    goToCallbackFn?: GoToCallbackFn
+  ): Promise<void> {
     const result = new Ingredients();
     if (!(src instanceof Source)) {
       src = new Source(src);
     }
     for (const container of src.containers()) {
-      await cook.goTo(container);
+      await cook.goTo(container, goToCallbackFn);
       const ingredients = container.removeItems(src.ofContainer(container));
       ingredients.forEachKind((items, kind) => {
         result.addItem(kind, ...items);
       });
     }
     const outputs = job.recipe.execute(result);
-    await cook.goTo(dest);
+    await cook.goTo(dest, goToCallbackFn);
     outputs.forEachKind((items, kind) => {
       dest.addItems([[kind, items]]);
     });
