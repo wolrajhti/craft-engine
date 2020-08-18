@@ -15,7 +15,11 @@ export class Cook extends ItemHolder {
     speed: number
   ): Promise<void> => {
     const dist = Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-    await new Promise(resolve => setTimeout(resolve, dist * speed));
+    console.log(
+      '\t=> cook is moving from', x1.toFixed(), y1.toFixed(),
+      'to', x2.toFixed(), y2.toFixed(),
+      '(in ', ((dist / speed) * 1000).toFixed(), 's)');
+    await new Promise(resolve => setTimeout(resolve, (dist / speed) * 1000));
   };
 
   constructor(

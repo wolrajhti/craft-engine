@@ -33,6 +33,7 @@ export class TaskManager {
     if (!(src instanceof Source)) {
       src = new Source(src);
     }
+    job.markAsProcessing();
     for (const container of src.containers()) {
       await cook.goTo(container, goToCallbackFn);
       const ingredients = container.removeItems(src.ofContainer(container));
@@ -94,15 +95,15 @@ export class TaskManager {
     let itemHolder: ItemHolder;
     switch(type) {
       case 'c': {
-        itemHolder = new Cook();
+        itemHolder = new Cook([], 1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random());
         break;
       }
       case 's': {
-        itemHolder = new Stock();
+        itemHolder = new Stock([], 1000 * Math.random(), 1000 * Math.random());
         break;
       }
       case 'f': {
-        itemHolder = new Furniture();
+        itemHolder = new Furniture([], 1000 * Math.random(), 1000 * Math.random());
         break;
       }
     }

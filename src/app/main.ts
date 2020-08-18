@@ -10,10 +10,10 @@ taskManager.createRecipe(['a', 'b', 'g', 'h'], 'i');
 
 // cuistot
 const cook = taskManager.createItemHolder('c');
-taskManager.createItemsIn(cook, [['a', 3]]);
+taskManager.createItemsIn(cook, [['a', Infinity]]);
 // plan de travail
 const furniture = taskManager.createItemHolder('f');
-taskManager.createItemsIn(furniture, [['b', 3]]);
+taskManager.createItemsIn(furniture, [['b', Infinity]]);
 // réfrigérateur 1
 const stock1 = taskManager.createItemHolder('s');
 taskManager.createItemsIn(stock1, [['b', 2], 'c']);
@@ -29,29 +29,30 @@ const jobs = [new Job(new Recipe('i'))];
 setInterval(() => {
   if (!!jobs.length) {
     const job = jobs.shift() as Job;
-    const recipe = job.recipe;
-    console.log('---', recipe.log(), '---');
-    const missing = taskManager.getProportions().getMissing(recipe.getInputs());
-    console.log('missing', missing.log(), missing.getNorm());
-    if (!missing.getNorm()) {
-      const bestItemHolders = taskManager.getBestItemHoldersFor(recipe.getInputs(), job.x, job.y);
-      const cook = TaskManager.GetTheCook(bestItemHolders.containers());
-      taskManager.execute(job, bestItemHolders, cook, cook).then(() => {
-        const i = jobs.findIndex(j => job === j);
-        if (i !== -1) {
-          jobs.splice(i, 1);
+    if (!job.isProcessing) {
+      const recipe = job.recipe;
+      const missing = taskManager.getProportions().getMissing(recipe.getInputs());
+      if (!missing.getNorm()) {
+        console.log('executing', recipe.log());
+        const bestItemHolders = taskManager.getBestItemHoldersFor(recipe.getInputs(), job.x, job.y);
+        const cook = TaskManager.GetTheCook(bestItemHolders.containers());
+        taskManager.execute(job, bestItemHolders, cook, cook).then(() => {
+          const i = jobs.findIndex(j => job === j);
+          if (i !== -1) {
+            jobs.splice(i, 1);
+          }
+          console.log('recipe', recipe.log(), 'executed !');
+        });
+      } else {
+        if (!job.isSplitted) {
+          const recipes = taskManager.getBestRecipesFor(missing);
+          console.log('splitting recipe', recipe.log(), 'into', [...recipes.containers()].map(r => r.log()));
+          job.markAsSplitted();
+          jobs.push(
+            ...recipes.containers()
+              .map(recipe => new Job(recipe))
+          );
         }
-        console.log('recipe', recipe.log(), 'executed !');
-      });
-    } else {
-      if (!job.isSplitted()) {
-        const recipes = taskManager.getBestRecipesFor(missing);
-        console.log('splitting task into :', [...recipes.containers()].map(r => r.log()));
-        job.markAsSplitted();
-        jobs.push(
-          ...recipes.containers()
-            .map(recipe => new Job(recipe))
-        );
       }
     }
     jobs.push(job);

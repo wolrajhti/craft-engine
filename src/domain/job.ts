@@ -2,6 +2,7 @@ import { Recipe } from "./recipe";
 
 export class Job {
   private _isSplitted = false;
+  private _isProcessing = false;
   constructor(
     public readonly recipe: Recipe,
     public readonly x = 0,
@@ -10,7 +11,13 @@ export class Job {
   markAsSplitted(): void {
     this._isSplitted = true;
   }
-  isSplitted(): boolean {
+  get isSplitted(): boolean {
     return this._isSplitted;
+  }
+  markAsProcessing(): void {
+    this._isProcessing = true;
+  }
+  get isProcessing(): boolean {
+    return this._isProcessing;
   }
 }
