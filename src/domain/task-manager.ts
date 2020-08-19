@@ -95,7 +95,7 @@ export class TaskManager {
     let itemHolder: ItemHolder;
     switch(type) {
       case 'c': {
-        itemHolder = new Cook([], 1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random());
+        itemHolder = new Cook([], 1000 * Math.random(), 1000 * Math.random(), 100 * Math.random());
         break;
       }
       case 's': {

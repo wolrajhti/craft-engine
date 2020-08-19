@@ -13,7 +13,7 @@ const cook = taskManager.createItemHolder('c');
 taskManager.createItemsIn(cook, [['a', Infinity]]);
 // plan de travail
 const furniture = taskManager.createItemHolder('f');
-taskManager.createItemsIn(furniture, [['b', Infinity]]);
+taskManager.createItemsIn(furniture, 'b');
 // réfrigérateur 1
 const stock1 = taskManager.createItemHolder('s');
 taskManager.createItemsIn(stock1, [['b', 2], 'c']);
