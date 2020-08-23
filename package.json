@@ -2,9 +2,10 @@
   "name": "craft-engine",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app/main.js",
+  "main": "dist/app/server/main.js",
   "scripts": {
-    "start": "tsc && node .",
+    "prestart": "tsc && tsc -p ./src/app/client",
+    "start": "node .",
     "test": "jest --no-cache",
     "test:coverage": "jest --coverage",
     "test:clearCache": "jest --clearCache"
@@ -20,9 +21,15 @@
   },
   "homepage": "https://github.com/wolrajhti/craft-engine#readme",
   "devDependencies": {
+    "@types/express": "^4.17.7",
     "@types/jest": "^26.0.4",
+    "@types/socket.io": "^2.1.11",
     "jest": "^26.1.0",
     "ts-jest": "^26.1.1",
     "typescript": "^3.9.6"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^2.3.0"
   }
 }
