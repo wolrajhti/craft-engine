@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/app/server/main.js",
   "scripts": {
-    "prestart": "tsc && tsc -p ./src/app/client",
+    "prestart": "tsc && webpack",
     "start": "node .",
     "test": "jest --no-cache",
     "test:coverage": "jest --coverage",
@@ -26,10 +26,14 @@
     "@types/socket.io": "^2.1.11",
     "jest": "^26.1.0",
     "ts-jest": "^26.1.1",
-    "typescript": "^3.9.6"
+    "ts-loader": "^8.0.3",
+    "typescript": "^3.9.6",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.3.0",
+    "three": "^0.119.1"
   }
 }
