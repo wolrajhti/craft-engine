@@ -8,20 +8,22 @@ taskManager.createRecipe(['a', 'b', 'c', 'd'], 'e');
 taskManager.createRecipe(['a', 'b', 'e', 'f'], 'g');
 taskManager.createRecipe(['a', 'b', 'g', 'h'], 'i');
 
+const random = (size: number) => size * (2 * Math.random() - 1);
+
 // cuistot
-const cook = taskManager.createItemHolder('c');
+const cook = taskManager.createItemHolder('c', random(1000), random(1000), 10 + 90 * Math.random());
 taskManager.createItemsIn(cook, [['a', Infinity]]);
 // plan de travail
-const furniture = taskManager.createItemHolder('f');
+const furniture = taskManager.createItemHolder('f', random(1000), random(1000));
 taskManager.createItemsIn(furniture, 'b');
 // réfrigérateur 1
-const stock1 = taskManager.createItemHolder('s');
+const stock1 = taskManager.createItemHolder('s', random(1000), random(1000));
 taskManager.createItemsIn(stock1, [['b', 2], 'c']);
 // réfrigérateur 2
-const stock2 = taskManager.createItemHolder('s');
+const stock2 = taskManager.createItemHolder('s', random(1000), random(1000));
 taskManager.createItemsIn(stock2, ['d', 'f']);
 // réfrigérateur 3
-const stock3 = taskManager.createItemHolder('s');
+const stock3 = taskManager.createItemHolder('s', random(1000), random(1000));
 taskManager.createItemsIn(stock3, 'h');
 
 const jobs = [new Job(new Recipe('i'))];

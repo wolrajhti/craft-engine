@@ -6,9 +6,22 @@
 		<style>
 			body { margin: 0; }
 			canvas { display: block; }
+			#overlay {
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				width: 100%;
+				text-align: center;
+				z-index: 1000;
+			}
 		</style>
 	</head>
 	<body>
+		<div id="overlay">
+			<button id="addCookButton">+ cuistot</button>
+			<button id="addStockButton">+ stock</button>
+			<button id="addFurnitureButton">+ furniture</button>
+		</div>
 		<script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();

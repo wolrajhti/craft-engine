@@ -3,7 +3,10 @@ import { Proportions, TProportionsData } from './proportions';
 import { Item } from './item';
 import { Container } from './container';
 
+let UUID = 0;
+
 export class ItemHolder extends Container {
+  readonly uuid = UUID++;
   private _items: Ingredients;
   constructor(
     data: [string, Item[]][] = [],

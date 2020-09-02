@@ -1,10 +1,10 @@
-type _ = string | (string | [string, number])[];
+export type TProportionsInput = string | (string | [string, number])[];
 
-export type TProportionsData = _ | Proportions;
+export type TProportionsData = TProportionsInput | Proportions;
 
 export class Proportions {
   private _data: Map<string, number>;
-  constructor(data: _ = []) {
+  constructor(data: TProportionsInput = []) {
     const entries: [string, number][] = [];
     if (!Array.isArray(data)) {
       data = [data];

@@ -91,34 +91,42 @@ export class TaskManager {
     this._recipes.push(recipe);
     return recipe;
   }
-  createItemHolder(type: 'c' | 's' | 'f'): ItemHolder {
+  createItemHolder(type: 'c' | 's' | 'f', x: number, y: number, speed?: number): ItemHolder {
     let itemHolder: ItemHolder;
     switch(type) {
       case 'c': {
-        itemHolder = new Cook([], 1000 * Math.random(), 1000 * Math.random(), 100 * Math.random());
+        itemHolder = new Cook([], x, y, speed);
         break;
       }
       case 's': {
-        itemHolder = new Stock([], 1000 * Math.random(), 1000 * Math.random());
+        itemHolder = new Stock([], x, y);
         break;
       }
       case 'f': {
-        itemHolder = new Furniture([], 1000 * Math.random(), 1000 * Math.random());
+        itemHolder = new Furniture([], x, y);
         break;
       }
     }
     this._itemHolders.push(itemHolder);
     return itemHolder;
   }
-  createItemsIn(itemHolder: ItemHolder, proportions: TProportionsData): Ingredients {
+  createItemsIn(itemHolder: ItemHolder | number, proportions: TProportionsData): Ingredients {
     if (!(proportions instanceof Proportions)) {
       proportions = new Proportions(proportions);
+    }
+    if (!(itemHolder instanceof ItemHolder)) {
+      const foundedItemHolder = this._itemHolders.find(iH => iH.uuid === itemHolder);
+      if (foundedItemHolder) {
+        itemHolder = foundedItemHolder;
+      } else {
+        throw new Error('unknown itemHolder');
+      }
     }
     return new Ingredients(
       proportions.content()
         .map(([kind, quantity]) => {
           const item = new Item({kinds: [kind], quantity});
-          itemHolder.addItem(kind, item);
+          (itemHolder as ItemHolder).addItem(kind, item);
           return [kind, [item]];
         })
     );
