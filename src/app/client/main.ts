@@ -29,6 +29,7 @@ clickOn('#addFurnitureButton', () => {
 });
 
 clickOn('#addItemAButton', () => {
-  const lastEntity = gameClient.getLastEntity();
-  socket.emit('addItemsIn', lastEntity.uuid, 'a');
+  gameClient.getSelectedEntityUuids().forEach(uuid => {
+    socket.emit('addItemsIn', uuid, 'a');
+  });
 });

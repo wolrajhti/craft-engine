@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 
 export class Entity {
-  geometry: THREE.BufferGeometry;
-  material: THREE.Material;
   mesh: THREE.Mesh;
   constructor(
     public readonly type: 'c' | 'f' | 's',
@@ -10,19 +8,35 @@ export class Entity {
     public x: number,
     public y: number,
   ) {
-    if (type === 'c') {
-      this.geometry = new THREE.ConeBufferGeometry(5, 5, 3);
-      this.material = new THREE.MeshBasicMaterial({color: 0xff0000});
-    } else if (type === 'f') {
-      this.geometry = new THREE.BoxBufferGeometry(10, 10, 10);
-      this.material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-    } else /* if (type === 's') */ {
-      this.geometry = new THREE.BoxBufferGeometry(10, 10, 10);
-      this.material = new THREE.MeshBasicMaterial({color: 0xff0000});
-    }
-    this.mesh = new THREE.Mesh(this.geometry, this.material);
+    const geometry = this._getGeometry();
+    const material = this._getMaterial();
+    this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.userData = this;
     console.log(this.x, this.y);
     this.mesh.position.add(new THREE.Vector3(this.x, this.y));
+  }
+  select(): void {
+    (this.mesh.material as THREE.MeshBasicMaterial).color = new THREE.Color(0x545454);
+  }
+  unselect(): void {
+    this.mesh.material = this._getMaterial();
+  }
+  private _getGeometry(): THREE.BufferGeometry {
+    if (this.type === 'c') {
+      return new THREE.ConeBufferGeometry(5, 5, 3);
+    } else if (this.type === 'f') {
+      return new THREE.BoxBufferGeometry(10, 10, 10);
+    } else /* if (type === 's') */ {
+      return new THREE.BoxBufferGeometry(10, 10, 10);
+    }
+  }
+  private _getMaterial(): THREE.MeshBasicMaterial {
+    if (this.type === 'c') {
+      return new THREE.MeshBasicMaterial({color: 0xff0000});
+    } else if (this.type === 'f') {
+      return new THREE.MeshBasicMaterial({color: 0x00ff00});
+    } else /* if (type === 's') */ {
+      return new THREE.MeshBasicMaterial({color: 0xff0000});
+    }
   }
 }
