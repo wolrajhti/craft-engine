@@ -14,6 +14,14 @@
 				text-align: center;
 				z-index: 1000;
 			}
+			#menu {
+				position: absolute;
+				left: 0px;
+				top: 50px;
+				width: 100%;
+				text-align: left;
+				z-index: 1000;
+			}
 		</style>
 	</head>
 	<body>
@@ -21,6 +29,24 @@
 			<button id="addCookButton">+ cuistot</button>
 			<button id="addStockButton">+ stock</button>
 			<button id="addFurnitureButton">+ furniture</button>
+		</div>
+		<div id="menu">
+			<div>
+				<button id="addIngredient1">+ ing1</button>
+			</div>
+			<div>
+				<button id="addIngredient2">+ ing2</button>
+			</div>
+			<div>
+				<button id="addIngredient3">+ ing3</button>
+			</div>
+			<div>
+				<button id="addIngredient4">+ ing4</button>
+			</div>
+			<div>
+				<input id="askForInput" type="text" />
+				<button id="askFor">ask for</button>
+			</div>
 		</div>
 		<script src="/socket.io/socket.io.js"></script>
     <script>

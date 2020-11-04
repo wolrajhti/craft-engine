@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io';
 import { GameClient } from './game-client';
-
+import { Proportions } from '../../domain/proportions';
 declare const socket: Socket;
 
 const gameClient = new GameClient(socket);
@@ -28,8 +28,24 @@ clickOn('#addFurnitureButton', () => {
   socket.emit('addItemHolder', 'f', random(100), random(100));
 });
 
-clickOn('#addItemAButton', () => {
-  gameClient.getSelectedEntityUuids().forEach(uuid => {
-    socket.emit('addItemsIn', uuid, 'a');
-  });
+clickOn('#addIngredient1', () => {
+  socket.emit('addItemsIn', gameClient.getSelectedEntityUuids(), 'I1');
+});
+
+clickOn('#addIngredient2', () => {
+  socket.emit('addItemsIn', gameClient.getSelectedEntityUuids(), 'I2');
+});
+
+clickOn('#addIngredient3', () => {
+  socket.emit('addItemsIn', gameClient.getSelectedEntityUuids(), 'I3');
+});
+
+clickOn('#addIngredient4', () => {
+  socket.emit('addItemsIn', gameClient.getSelectedEntityUuids(), 'I4');
+});
+
+clickOn('#askFor', () => {
+  // const inputElement = document.querySelector('#askForInput') as HTMLInputElement;
+  // const data = Proportions.ParseProportionsInput(inputElement.value);
+  socket.emit('addJob', 'I5');
 });

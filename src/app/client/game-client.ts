@@ -6,16 +6,25 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 export class GameClient {
   private _entities = new Map<number, Entity>();
   private _scene = new THREE.Scene();
-  private _camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  private _entityContainer = new THREE.Object3D();
   private _renderer = new THREE.WebGLRenderer();
-  private _controls = new OrbitControls(this._camera, this._renderer.domElement);
+  private _camera: THREE.PerspectiveCamera;
+  private _controls: OrbitControls;
   private _raycaster = new THREE.Raycaster();
   private _selectedEntities = new Set<number>();
   constructor(private _socket: Socket) {
+    const geometry = new THREE.PlaneBufferGeometry(100, 100);
+    const material = new THREE.MeshBasicMaterial({color: 0x343434, side: THREE.DoubleSide});
+    const plane = new THREE.Mesh(geometry, material);
+    this._scene.add(plane);
+    this._scene.add(this._entityContainer);
+
+    this._camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this._camera.position.z = 500;
+    this._controls = new OrbitControls(this._camera, this._renderer.domElement);
+
     this._renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this._renderer.domElement);
-    this._camera.position.z = 500;
-    this._camera.rotateX(Math.PI / 2);
 
     const mouse = new THREE.Vector2();
     this._renderer.domElement.addEventListener('click', event => {
@@ -30,7 +39,7 @@ export class GameClient {
   addEntity(type: 'c' | 'f' | 's', uuid: number, x: number, y: number) {
     const entity = new Entity(type, uuid, x, y);
     this._entities.set(entity.uuid, entity);
-    this._scene.add(entity.mesh);
+    this._entityContainer.add(entity.mesh);
   }
   animate() {
     requestAnimationFrame(this.animate.bind(this));
@@ -38,7 +47,7 @@ export class GameClient {
   }
   private _clickHandler(mouse: THREE.Vector2) {
     this._raycaster.setFromCamera(mouse, this._camera);
-    const inters = this._raycaster.intersectObjects(this._scene.children);
+    const inters = this._raycaster.intersectObjects(this._entityContainer.children);
     inters.forEach(inter => {
       const entity = inter.object.userData as Entity;
       if (this._selectedEntities.has(entity.uuid)) {

@@ -3,6 +3,13 @@ export type TProportionsInput = string | (string | [string, number])[];
 export type TProportionsData = TProportionsInput | Proportions;
 
 export class Proportions {
+  static ParseProportionsInput(data: string): TProportionsInput {
+    try {
+      return JSON.parse(data);
+    } catch (err) {
+      return data;
+    }
+  }
   private _data: Map<string, number>;
   constructor(data: TProportionsInput = []) {
     const entries: [string, number][] = [];
