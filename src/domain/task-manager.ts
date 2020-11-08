@@ -11,10 +11,45 @@ import { Stock } from './stock';
 import { Job } from './job';
 
 export class TaskManager {
+  private _jobs: Job[] = [];
   constructor(
     private _itemHolders: ItemHolder[],
     private _recipes: Recipe[],
-  ) {}
+  ) {
+    setInterval(() => {
+      if (!!this._jobs.length) {
+        const job = this._jobs.shift() as Job;
+        if (!job.isProcessing) {
+          const recipe = job.recipe;
+          const missing = this.getProportions().getMissing(recipe.getInputs());
+          console.log(missing.log());
+          if (!missing.getNorm()) {
+            console.log('executing', recipe.log());
+            const bestItemHolders = this.getBestItemHoldersFor(recipe.getInputs(), job.x, job.y);
+            const cook = TaskManager.GetTheCook(bestItemHolders.containers());
+            this.execute(job, bestItemHolders, cook, cook).then(() => {
+              const i = this._jobs.findIndex(j => job === j);
+              if (i !== -1) {
+                this._jobs.splice(i, 1);
+              }
+              console.log('recipe', recipe.log(), 'executed !');
+            });
+          } else {
+            if (!job.isSplitted) {
+              const recipes = this.getBestRecipesFor(missing);
+              console.log('splitting recipe', recipe.log(), 'into', [...recipes.containers()].map(r => r.log()));
+              job.markAsSplitted();
+              this._jobs.push(
+                ...recipes.containers()
+                  .map(recipe => new Job(recipe))
+              );
+            }
+          }
+        }
+        this._jobs.push(job);
+      }
+    }, 50);
+  }
   static GetTheCook(itemHolders: ItemHolder[]): Cook {
     const cook = itemHolders.find(itemHolder => itemHolder instanceof Cook);
     if (!cook) {
@@ -130,5 +165,8 @@ export class TaskManager {
           return [kind, [item]];
         })
     );
+  }
+  addJob(job: Job): void {
+    this._jobs.push(job);
   }
 }

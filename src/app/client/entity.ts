@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 export class Entity {
   mesh: THREE.Mesh;
+  div: HTMLDivElement;
   constructor(
     public readonly type: 'c' | 'f' | 's',
     public readonly uuid: number,
@@ -13,6 +14,16 @@ export class Entity {
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.userData = this;
     console.log(this.x, this.y);
+    const labels = document.getElementById('labels');
+    if (labels) {
+      labels.insertAdjacentHTML(
+        'beforeend',
+        `<div id="${type}${uuid}">
+          ${type}${uuid}
+        </div>`
+      );
+    }
+    this.div = document.getElementById(type + uuid) as HTMLDivElement;
     this.mesh.position.add(new THREE.Vector3(this.x, this.y));
   }
   select(): void {
