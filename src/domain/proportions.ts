@@ -1,50 +1,12 @@
-export type TProportionsInput = string | (string | [string, number])[];
-
-export type TProportionsData = TProportionsInput | Proportions;
+import { Kind } from "./valueObjects/kind";
 
 export class Proportions {
-  static ParseProportionsInput(data: string): TProportionsInput {
-    try {
-      return JSON.parse(data);
-    } catch (err) {
-      return data;
-    }
-  }
-  private _data: Map<string, number>;
-  constructor(data: TProportionsInput = []) {
-    const entries: [string, number][] = [];
-    if (!Array.isArray(data)) {
-      data = [data];
-    }
-    data.forEach(value => {
-      if (!Array.isArray(value)) {
-        value = [value, 1];
-      }
-      const [kind, quantity] = value;
-      if (typeof kind !== 'string') {
-        throw new Error('kind must be a string');
-      }
-      if (typeof quantity !== 'number' || Math.round(quantity) !== quantity) {
-        throw new Error('quantity must be a integer');
-      }
-      entries.push([kind, quantity]);
-    });
+  private _data: Map<Kind, number>;
+  constructor(entries: [Kind, number][]) {
     this._data = new Map(entries);
   }
-  getNorm2(): number {
-    return this.quantities().reduce((acc, quantity) => acc + quantity * quantity, 0);
-  }
-  getNorm(): number {
-    return Math.sqrt(this.getNorm2());
-  }
-  isEmpty(): boolean {
-    return this.getNorm() === 0;
-  }
-  private _add(other: TProportionsData, sign: -1 | 1 = 1): Proportions {
-    if (!(other instanceof Proportions)) {
-      other = new Proportions(other);
-    }
-    const result = new Proportions();
+  private _add(other: Proportions, sign: -1 | 1 = 1): Proportions {
+    const result = new Proportions([]);
     this._data.forEach((quantity, kind) => {
       result._data.set(kind, quantity);
     });
@@ -58,50 +20,35 @@ export class Proportions {
     });
     return result;
   }
-  add(other: TProportionsData): Proportions {
-    if (!(other instanceof Proportions)) {
-      other = new Proportions(other);
-    }
+  add(other: Proportions): Proportions {
     return this._add(other);
   }
-  sub(other: TProportionsData): Proportions {
-    if (!(other instanceof Proportions)) {
-      other = new Proportions(other);
-    }
+  sub(other: Proportions): Proportions {
     return this._add(other, -1);
   }
   mul(scale: number): Proportions {
     if (Math.round(scale) !== scale) {
       throw new Error('scale must be a integer');
     }
-    const result = new Proportions();
+    const result = new Proportions([]);
     this._data.forEach((quantity, kind) => {
       result._data.set(kind, quantity * scale);
     });
     return result;
   }
-  equals(other: TProportionsData): boolean {
-    if (!(other instanceof Proportions)) {
-      other = new Proportions(other);
-    }
+  equals(other: Proportions): boolean {
     return this.sub(other).isEmpty();
   }
-  contains(other: TProportionsData): boolean {
-    if (!(other instanceof Proportions)) {
-      other = new Proportions(other);
-    }
+  contains(other: Proportions): boolean {
     return this.getMissing(other).isEmpty();
   }
-  getMissing(other: TProportionsData): Proportions {
-    if (!(other instanceof Proportions)) {
-      other = new Proportions(other);
-    }
+  getMissing(other: Proportions): Proportions {
     return new Proportions(other.sub(this).content());
   }
   log(): string {
     return this.content().join(', ');
   }
-  content(): [string, number][] {
+  content(): [Kind, number][] {
     return [...this._data].filter(([kind, quantity]) => quantity > 0);
   }
   ofKind(kind: string): number {

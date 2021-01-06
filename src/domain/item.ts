@@ -9,12 +9,12 @@ export class Item {
   ) {
     this._quantity = quantity;
   }
+  get quantity(): number {
+    return this._quantity;
+  }
   remove(quantity: number): Item {
-    if (this._quantity < quantity) {
-      throw new Error('Cannot remove this quantity');
-    }
+    this._quantity -= Math.min(this._quantity, quantity);
     if (0 < this._quantity) {
-      this._quantity -= quantity;
       return new Item(this.kind, this.quality, quantity);
     }
     return this;

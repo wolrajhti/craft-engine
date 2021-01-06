@@ -1,5 +1,5 @@
 import { Ingredients } from './ingredients';
-import { Proportions, TProportionsData } from './proportions';
+import { Proportions } from './proportions';
 import { Item } from './item';
 import { Container } from './container';
 
