@@ -8,6 +8,9 @@ class Rect {
     public h = 0,
   ) {
   }
+  mirror(): Rect {
+    return new Rect(this.y, this.x, this.h, this.w);
+  }
 }
 
 class Cell {
@@ -142,6 +145,13 @@ const map = '' +
   '           X' +
   '';
 
+// const map = '' + 
+//   'X555555555 X' +
+//   'X6666666666 ' +
+//   '34XXXXX22222' +
+//   '11111111111X' +
+//   '';
+
 // const map = '' +
 //   'X XX' +
 //   'X  X' +
@@ -201,4 +211,145 @@ while (todos.length) {
   todos.pop()?.cut();
 }
 
-console.log([...rects]);
+const validRects = [...rects];
+
+console.log(validRects);
+
+const mergeX = (r1: Rect, r2: Rect): Rect[] => {
+  if (r1.x === r2.x) {
+    if (r1.y === r2.y + r2.h + 1) {
+      if (r1.w < r2.w) {
+        if (r2.h < r1.w) {
+          // 222222    111222
+          // 111    -> 111
+          // 111       111
+          return [
+            new Rect(r2.x, r2.y, r1.w, r1.h + r2.h),
+            new Rect(r2.x + r1.w, r2.y, r2.w - r1.w, r2.h)
+          ];
+        }
+      } else if (r1.w === r2.w) {
+        // 222222    222222
+        // 111111 -> 222222
+        // 111111    222222
+        return [new Rect(r2.x, r2.y, r2.w, r1.h + r2.h)];
+      } else if (r1.h < r2.w) {
+        // 222       222
+        // 222    -> 222
+        // 111111    222111
+        return [
+          new Rect(r2.x, r2.y, r2.w, r1.h + r2.h),
+          new Rect(r1.x + r2.w, r1.y, r1.w - r2.w, r1.h)
+        ];
+      }
+    } else if (r1.y + r1.h + 1 === r2.y) {
+      if (r1.w < r2.w) {
+        if (r2.h < r1.w) {
+          // 111       111
+          // 111    -> 111
+          // 222222    111222
+          return [
+            new Rect(r1.x, r1.y, r1.w, r1.h + r2.h),
+            new Rect(r2.x + r1.w, r2.y, r2.w - r1.w, r2.h)
+          ];
+        }
+      } else if (r1.w === r2.w) {
+        // 111111    111111
+        // 222222 -> 111111
+        // 222222    111111
+        return [new Rect(r1.x, r1.y, r1.w, r1.h + r2.h)];
+      } else if (r1.h < r2.w) {
+        // 111111    222111
+        // 222    -> 222
+        // 222       222
+        return [
+          new Rect(r1.x, r1.y, r2.w, r2.h + r1.h),
+          new Rect(r1.x + r2.w, r1.y, r1.w - r2.w, r1.h)
+        ];
+      }
+    }
+  } else if (r1.x + r1.w === r2.x + r2.h) {
+    if (r1.y === r2.y + r2.h + 1) {
+      if (r1.w < r2.w) {
+        if (r2.h < r1.w) {
+          // 222222    222111
+          //    111 ->    111
+          //    111       111
+          return [
+            new Rect(r2.x, r2.y, r2.w - r1.w, r2.h),
+            new Rect(r1.x, r2.y, r1.w, r1.h + r2.h)
+          ];
+        }
+      } else if (r1.w === r2.w) {
+        // 222222    222222
+        // 111111 -> 222222
+        // 111111    222222
+        return [new Rect(r2.x, r2.y, r2.w, r1.h + r2.h)];
+      } else if (r1.h < r2.w) {
+        //    222       222
+        //    222 ->    222
+        // 111111    111222
+        return [
+          new Rect(r2.x, r2.y, r2.w, r1.h + r2.h),
+          new Rect(r1.x, r1.y, r1.w - r2.w, r1.h)
+        ];
+      }
+    } else if (r1.y + r1.h + 1 === r2.y) {
+      if (r1.w < r2.w) {
+        if (r2.h < r1.w) {
+          //    111       111
+          //    111 ->    111
+          // 222222    222111
+          return [
+            new Rect(r1.x, r1.y, r1.w, r1.h + r2.h),
+            new Rect(r2.x, r2.y, r2.w - r1.w, r1.h)
+          ];
+        }
+      } else if (r1.w === r2.w) {
+        // 111111    111111
+        // 222222 -> 111111
+        // 222222    111111
+        return [new Rect(r1.x, r1.y, r1.w, r1.h + r2.h)];
+      } else if (r1.h < r2.w) {
+        // 111111    111222
+        //    222 ->    222
+        //    222       222
+        return [
+          new Rect(r1.x, r1.y, r1.w - r2.w, r1.h),
+          new Rect(r1.x, r1.y, r2.w, r1.h + r2.h)
+        ];
+      }
+    }
+  }
+  return [];
+}
+
+let i = 0;
+while (i < validRects.length - 1) {
+  let j = i + 1;
+  let r1 = validRects[i];
+  while (j < validRects.length) {
+    let r2 = validRects[j];
+    let merged = mergeX(r1, r2);
+    if (merged.length) {
+      validRects.splice(j, 1);
+      validRects.splice(i, 1);
+      validRects.push(...merged);
+      i = -1;
+      break;
+    } else {
+      merged = mergeX(r1.mirror(), r2.mirror());
+      if (merged.length) {
+        validRects.splice(j, 1);
+        validRects.splice(i, 1);
+        validRects.push(...merged.map(r => r.mirror()));
+        i = -1;
+        break;
+      }
+    }
+    j++;
+  }
+  i++;
+}
+
+console.log(validRects);
