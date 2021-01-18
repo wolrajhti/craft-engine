@@ -8,8 +8,11 @@ class Rect {
     public h = 0,
   ) {
   }
-  mirror(): Rect {
-    return new Rect(this.y, this.x, this.h, this.w);
+  turnLeft(): Rect {
+    return new Rect(-this.y, this.x, this.h, this.w);
+  }
+  turnRight(): Rect {
+    return new Rect(this.y, -this.x, this.h, this.w);
   }
   mirrorX(): Rect {
     return new Rect(-this.x - this.w, this.y, this.w, this.h);
@@ -255,7 +258,31 @@ while (todos.length) {
 
 const validRects = [...rects];
 
-console.log(validRects);
+console.log(validRects.length);
+
+const draw = () => {
+  let result = '';
+  for (let y = 0; y < height(); y++) {
+    for (let x = 0; x < width(); x++) {
+      const rect = validRects.findIndex(rect => rect.contains(x, y));
+      if (validRects.length > 16) {
+        if (rect !== -1) {
+          result += '[' + rect.toString(16).padStart(2, ' ') + ']';
+        } else {
+          result += '    ';
+        }
+      } else if (rect !== -1) {
+        result += '[' + rect.toString(16) + ']';
+      } else {
+        result += '   ';
+      }
+    }
+    result += '\n';
+  }
+  console.log(result);
+}
+
+draw();
 
 const mergeTopLeft = (r1: Rect, r2: Rect): Rect[] => {
   if (r1.x === r2.x && r1.y === r2.y - r1.h) {
@@ -295,20 +322,20 @@ const cases: [(r: Rect) => Rect, (r: Rect) => Rect][] = [
     (r: Rect) => r.mirrorY().mirrorX()
   ],
   [
-    (r: Rect) => r.mirror(),
-    (r: Rect) => r.mirror()
+    (r: Rect) => r.turnLeft(),
+    (r: Rect) => r.turnRight()
   ],
   [
-    (r: Rect) => r.mirror().mirrorX(),
-    (r: Rect) => r.mirrorX().mirror()
+    (r: Rect) => r.turnLeft().mirrorX(),
+    (r: Rect) => r.mirrorX().turnRight()
   ],
   [
-    (r: Rect) => r.mirror().mirrorY(),
-    (r: Rect) => r.mirrorY().mirror()
+    (r: Rect) => r.turnLeft().mirrorY(),
+    (r: Rect) => r.mirrorY().turnRight()
   ],
   [
-    (r: Rect) => r.mirror().mirrorX().mirrorY(),
-    (r: Rect) => r.mirrorY().mirrorX().mirror()
+    (r: Rect) => r.turnLeft().mirrorX().mirrorY(),
+    (r: Rect) => r.mirrorY().mirrorX().turnRight()
   ],
 ];
 
@@ -339,7 +366,7 @@ while (i < validRects.length - 1) {
   i++;
 }
 
-console.log(validRects);
+// console.log(validRects);
 
 console.log(validRects.length);
 
@@ -353,16 +380,16 @@ function t(r: Rect) {
   if (!r.mirrorX().mirrorY().mirrorX().mirrorY().equals(r)) {
     console.log('mirrorXY');
   }
-  if (!r.mirror().mirror().equals(r)) {
+  if (!r.turnLeft().turnRight().equals(r)) {
     console.log('mirror');
   }
-  if (!r.mirror().mirrorX().mirrorX().mirror().equals(r)) {
+  if (!r.turnLeft().mirrorX().mirrorX().turnRight().equals(r)) {
     console.log('mirrormirrorX');
   }
-  if (!r.mirror().mirrorY().mirrorY().mirror().equals(r)) {
+  if (!r.turnLeft().mirrorY().mirrorY().turnRight().equals(r)) {
     console.log('mirrormirrorY');
   }
-  if (!r.mirror().mirrorX().mirrorY().mirrorX().mirrorY().mirror().equals(r)) {
+  if (!r.turnLeft().mirrorX().mirrorY().mirrorX().mirrorY().turnRight().equals(r)) {
     console.log('mirrormirrorXY');
   }
 }
@@ -380,28 +407,5 @@ t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
-
-
-const draw = () => {
-  let result = '';
-  for (let y = 0; y < height(); y++) {
-    for (let x = 0; x < width(); x++) {
-      const rect = validRects.findIndex(rect => rect.contains(x, y));
-      if (validRects.length > 16) {
-        if (rect !== -1) {
-          result += rect.toString(16).padStart(2, ' ');
-        } else {
-          result += 'XX';
-        }
-      } else if (rect !== -1) {
-        result += rect.toString(16);
-      } else {
-        result += 'X';
-      }
-    }
-    result += '\n';
-  }
-  console.log(result);
-}
 
 draw();

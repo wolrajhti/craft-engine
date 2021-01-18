@@ -43,8 +43,11 @@ var Rect = /** @class */ (function () {
         this.w = w;
         this.h = h;
     }
-    Rect.prototype.mirror = function () {
-        return new Rect(this.y, this.x, this.h, this.w);
+    Rect.prototype.turnLeft = function () {
+        return new Rect(-this.y, this.x, this.h, this.w);
+    };
+    Rect.prototype.turnRight = function () {
+        return new Rect(this.y, -this.x, this.h, this.w);
     };
     Rect.prototype.mirrorX = function () {
         return new Rect(-this.x - this.w, this.y, this.w, this.h);
@@ -282,7 +285,38 @@ while (todos.length) {
     (_b = todos.pop()) === null || _b === void 0 ? void 0 : _b.cut();
 }
 var validRects = __spread(rects);
-console.log(validRects);
+console.log(validRects.length);
+var draw = function () {
+    var result = '';
+    var _loop_2 = function (y) {
+        var _loop_3 = function (x) {
+            var rect = validRects.findIndex(function (rect) { return rect.contains(x, y); });
+            if (validRects.length > 16) {
+                if (rect !== -1) {
+                    result += '[' + rect.toString(16).padStart(2, ' ') + ']';
+                }
+                else {
+                    result += '    ';
+                }
+            }
+            else if (rect !== -1) {
+                result += '[' + rect.toString(16) + ']';
+            }
+            else {
+                result += '   ';
+            }
+        };
+        for (var x = 0; x < width(); x++) {
+            _loop_3(x);
+        }
+        result += '\n';
+    };
+    for (var y = 0; y < height(); y++) {
+        _loop_2(y);
+    }
+    console.log(result);
+};
+draw();
 var mergeTopLeft = function (r1, r2) {
     if (r1.x === r2.x && r1.y === r2.y - r1.h) {
         if (r1.w < r2.w && r2.h < r1.w) {
@@ -321,20 +355,20 @@ var cases = [
         function (r) { return r.mirrorY().mirrorX(); }
     ],
     [
-        function (r) { return r.mirror(); },
-        function (r) { return r.mirror(); }
+        function (r) { return r.turnLeft(); },
+        function (r) { return r.turnRight(); }
     ],
     [
-        function (r) { return r.mirror().mirrorX(); },
-        function (r) { return r.mirrorX().mirror(); }
+        function (r) { return r.turnLeft().mirrorX(); },
+        function (r) { return r.mirrorX().turnRight(); }
     ],
     [
-        function (r) { return r.mirror().mirrorY(); },
-        function (r) { return r.mirrorY().mirror(); }
+        function (r) { return r.turnLeft().mirrorY(); },
+        function (r) { return r.mirrorY().turnRight(); }
     ],
     [
-        function (r) { return r.mirror().mirrorX().mirrorY(); },
-        function (r) { return r.mirrorY().mirrorX().mirror(); }
+        function (r) { return r.turnLeft().mirrorX().mirrorY(); },
+        function (r) { return r.mirrorY().mirrorX().turnRight(); }
     ],
 ];
 var i, j;
@@ -377,7 +411,7 @@ while (i < validRects.length - 1) {
     }
     i++;
 }
-console.log(validRects);
+// console.log(validRects);
 console.log(validRects.length);
 function t(r) {
     if (!r.mirrorX().mirrorX().equals(r)) {
@@ -389,16 +423,16 @@ function t(r) {
     if (!r.mirrorX().mirrorY().mirrorX().mirrorY().equals(r)) {
         console.log('mirrorXY');
     }
-    if (!r.mirror().mirror().equals(r)) {
+    if (!r.turnLeft().turnRight().equals(r)) {
         console.log('mirror');
     }
-    if (!r.mirror().mirrorX().mirrorX().mirror().equals(r)) {
+    if (!r.turnLeft().mirrorX().mirrorX().turnRight().equals(r)) {
         console.log('mirrormirrorX');
     }
-    if (!r.mirror().mirrorY().mirrorY().mirror().equals(r)) {
+    if (!r.turnLeft().mirrorY().mirrorY().turnRight().equals(r)) {
         console.log('mirrormirrorY');
     }
-    if (!r.mirror().mirrorX().mirrorY().mirrorX().mirrorY().mirror().equals(r)) {
+    if (!r.turnLeft().mirrorX().mirrorY().mirrorX().mirrorY().turnRight().equals(r)) {
         console.log('mirrormirrorXY');
     }
 }
@@ -415,34 +449,4 @@ t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
-var draw = function () {
-    var result = '';
-    var _loop_2 = function (y) {
-        var _loop_3 = function (x) {
-            var rect = validRects.findIndex(function (rect) { return rect.contains(x, y); });
-            if (validRects.length > 16) {
-                if (rect !== -1) {
-                    result += rect.toString(16).padStart(2, ' ');
-                }
-                else {
-                    result += 'XX';
-                }
-            }
-            else if (rect !== -1) {
-                result += rect.toString(16);
-            }
-            else {
-                result += 'X';
-            }
-        };
-        for (var x = 0; x < width(); x++) {
-            _loop_3(x);
-        }
-        result += '\n';
-    };
-    for (var y = 0; y < height(); y++) {
-        _loop_2(y);
-    }
-    console.log(result);
-};
 draw();
