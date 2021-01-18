@@ -11,6 +11,25 @@ class Rect {
   mirror(): Rect {
     return new Rect(this.y, this.x, this.h, this.w);
   }
+  mirrorX(): Rect {
+    return new Rect(-this.x - this.w, this.y, this.w, this.h);
+  }
+  mirrorY(): Rect {
+    return new Rect(this.x, -this.y - this.h, this.w, this.h);
+  }
+  toString(): string {
+    return `${this.x}, ${this.y}, ${this.w}, ${this.h}`;
+  }
+  contains(x: number, y: number): boolean {
+    return this.x <= x && x < this.x + this.w &&
+      this.y <= y && y < this.y + this.h;
+  }
+  equals(other: Rect): boolean {
+    return this.x === other.x &&
+      this.y === other.y &&
+      this.w === other.w &&
+      this.h === other.h;
+  }
 }
 
 class Cell {
@@ -138,32 +157,55 @@ const setCellAt = (x: number, y: number, cell: Cell): void => {
 
 const rects = new Set<Rect>();
 
-const map = '' + 
-  'X    X     X' +
-  'X    X      ' +
-  '  XXXXX     ' +
-  '           X' +
-  '';
+// const map = '' + 
+//   'X    X     X' +
+//   'X    X      ' +
+//   '  XXXXX     ' +
+//   '           X' +
+//   '';
 
 // const map = '' + 
-//   'X555555555 X' +
-//   'X6666666666 ' +
-//   '34XXXXX22222' +
-//   '11111111111X' +
-//   '';
+// 'X1111X33333X' +
+// 'X2222X444444' +
+// '67XXXXX55555' +
+// '00000000000X' +
+// '';
 
-// const map = '' +
-//   'X XX' +
-//   'X  X' +
-//   '    ' +
-//   '';
+// const map = '' + 
+// 'X2222X33333X' +
+// 'X2222X333334' +
+// '55XXXXX11111' +
+// '00000000000X' +
+// '';
+
+const map = '' + 
+'XXXXXX    X     X' +
+'X        XXX     ' +
+'  X   X          ' +
+'  XX XX    XXXX  ' +
+'  XX        XXX  ' +
+'     XX          ' +
+'  XXXXX          ' +
+'              XXX' +
+'';
+
+// const map = '' + 
+// 'XXXXXX    X66666X' +
+// 'X22222222XXX77777' +
+// '  X333X          ' +
+// '  XX8XX    XXXX  ' +
+// '  XX44444444XXX  ' +
+// '00000XX          ' +
+// '9 XXXXX5555555555' +
+// '11111111111111XXX' +
+// '';
 
 const width = (): number => {
-  return 12;
+  return 17; // 12
 };
 
 const height = (): number => {
-  return 4;
+  return 8; // 4
 };
 
 const isEmpty = (x: number, y: number): boolean => {
@@ -215,137 +257,82 @@ const validRects = [...rects];
 
 console.log(validRects);
 
-const mergeX = (r1: Rect, r2: Rect): Rect[] => {
-  if (r1.x === r2.x) {
-    if (r1.y === r2.y + r2.h + 1) {
-      if (r1.w < r2.w) {
-        if (r2.h < r1.w) {
-          // 222222    111222
-          // 111    -> 111
-          // 111       111
-          return [
-            new Rect(r2.x, r2.y, r1.w, r1.h + r2.h),
-            new Rect(r2.x + r1.w, r2.y, r2.w - r1.w, r2.h)
-          ];
-        }
-      } else if (r1.w === r2.w) {
-        // 222222    222222
-        // 111111 -> 222222
-        // 111111    222222
-        return [new Rect(r2.x, r2.y, r2.w, r1.h + r2.h)];
-      } else if (r1.h < r2.w) {
-        // 222       222
-        // 222    -> 222
-        // 111111    222111
-        return [
-          new Rect(r2.x, r2.y, r2.w, r1.h + r2.h),
-          new Rect(r1.x + r2.w, r1.y, r1.w - r2.w, r1.h)
-        ];
-      }
-    } else if (r1.y + r1.h + 1 === r2.y) {
-      if (r1.w < r2.w) {
-        if (r2.h < r1.w) {
-          // 111       111
-          // 111    -> 111
-          // 222222    111222
-          return [
-            new Rect(r1.x, r1.y, r1.w, r1.h + r2.h),
-            new Rect(r2.x + r1.w, r2.y, r2.w - r1.w, r2.h)
-          ];
-        }
-      } else if (r1.w === r2.w) {
-        // 111111    111111
-        // 222222 -> 111111
-        // 222222    111111
-        return [new Rect(r1.x, r1.y, r1.w, r1.h + r2.h)];
-      } else if (r1.h < r2.w) {
-        // 111111    222111
-        // 222    -> 222
-        // 222       222
-        return [
-          new Rect(r1.x, r1.y, r2.w, r2.h + r1.h),
-          new Rect(r1.x + r2.w, r1.y, r1.w - r2.w, r1.h)
-        ];
-      }
-    }
-  } else if (r1.x + r1.w === r2.x + r2.h) {
-    if (r1.y === r2.y + r2.h + 1) {
-      if (r1.w < r2.w) {
-        if (r2.h < r1.w) {
-          // 222222    222111
-          //    111 ->    111
-          //    111       111
-          return [
-            new Rect(r2.x, r2.y, r2.w - r1.w, r2.h),
-            new Rect(r1.x, r2.y, r1.w, r1.h + r2.h)
-          ];
-        }
-      } else if (r1.w === r2.w) {
-        // 222222    222222
-        // 111111 -> 222222
-        // 111111    222222
-        return [new Rect(r2.x, r2.y, r2.w, r1.h + r2.h)];
-      } else if (r1.h < r2.w) {
-        //    222       222
-        //    222 ->    222
-        // 111111    111222
-        return [
-          new Rect(r2.x, r2.y, r2.w, r1.h + r2.h),
-          new Rect(r1.x, r1.y, r1.w - r2.w, r1.h)
-        ];
-      }
-    } else if (r1.y + r1.h + 1 === r2.y) {
-      if (r1.w < r2.w) {
-        if (r2.h < r1.w) {
-          //    111       111
-          //    111 ->    111
-          // 222222    222111
-          return [
-            new Rect(r1.x, r1.y, r1.w, r1.h + r2.h),
-            new Rect(r2.x, r2.y, r2.w - r1.w, r1.h)
-          ];
-        }
-      } else if (r1.w === r2.w) {
-        // 111111    111111
-        // 222222 -> 111111
-        // 222222    111111
-        return [new Rect(r1.x, r1.y, r1.w, r1.h + r2.h)];
-      } else if (r1.h < r2.w) {
-        // 111111    111222
-        //    222 ->    222
-        //    222       222
-        return [
-          new Rect(r1.x, r1.y, r1.w - r2.w, r1.h),
-          new Rect(r1.x, r1.y, r2.w, r1.h + r2.h)
-        ];
-      }
+const mergeTopLeft = (r1: Rect, r2: Rect): Rect[] => {
+  if (r1.x === r2.x && r1.y === r2.y - r1.h) {
+    if (r1.w < r2.w && r2.h < r1.w) {
+      // 111       111
+      // 111    -> 111
+      // 222222    111222
+      return [
+        new Rect(r1.x, r1.y, r1.w, r1.h + r2.h),
+        new Rect(r1.x + r1.w, r2.y, r2.w - r1.w, r2.h)
+      ];
+    } else if (r1.w === r2.w) {
+      // 111111    222222
+      // 111111 -> 222222
+      // 222222    222222
+      return [new Rect(r1.x, r1.y, r1.w, r1.h + r2.h)];
     }
   }
   return [];
 }
 
-let i = 0;
+const cases: [(r: Rect) => Rect, (r: Rect) => Rect][] = [
+  [
+    (r: Rect) => r,
+    (r: Rect) => r
+  ],
+  [
+    (r: Rect) => r.mirrorX(),
+    (r: Rect) => r.mirrorX()
+  ],
+  [
+    (r: Rect) => r.mirrorY(),
+    (r: Rect) => r.mirrorY()
+  ],
+  [
+    (r: Rect) => r.mirrorX().mirrorY(),
+    (r: Rect) => r.mirrorY().mirrorX()
+  ],
+  [
+    (r: Rect) => r.mirror(),
+    (r: Rect) => r.mirror()
+  ],
+  [
+    (r: Rect) => r.mirror().mirrorX(),
+    (r: Rect) => r.mirrorX().mirror()
+  ],
+  [
+    (r: Rect) => r.mirror().mirrorY(),
+    (r: Rect) => r.mirrorY().mirror()
+  ],
+  [
+    (r: Rect) => r.mirror().mirrorX().mirrorY(),
+    (r: Rect) => r.mirrorY().mirrorX().mirror()
+  ],
+];
+
+let i: number, j: number;
+let r1: Rect, r2: Rect, merged: Rect[];
+
+i = 0;
 while (i < validRects.length - 1) {
   let j = i + 1;
   let r1 = validRects[i];
   while (j < validRects.length) {
     let r2 = validRects[j];
-    let merged = mergeX(r1, r2);
-    if (merged.length) {
-      validRects.splice(j, 1);
-      validRects.splice(i, 1);
-      validRects.push(...merged);
-      i = -1;
-      break;
-    } else {
-      merged = mergeX(r1.mirror(), r2.mirror());
+    for (const [send, receive] of cases) {
+      merged = mergeTopLeft(send(r1), send(r2));
       if (merged.length) {
         validRects.splice(j, 1);
         validRects.splice(i, 1);
-        validRects.push(...merged.map(r => r.mirror()));
+        validRects.push(...merged.map(r => receive(r)));
         i = -1;
         break;
       }
+    }
+    if (i === -1) {
+      break;
     }
     j++;
   }
@@ -353,3 +340,68 @@ while (i < validRects.length - 1) {
 }
 
 console.log(validRects);
+
+console.log(validRects.length);
+
+function t(r: Rect) {
+  if (!r.mirrorX().mirrorX().equals(r)) {
+    console.log('mirrorX');
+  }
+  if (!r.mirrorY().mirrorY().equals(r)) {
+    console.log('mirrorY');
+  }
+  if (!r.mirrorX().mirrorY().mirrorX().mirrorY().equals(r)) {
+    console.log('mirrorXY');
+  }
+  if (!r.mirror().mirror().equals(r)) {
+    console.log('mirror');
+  }
+  if (!r.mirror().mirrorX().mirrorX().mirror().equals(r)) {
+    console.log('mirrormirrorX');
+  }
+  if (!r.mirror().mirrorY().mirrorY().mirror().equals(r)) {
+    console.log('mirrormirrorY');
+  }
+  if (!r.mirror().mirrorX().mirrorY().mirrorX().mirrorY().mirror().equals(r)) {
+    console.log('mirrormirrorXY');
+  }
+}
+
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
+
+
+const draw = () => {
+  let result = '';
+  for (let y = 0; y < height(); y++) {
+    for (let x = 0; x < width(); x++) {
+      const rect = validRects.findIndex(rect => rect.contains(x, y));
+      if (validRects.length > 16) {
+        if (rect !== -1) {
+          result += rect.toString(16).padStart(2, ' ');
+        } else {
+          result += 'XX';
+        }
+      } else if (rect !== -1) {
+        result += rect.toString(16);
+      } else {
+        result += 'X';
+      }
+    }
+    result += '\n';
+  }
+  console.log(result);
+}
+
+draw();
