@@ -30,8 +30,7 @@ var __values = (this && this.__values) || function(o) {
     };
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
-var e_1, _a;
-var _b;
+var _a;
 var Rect = /** @class */ (function () {
     function Rect(x, y, w, h) {
         if (x === void 0) { x = 0; }
@@ -56,11 +55,11 @@ var Rect = /** @class */ (function () {
         return new Rect(this.x, -this.y - this.h, this.w, this.h);
     };
     Rect.prototype.toString = function () {
-        return this.x + ", " + this.y + ", " + this.w + ", " + this.h;
+        return "(" + this.x + ", " + this.y + ", " + this.w + ", " + this.h + ")";
     };
     Rect.prototype.contains = function (x, y) {
-        return this.x <= x && x < this.x + this.w &&
-            this.y <= y && y < this.y + this.h;
+        return (this.x <= x && x < this.x + this.w) &&
+            (this.y <= y && y < this.y + this.h);
     };
     Rect.prototype.equals = function (other) {
         return this.x === other.x &&
@@ -282,14 +281,13 @@ console.log(rects.size, todos.length);
 // while
 while (todos.length) {
     todos.sort(function (c1, c2) { return c1.score() - c2.score(); });
-    (_b = todos.pop()) === null || _b === void 0 ? void 0 : _b.cut();
+    (_a = todos.pop()) === null || _a === void 0 ? void 0 : _a.cut();
 }
 var validRects = __spread(rects);
-console.log(validRects.length);
 var draw = function () {
     var result = '';
-    var _loop_2 = function (y) {
-        var _loop_3 = function (x) {
+    var _loop_1 = function (y) {
+        var _loop_2 = function (x) {
             var rect = validRects.findIndex(function (rect) { return rect.contains(x, y); });
             if (validRects.length > 16) {
                 if (rect !== -1) {
@@ -307,13 +305,15 @@ var draw = function () {
             }
         };
         for (var x = 0; x < width(); x++) {
-            _loop_3(x);
+            _loop_2(x);
         }
         result += '\n';
     };
     for (var y = 0; y < height(); y++) {
-        _loop_2(y);
+        _loop_1(y);
     }
+    console.log(validRects.length);
+    console.log(validRects.map(function (r, i) { return [i.toString(16), r]; }));
     console.log(result);
 };
 draw();
@@ -371,48 +371,61 @@ var cases = [
         function (r) { return r.mirrorY().mirrorX().turnRight(); }
     ],
 ];
-var i, j;
-var r1, r2, merged;
-i = 0;
-while (i < validRects.length - 1) {
-    var j_1 = i + 1;
-    var r1_1 = validRects[i];
-    while (j_1 < validRects.length) {
-        var r2_1 = validRects[j_1];
-        var _loop_1 = function (send, receive) {
-            merged = mergeTopLeft(send(r1_1), send(r2_1));
-            if (merged.length) {
-                validRects.splice(j_1, 1);
-                validRects.splice(i, 1);
-                validRects.push.apply(validRects, __spread(merged.map(function (r) { return receive(r); })));
-                i = -1;
-                return "break";
-            }
-        };
-        try {
-            for (var cases_1 = (e_1 = void 0, __values(cases)), cases_1_1 = cases_1.next(); !cases_1_1.done; cases_1_1 = cases_1.next()) {
-                var _c = __read(cases_1_1.value, 2), send = _c[0], receive = _c[1];
-                var state_1 = _loop_1(send, receive);
-                if (state_1 === "break")
-                    break;
-            }
-        }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
+var optimize = function () {
+    var e_1, _a;
+    var i, j;
+    var r1, r2, merged;
+    i = 0;
+    while (i < validRects.length - 1) {
+        j = i + 1;
+        r1 = validRects[i];
+        while (j < validRects.length) {
+            // console.log(i, j);
+            r2 = validRects[j];
+            var _loop_3 = function (send, receive) {
+                merged = mergeTopLeft(send(r1), send(r2));
+                if (merged.length) {
+                    console.log('merging', i, j);
+                    validRects.splice(j, 1);
+                    validRects.splice(i, 1);
+                    validRects.push.apply(validRects, __spread(merged.map(function (r) { return receive(r); })));
+                    i = -1;
+                    return "break";
+                }
+            };
             try {
-                if (cases_1_1 && !cases_1_1.done && (_a = cases_1["return"])) _a.call(cases_1);
+                for (var cases_1 = (e_1 = void 0, __values(cases)), cases_1_1 = cases_1.next(); !cases_1_1.done; cases_1_1 = cases_1.next()) {
+                    var _b = __read(cases_1_1.value, 2), send = _b[0], receive = _b[1];
+                    var state_1 = _loop_3(send, receive);
+                    if (state_1 === "break")
+                        break;
+                }
             }
-            finally { if (e_1) throw e_1.error; }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (cases_1_1 && !cases_1_1.done && (_a = cases_1["return"])) _a.call(cases_1);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            if (i === -1) {
+                break;
+            }
+            j++;
         }
-        if (i === -1) {
-            break;
-        }
-        j_1++;
+        i++;
     }
-    i++;
-}
-// console.log(validRects);
-console.log(validRects.length);
+    draw();
+};
+optimize();
+optimize();
+optimize();
+// validRects.sort((r1, r2) => {
+//   if (r1.x === r2.x) {
+//     return r1.y - r2.y;
+//   }
+//   return r1.x - r2.x;
+// });
 function t(r) {
     if (!r.mirrorX().mirrorX().equals(r)) {
         console.log('mirrorX');
@@ -449,4 +462,3 @@ t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
-draw();

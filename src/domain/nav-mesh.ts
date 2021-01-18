@@ -21,11 +21,11 @@ class Rect {
     return new Rect(this.x, -this.y - this.h, this.w, this.h);
   }
   toString(): string {
-    return `${this.x}, ${this.y}, ${this.w}, ${this.h}`;
+    return `(${this.x}, ${this.y}, ${this.w}, ${this.h})`;
   }
   contains(x: number, y: number): boolean {
-    return this.x <= x && x < this.x + this.w &&
-      this.y <= y && y < this.y + this.h;
+    return (this.x <= x && x < this.x + this.w) &&
+      (this.y <= y && y < this.y + this.h);
   }
   equals(other: Rect): boolean {
     return this.x === other.x &&
@@ -258,8 +258,6 @@ while (todos.length) {
 
 const validRects = [...rects];
 
-console.log(validRects.length);
-
 const draw = () => {
   let result = '';
   for (let y = 0; y < height(); y++) {
@@ -279,6 +277,8 @@ const draw = () => {
     }
     result += '\n';
   }
+  console.log(validRects.length);
+  console.log(validRects.map((r, i) => [i.toString(16), r]));
   console.log(result);
 }
 
@@ -339,36 +339,49 @@ const cases: [(r: Rect) => Rect, (r: Rect) => Rect][] = [
   ],
 ];
 
-let i: number, j: number;
-let r1: Rect, r2: Rect, merged: Rect[];
+const optimize = () => {
+  let i: number, j: number;
+  let r1: Rect, r2: Rect, merged: Rect[];
 
-i = 0;
-while (i < validRects.length - 1) {
-  let j = i + 1;
-  let r1 = validRects[i];
-  while (j < validRects.length) {
-    let r2 = validRects[j];
-    for (const [send, receive] of cases) {
-      merged = mergeTopLeft(send(r1), send(r2));
-      if (merged.length) {
-        validRects.splice(j, 1);
-        validRects.splice(i, 1);
-        validRects.push(...merged.map(r => receive(r)));
-        i = -1;
+  i = 0;
+  while (i < validRects.length - 1) {
+    j = i + 1;
+    r1 = validRects[i];
+    while (j < validRects.length) {
+      // console.log(i, j);
+      r2 = validRects[j];
+      for (const [send, receive] of cases) {
+        merged = mergeTopLeft(send(r1), send(r2));
+        if (merged.length) {
+          console.log('merging', i, j);
+          validRects.splice(j, 1);
+          validRects.splice(i, 1);
+          validRects.push(...merged.map(r => receive(r)));
+          i = -1;
+          break;
+        }
+      }
+      if (i === -1) {
         break;
       }
+      j++;
     }
-    if (i === -1) {
-      break;
-    }
-    j++;
+    i++;
   }
-  i++;
+  draw();
 }
 
-// console.log(validRects);
+optimize();
+optimize();
+optimize();
 
-console.log(validRects.length);
+
+// validRects.sort((r1, r2) => {
+//   if (r1.x === r2.x) {
+//     return r1.y - r2.y;
+//   }
+//   return r1.x - r2.x;
+// });
 
 function t(r: Rect) {
   if (!r.mirrorX().mirrorX().equals(r)) {
@@ -407,5 +420,3 @@ t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
 t(new Rect(Math.random(), Math.random(), Math.random(), Math.random()));
-
-draw();
