@@ -120,26 +120,15 @@ class Cell {
     }
   }
   cut() {
+    let newRects: Rect[];
     if (this.rectX.w < this.rectY.h) {
       rects.delete(this.rectX);
-      const newRects = this._cutX();
-      // console.log([
-      //   'cutX',
-      //   this,
-      //   ...newRects
-      // ]);
-      newRects.forEach(newRect => rects.add(newRect));
-      return [this.rectX, this._cutX()];
+      newRects = this._cutX();
     } else {
       rects.delete(this.rectY);
-      const newRects = this._cutY();
-      // console.log([
-      //   'cutY',
-      //   this,
-      //   ...newRects
-      // ]);
-      newRects.forEach(newRect => rects.add(newRect));
+      newRects = this._cutY();
     }
+    newRects.forEach(newRect => rects.add(newRect));
   }
 }
 
@@ -248,15 +237,9 @@ for (let x = 0; x < width(); x++) {
 const todos: Cell[] = [];
 cells.forEach(row => row.forEach(cell => todos.push(cell)));
 
-console.log(rects.size, todos.length);
+console.log(todos.length, 'empty cells');
 
-// while
-while (todos.length) {
-  todos.sort((c1, c2) => c1.score() - c2.score());
-  todos.pop()?.cut();
-}
-
-const validRects = [...rects];
+let validRects = [...rects];
 
 const draw = () => {
   let result = '';
@@ -277,11 +260,23 @@ const draw = () => {
     }
     result += '\n';
   }
-  console.log(validRects.length);
-  console.log(validRects.map((r, i) => [i.toString(16), r]));
+  console.log(validRects.length, 'rectangles');
+  // console.log(validRects.map((r, i) => [i.toString(16), r]));
   console.log(result);
 }
 
+console.log('raw lines');
+draw();
+
+// while
+while (todos.length) {
+  todos.sort((c1, c2) => c1.score() - c2.score());
+  todos.pop()?.cut();
+}
+
+validRects = [...rects];
+
+console.log('optimized lines');
 draw();
 
 const mergeTopLeft = (r1: Rect, r2: Rect): Rect[] => {
@@ -353,7 +348,7 @@ const optimize = () => {
       for (const [send, receive] of cases) {
         merged = mergeTopLeft(send(r1), send(r2));
         if (merged.length) {
-          console.log('merging', i, j);
+          // console.log('merging', i, j);
           validRects.splice(j, 1);
           validRects.splice(i, 1);
           validRects.push(...merged.map(r => receive(r)));
@@ -368,20 +363,12 @@ const optimize = () => {
     }
     i++;
   }
-  draw();
 }
 
 optimize();
-optimize();
-optimize();
 
-
-// validRects.sort((r1, r2) => {
-//   if (r1.x === r2.x) {
-//     return r1.y - r2.y;
-//   }
-//   return r1.x - r2.x;
-// });
+console.log('optimized rectangles');
+draw();
 
 function t(r: Rect) {
   if (!r.mirrorX().mirrorX().equals(r)) {
