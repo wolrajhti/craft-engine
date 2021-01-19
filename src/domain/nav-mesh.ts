@@ -82,6 +82,7 @@ class Cell {
       return [tail];
     }
   }
+  // rm next duplication
   private _cutY(): Rect[] {
     if (this.rectY.h === 1) {
       return [];
@@ -149,27 +150,6 @@ const setCellAt = (x: number, y: number, cell: Cell): void => {
 
 const rects = new Set<Rect>();
 
-// const map = '' + 
-//   'X    X     X' +
-//   'X    X      ' +
-//   '  XXXXX     ' +
-//   '           X' +
-//   '';
-
-// const map = '' + 
-// 'X1111X33333X' +
-// 'X2222X444444' +
-// '67XXXXX55555' +
-// '00000000000X' +
-// '';
-
-// const map = '' + 
-// 'X2222X33333X' +
-// 'X2222X333334' +
-// '55XXXXX11111' +
-// '00000000000X' +
-// '';
-
 const map = '' + 
 'XXXXXX    X     X' +
 'X        XXX     ' +
@@ -181,23 +161,12 @@ const map = '' +
 '              XXX' +
 '';
 
-// const map = '' + 
-// 'XXXXXX    X66666X' +
-// 'X22222222XXX77777' +
-// '  X333X          ' +
-// '  XX8XX    XXXX  ' +
-// '  XX44444444XXX  ' +
-// '00000XX          ' +
-// '9 XXXXX5555555555' +
-// '11111111111111XXX' +
-// '';
-
 const width = (): number => {
-  return 17; // 12
+  return 17;
 };
 
 const height = (): number => {
-  return 8; // 4
+  return 8;
 };
 
 const isEmpty = (x: number, y: number): boolean => {
@@ -237,9 +206,9 @@ for (let x = 0; x < width(); x++) {
 const todos: Cell[] = [];
 cells.forEach(row => row.forEach(cell => todos.push(cell)));
 
-console.log(todos.length, 'empty cells');
+console.log(todos.length, 'empty cells\n');
 
-let validRects = [...rects];
+let validRects: Rect[];
 
 const draw = () => {
   let result = '';
@@ -265,7 +234,14 @@ const draw = () => {
   console.log(result);
 }
 
-console.log('raw lines');
+validRects = [...rects].filter(r => r.h === 1);
+
+console.log('raw horizontal lines');
+draw();
+
+validRects = [...rects].filter(r => r.w === 1);
+
+console.log('raw vertical lines');
 draw();
 
 // while
@@ -348,7 +324,22 @@ const optimize = () => {
       for (const [send, receive] of cases) {
         merged = mergeTopLeft(send(r1), send(r2));
         if (merged.length) {
-          // console.log('merging', i, j);
+          // console.log('merging r1, r2', i, j);
+          validRects.splice(j, 1);
+          validRects.splice(i, 1);
+          validRects.push(...merged.map(r => receive(r)));
+          i = -1;
+          break;
+        }
+      }
+      if (i === -1) {
+        break;
+      }
+      // rm next duplication
+      for (const [send, receive] of cases) {
+        merged = mergeTopLeft(send(r2), send(r1));
+        if (merged.length) {
+          // console.log('merging r2, r1', i, j);
           validRects.splice(j, 1);
           validRects.splice(i, 1);
           validRects.push(...merged.map(r => receive(r)));
