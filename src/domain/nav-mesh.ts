@@ -46,91 +46,55 @@ class Cell {
   score(): number {
     return Math.abs(this.rectX.w - this.rectY.h);
   }
-  private _cutX(): Rect[] {
-    if (this.rectX.w === 1) {
+  private _cutX(r1 = this.rectX, r2 = this.rectY): Rect[] {
+    if (r1.w === 1) {
       return [];
     }
-    if (this.rectX.x < this.rectY.x) {
-      if (this.rectY.x < this.rectX.x + this.rectX.w - 1) {
+    if (r1.x < r2.x) {
+      if (r2.x < r1.x + r1.w - 1) {
         //      Y
         // [XXX]Y[XXX]
         //      Y
-        const head = new Rect(this.rectX.x, this.rectX.y, this.rectY.x - this.rectX.x, 1);
-        const tail = new Rect(this.rectY.x + 1, this.rectX.y, this.rectX.w - (this.rectY.x - this.rectX.x + 1), 1);
-        for (let x = 0; x < head.w; x++) {
-          (cellAt(head.x + x, head.y) as Cell).rectX = head;
-        }
-        for (let x = 0; x < tail.w; x++) {
-          (cellAt(tail.x + x, tail.y) as Cell).rectX = tail;
-        }
+        const head = new Rect(r1.x, r1.y, r2.x - r1.x, 1);
+        const tail = new Rect(r2.x + 1, r1.y, r1.w - (r2.x - r1.x + 1), 1);
         return [head, tail];
       } else {
         //      Y
         // [XXX]Y
         //      Y
-        const head = new Rect(this.rectX.x, this.rectX.y, this.rectX.w - 1, 1);
-        for (let x = 0; x < head.w; x++) {
-          (cellAt(head.x + x, head.y) as Cell).rectX = head;
-        }
+        const head = new Rect(r1.x, r1.y, r1.w - 1, 1);
         return [head];
       }
     } else {
       // Y
       // Y[XXX]
       // Y
-      const tail = new Rect(this.rectX.x + 1, this.rectX.y, this.rectX.w - 1, 1);
-      for (let x = 0; x < tail.w; x++) {
-        (cellAt(tail.x + x, tail.y) as Cell).rectX = tail;
-      }
+      const tail = new Rect(r1.x + 1, r1.y, r1.w - 1, 1);
       return [tail];
     }
   }
-  // rm next duplication
   private _cutY(): Rect[] {
-    if (this.rectY.h === 1) {
-      return [];
-    }
-    if (this.rectY.y < this.rectX.y) {
-      if (this.rectX.y < this.rectY.y + this.rectY.h - 1) {
-        //   [Y]
-        // XXXXXXX
-        //   [Y]
-        const head = new Rect(this.rectY.x, this.rectY.y, 1, this.rectX.y - this.rectY.y);
-        const tail = new Rect(this.rectY.x, this.rectX.y + 1, 1, this.rectY.h - (this.rectX.y - this.rectY.y + 1));
-        for (let y = 0; y < head.h; y++) {
-          (cellAt(head.x, head.y + y) as Cell).rectY = head;
-        }
-        for (let y = 0; y < tail.h; y++) {
-          (cellAt(tail.x, tail.y + y) as Cell).rectY = tail;
-        }
-        return [head, tail];
-      } else {
-        //   [Y]
-        // XXXXXXX
-        const head = new Rect(this.rectY.x, this.rectY.y, 1, this.rectY.h - 1);
-        for (let y = 0; y < head.h; y++) {
-          (cellAt(head.x, head.y + y) as Cell).rectY = head;
-        }
-        return [head];
-      }
-    } else {
-      // XXXXXXX
-      //   [Y]
-      const tail = new Rect(this.rectY.x, this.rectY.y + 1, 1, this.rectY.h - 1);
-      for (let y = 0; y < tail.h; y++) {
-        (cellAt(tail.x, tail.y + y) as Cell).rectY = tail;
-      }
-      return [tail];
-    }
+    return this._cutX(this.rectY.turnLeft(), this.rectX.turnLeft())
+      .map(r => r.turnRight());
   }
   cut() {
     let newRects: Rect[];
     if (this.rectX.w < this.rectY.h) {
       rects.delete(this.rectX);
       newRects = this._cutX();
+      newRects.forEach(r => {
+        for (let x = 0; x < r.w; x++) {
+          (cellAt(r.x + x, r.y) as Cell).rectX = r;
+        }
+      });
     } else {
       rects.delete(this.rectY);
       newRects = this._cutY();
+      newRects.forEach(r => {
+        for (let y = 0; y < r.h; y++) {
+          (cellAt(r.x, r.y + y) as Cell).rectY = r;
+        }
+      });
     }
     newRects.forEach(newRect => rects.add(newRect));
   }
