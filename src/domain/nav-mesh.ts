@@ -273,7 +273,7 @@ draw();
 
 // while
 while (todos.length) {
-  todos.sort((c1, c2) => c1.score() - c2.score()); // TODO fix order
+  todos.sort((c1, c2) => c1.score() - c2.score()); // TODO fix order to gain 3 rectangles
   todos.pop()?.cut();
 }
 
