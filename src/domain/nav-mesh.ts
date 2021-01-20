@@ -36,6 +36,22 @@ class Rect {
   area(): number {
     return this.w * this.h;
   }
+  // not so good
+  scoreX(): number {
+    let scoreX = -this.w;
+    for (let x = 0; x < this.w; x++) {
+      scoreX += (cellAt(this.x + x, this.y) as Cell).rectY.h;
+    }
+    return scoreX;
+  }
+  // not so good
+  scoreY(): number {
+    let scoreY = -this.h;
+    for (let y = 0; y < this.h; y++) {
+      scoreY += (cellAt(this.x, this.y + y) as Cell).rectX.w;
+    }
+    return scoreY;
+  }
 }
 
 class Cell {
@@ -43,6 +59,10 @@ class Cell {
     public rectX = new Rect(),
     public rectY = new Rect(),
   ) { }
+  // not so good
+  fullScore(): number {
+    return Math.abs(this.rectX.scoreX() - this.rectY.scoreY());
+  }
   score(): number {
     return Math.abs(this.rectX.w - this.rectY.h);
   }
@@ -80,6 +100,8 @@ class Cell {
   cut() {
     let newRects: Rect[];
     if (this.rectX.w < this.rectY.h) {
+    // not so good
+    // if (this.rectX.scoreY() < this.rectY.scoreX()) {
       rects.delete(this.rectX);
       newRects = this._cutX();
       newRects.forEach(r => {
@@ -201,6 +223,7 @@ const draw = () => {
   for (let y = 0; y < height(); y++) {
     for (let x = 0; x < width(); x++) {
       if (isEmpty(x, y)) {
+        // result += ' ' + cellAt(x, y)?.score().toFixed().padStart(padding) + ' ';
         const i = validRects.findIndex(rect => rect.contains(x, y));
         if (i !== -1) {
           result += ' ' + i.toString(16).padStart(padding, ' ') + ' ';
