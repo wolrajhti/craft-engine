@@ -150,15 +150,31 @@ const setCellAt = (x: number, y: number, cell: Cell): void => {
 
 const rects = new Set<Rect>();
 
+// const grid = [
+//   'XXXXXX    X     X',
+//   'X        XXX     ',
+//   '  X   X          ',
+//   '  XX XX    XXXX  ',
+//   '  XX        XXX  ',
+//   '     XX          ',
+//   '  XXXXX          ',
+//   '              XXX',
+// ];
+
 const grid = [
-  'XXXXXX    X     X',
-  'X        XXX     ',
-  '  X   X          ',
-  '  XX XX    XXXX  ',
-  '  XX        XXX  ',
-  '     XX          ',
-  '  XXXXX          ',
-  '              XXX',
+  'XXXXXXXXXXXXXXXXXX',
+  'XXXXXXXXXXX      X',
+  'X XXXXXXX      XXX',
+  'X  XXXX      XXXXX',
+  'X   X      XXXXXXX',
+  'X    XXXXXXXXXXXXX',
+  'XX    XXXX   XXXXX',
+  'XX     XXXX XXXXXX',
+  'XXX    XXX     XXX',
+  'XXXX   XXX  XX XXX',
+  'XXXXX  XXX     XXX',
+  'XXXXXX XX      XXX',
+  'XXXXXXXXXXXXXXXXXX',
 ];
 
 const width = (): number => {
@@ -243,12 +259,12 @@ const draw = () => {
 console.log('input');
 draw();
 
-validRects = [...rects].filter(r => r.h === 1);
+validRects = [...new Set(todos.map(cell => cell.rectX))];
 
 console.log('raw horizontal lines');
 draw();
 
-validRects = [...rects].filter(r => r.w === 1);
+validRects = [...new Set(todos.map(cell => cell.rectY))];
 
 console.log('raw vertical lines');
 draw();
