@@ -150,32 +150,32 @@ const setCellAt = (x: number, y: number, cell: Cell): void => {
 
 const rects = new Set<Rect>();
 
-// const grid = [
-//   'XXXXXX    X     X',
-//   'X        XXX     ',
-//   '  X   X          ',
-//   '  XX XX    XXXX  ',
-//   '  XX        XXX  ',
-//   '     XX          ',
-//   '  XXXXX          ',
-//   '              XXX',
-// ];
-
 const grid = [
-  'XXXXXXXXXXXXXXXXXX',
-  'XXXXXXXXXXX      X',
-  'X XXXXXXX      XXX',
-  'X  XXXX      XXXXX',
-  'X   X      XXXXXXX',
-  'X    XXXXXXXXXXXXX',
-  'XX    XXXX   XXXXX',
-  'XX     XXXX XXXXXX',
-  'XXX    XXX     XXX',
-  'XXXX   XXX  XX XXX',
-  'XXXXX  XXX     XXX',
-  'XXXXXX XX      XXX',
-  'XXXXXXXXXXXXXXXXXX',
+  'XXXXXX    X     X',
+  'X        XXX     ',
+  '  X   X          ',
+  '  XX XX    XXXX  ',
+  '  XX        XXX  ',
+  '     XX          ',
+  '  XXXXX          ',
+  '              XXX',
 ];
+
+// const grid = [
+//   'XXXXXXXXXXXXXXXXXX',
+//   'XXXXXXXXXXX      X',
+//   'X XXXXXXX      XXX',
+//   'X  XXXX      XXXXX',
+//   'X   X      XXXXXXX',
+//   'X    XXXXXXXXXXXXX',
+//   'XX    XXXX   XXXXX',
+//   'XX     XXXX XXXXXX',
+//   'XXX    XXX     XXX',
+//   'XXXX   XXX  XX XXX',
+//   'XXXXX  XXX     XXX',
+//   'XXXXXX XX      XXX',
+//   'XXXXXXXXXXXXXXXXXX',
+// ];
 
 const width = (): number => {
   return grid[0].length;
@@ -271,7 +271,7 @@ draw();
 
 // while
 while (todos.length) {
-  todos.sort((c1, c2) => c1.score() - c2.score());
+  todos.sort((c1, c2) => c2.score() - c1.score());
   todos.pop()?.cut();
 }
 
