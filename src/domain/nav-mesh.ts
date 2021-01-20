@@ -9,10 +9,10 @@ class Rect {
   ) {
   }
   turnLeft(): Rect {
-    return new Rect(-this.y, this.x, this.h, this.w);
+    return new Rect(-this.y - this.h, this.x, this.h, this.w);
   }
   turnRight(): Rect {
-    return new Rect(this.y, -this.x, this.h, this.w);
+    return new Rect(this.y, -this.x - this.w, this.h, this.w);
   }
   mirrorX(): Rect {
     return new Rect(-this.x - this.w, this.y, this.w, this.h);
@@ -252,7 +252,7 @@ const draw = () => {
   console.log(validRects.length, 'rectangles');
   validRects.forEach((rect, i) => {
     if ((result.match(new RegExp(' ' + i.toString(16) + ' ', 'g')) || []).length !== rect.area()) {
-      console.log('invalid', rect);
+      console.log('invalid', i.toString(16), rect);
     }
   });
   console.log(result);
@@ -351,10 +351,11 @@ const optimize = () => {
       for (const [send, receive] of cases) {
         merged = mergeTopLeft(send(r1), send(r2));
         if (merged.length) {
-          // console.log('merging r1, r2', i, j);
+          console.log('merging r1, r2', i.toString(16), j.toString(16));
           validRects.splice(j, 1);
           validRects.splice(i, 1);
           validRects.push(...merged.map(r => receive(r)));
+          // draw();
           i = -1;
           break;
         }
@@ -366,10 +367,11 @@ const optimize = () => {
       for (const [send, receive] of cases) {
         merged = mergeTopLeft(send(r2), send(r1));
         if (merged.length) {
-          // console.log('merging r2, r1', i, j);
+          console.log('merging r2, r1', i.toString(16), j.toString(16));
           validRects.splice(j, 1);
           validRects.splice(i, 1);
           validRects.push(...merged.map(r => receive(r)));
+          // draw();
           i = -1;
           break;
         }
