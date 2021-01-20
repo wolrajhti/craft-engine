@@ -33,6 +33,9 @@ class Rect {
       this.w === other.w &&
       this.h === other.h;
   }
+  area(): number {
+    return this.w * this.h;
+  }
 }
 
 class Cell {
@@ -150,7 +153,9 @@ const setCellAt = (x: number, y: number, cell: Cell): void => {
 
 const rects = new Set<Rect>();
 
-const grid = [
+let grid: string[];
+
+grid = [
   'XXXXXX    X     X',
   'X        XXX     ',
   '  X   X          ',
@@ -161,21 +166,21 @@ const grid = [
   '              XXX',
 ];
 
-// const grid = [
-//   'XXXXXXXXXXXXXXXXXX',
-//   'XXXXXXXXXXX      X',
-//   'X XXXXXXX      XXX',
-//   'X  XXXX      XXXXX',
-//   'X   X      XXXXXXX',
-//   'X    XXXXXXXXXXXXX',
-//   'XX    XXXX   XXXXX',
-//   'XX     XXXX XXXXXX',
-//   'XXX    XXX     XXX',
-//   'XXXX   XXX  XX XXX',
-//   'XXXXX  XXX     XXX',
-//   'XXXXXX XX      XXX',
-//   'XXXXXXXXXXXXXXXXXX',
-// ];
+grid = [
+  'XXXXXXXXXXXXXXXXXX',
+  'XXXXXXXXXXX      X',
+  'X XXXXXXX      XXX',
+  'X  XXXX      XXXXX',
+  'X   X      XXXXXXX',
+  'X    XXXXXXXXXXXXX',
+  'XX    XXXX   XXXXX',
+  'XX     XXXX XXXXXX',
+  'XXX    XXX     XXX',
+  'XXXX   XXX  XX XXX',
+  'XXXXX  XXX     XXX',
+  'XXXXXX XX      XXX',
+  'XXXXXXXXXXXXXXXXXX',
+];
 
 const width = (): number => {
   return grid[0].length;
@@ -228,31 +233,28 @@ let validRects: Rect[] = [];
 
 const draw = () => {
   let result = '';
+  const padding = validRects.length > 16 ? 2 : 1;
   for (let y = 0; y < height(); y++) {
     for (let x = 0; x < width(); x++) {
       if (isEmpty(x, y)) {
-        const rect = validRects.findIndex(rect => rect.contains(x, y));
-        if (validRects.length > 16) {
-          if (rect !== -1) {
-            result += ' ' + rect.toString(16).padStart(2, ' ') + ' ';
-          } else {
-            result += '    ';
-          }
-        } else if (rect !== -1) {
-          result += ' ' + rect.toString(16) + ' ';
+        const i = validRects.findIndex(rect => rect.contains(x, y));
+        if (i !== -1) {
+          result += ' ' + i.toString(16).padStart(padding, ' ') + ' ';
         } else {
-          result += '   ';
+          result += ' ' + ''.padStart(padding, ' ') + ' ';
         }
-      } else if (validRects.length > 16) {
-        result += ' ■■ ';
       } else {
-        result += ' ■ ';
+        result += ' ' + '■'.padStart(padding, '■') + ' ';
       }
     }
     result += '\n';
   }
   console.log(validRects.length, 'rectangles');
-  // console.log(validRects.map((r, i) => [i.toString(16), r]));
+  validRects.forEach((rect, i) => {
+    if ((result.match(new RegExp(' ' + i.toString(16) + ' ', 'g')) || []).length !== rect.area()) {
+      console.log('invalid', rect);
+    }
+  });
   console.log(result);
 }
 
@@ -271,7 +273,7 @@ draw();
 
 // while
 while (todos.length) {
-  todos.sort((c1, c2) => c2.score() - c1.score());
+  todos.sort((c1, c2) => c1.score() - c2.score()); // TODO fix order
   todos.pop()?.cut();
 }
 

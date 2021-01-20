@@ -8,7 +8,8 @@
     "start": "node .",
     "test": "jest --no-cache",
     "test:coverage": "jest --coverage",
-    "test:clearCache": "jest --clearCache"
+    "test:clearCache": "jest --clearCache",
+    "nav-mesh": "tsc ./src/domain/nav-mesh.ts --downlevelIteration && node ./src/domain/nav-mesh.js"
   },
   "repository": {
     "type": "git",
