@@ -150,27 +150,27 @@ const setCellAt = (x: number, y: number, cell: Cell): void => {
 
 const rects = new Set<Rect>();
 
-const map = '' + 
-'XXXXXX    X     X' +
-'X        XXX     ' +
-'  X   X          ' +
-'  XX XX    XXXX  ' +
-'  XX        XXX  ' +
-'     XX          ' +
-'  XXXXX          ' +
-'              XXX' +
-'';
+const grid = [
+  'XXXXXX    X     X',
+  'X        XXX     ',
+  '  X   X          ',
+  '  XX XX    XXXX  ',
+  '  XX        XXX  ',
+  '     XX          ',
+  '  XXXXX          ',
+  '              XXX',
+];
 
 const width = (): number => {
-  return 17;
+  return grid[0].length;
 };
 
 const height = (): number => {
-  return 8;
+  return grid.length;
 };
 
 const isEmpty = (x: number, y: number): boolean => {
-  return map[y * width() + x] === ' ';
+  return grid[y][x] === ' ';
 };
 
 // setup cells
@@ -208,23 +208,29 @@ cells.forEach(row => row.forEach(cell => todos.push(cell)));
 
 console.log(todos.length, 'empty cells\n');
 
-let validRects: Rect[];
+let validRects: Rect[] = [];
 
 const draw = () => {
   let result = '';
   for (let y = 0; y < height(); y++) {
     for (let x = 0; x < width(); x++) {
-      const rect = validRects.findIndex(rect => rect.contains(x, y));
-      if (validRects.length > 16) {
-        if (rect !== -1) {
-          result += '[' + rect.toString(16).padStart(2, ' ') + ']';
+      if (isEmpty(x, y)) {
+        const rect = validRects.findIndex(rect => rect.contains(x, y));
+        if (validRects.length > 16) {
+          if (rect !== -1) {
+            result += ' ' + rect.toString(16).padStart(2, ' ') + ' ';
+          } else {
+            result += '    ';
+          }
+        } else if (rect !== -1) {
+          result += ' ' + rect.toString(16) + ' ';
         } else {
-          result += '    ';
+          result += '   ';
         }
-      } else if (rect !== -1) {
-        result += '[' + rect.toString(16) + ']';
+      } else if (validRects.length > 16) {
+        result += ' ■■ ';
       } else {
-        result += '   ';
+        result += ' ■ ';
       }
     }
     result += '\n';
@@ -233,6 +239,9 @@ const draw = () => {
   // console.log(validRects.map((r, i) => [i.toString(16), r]));
   console.log(result);
 }
+
+console.log('input');
+draw();
 
 validRects = [...rects].filter(r => r.h === 1);
 
