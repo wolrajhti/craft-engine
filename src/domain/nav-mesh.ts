@@ -1,5 +1,3 @@
-// tsc src/domain/nav-mesh.ts --downlevelIteration && node src/domain/nav-mesh.js
-
 class Rect {
   constructor(
     public x = 0,
@@ -36,19 +34,17 @@ class Rect {
   area(): number {
     return this.w * this.h;
   }
-  // not so good
   scoreX(): number {
-    let scoreX = -this.w;
+    let scoreX = this.w * this.w;
     for (let x = 0; x < this.w; x++) {
-      scoreX += (cellAt(this.x + x, this.y) as Cell).rectY.h;
+      scoreX -= (cellAt(this.x + x, this.y) as Cell).rectY.h;
     }
     return scoreX;
   }
-  // not so good
   scoreY(): number {
-    let scoreY = -this.h;
+    let scoreY = this.h * this.h;
     for (let y = 0; y < this.h; y++) {
-      scoreY += (cellAt(this.x, this.y + y) as Cell).rectX.w;
+      scoreY -= (cellAt(this.x, this.y + y) as Cell).rectX.w;
     }
     return scoreY;
   }
@@ -59,12 +55,8 @@ class Cell {
     public rectX = new Rect(),
     public rectY = new Rect(),
   ) { }
-  // not so good
-  fullScore(): number {
-    return Math.abs(this.rectX.scoreX() - this.rectY.scoreY());
-  }
   score(): number {
-    return Math.abs(this.rectX.w - this.rectY.h);
+    return Math.abs(this.rectX.scoreX() - this.rectY.scoreY());
   }
   private _cutX(r1 = this.rectX, r2 = this.rectY): Rect[] {
     if (r1.w === 1) {
@@ -99,9 +91,7 @@ class Cell {
   }
   cut() {
     let newRects: Rect[];
-    if (this.rectX.w < this.rectY.h) {
-    // not so good
-    // if (this.rectX.scoreY() < this.rectY.scoreX()) {
+    if (this.rectX.scoreX() < this.rectY.scoreY()) {
       rects.delete(this.rectX);
       newRects = this._cutX();
       newRects.forEach(r => {
@@ -260,7 +250,7 @@ draw();
 
 // while
 while (todos.length) {
-  todos.sort((c1, c2) => c1.score() - c2.score()); // TODO fix order to gain 3 rectangles
+  todos.sort((c1, c2) => c1.score() - c2.score());
   todos.pop()?.cut();
 }
 
@@ -338,7 +328,7 @@ const optimize = () => {
       for (const [send, receive] of cases) {
         merged = mergeTopLeft(send(r1), send(r2));
         if (merged.length) {
-          console.log('merging r1, r2', i.toString(16), j.toString(16));
+          // console.log('merging r1, r2', i.toString(16), j.toString(16));
           validRects.splice(j, 1);
           validRects.splice(i, 1);
           validRects.push(...merged.map(r => receive(r)));
@@ -354,7 +344,7 @@ const optimize = () => {
       for (const [send, receive] of cases) {
         merged = mergeTopLeft(send(r2), send(r1));
         if (merged.length) {
-          console.log('merging r2, r1', i.toString(16), j.toString(16));
+          // console.log('merging r2, r1', i.toString(16), j.toString(16));
           validRects.splice(j, 1);
           validRects.splice(i, 1);
           validRects.push(...merged.map(r => receive(r)));
