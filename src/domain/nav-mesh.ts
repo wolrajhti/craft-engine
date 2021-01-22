@@ -34,19 +34,20 @@ class Rect {
   area(): number {
     return this.w * this.h;
   }
-  scoreX(): number {
-    let scoreX = this.w * this.w;
+  score(): number {
+    let score = this.area() * this.area();
+    let cell: Cell;
     for (let x = 0; x < this.w; x++) {
-      scoreX -= (cellAt(this.x + x, this.y) as Cell).rectY.h;
+      for (let y = 0; y < this.h; y++) {
+        cell = cellAt(this.x + x, this.y + y) as Cell;
+        if (cell.rectX === this) {
+          score -= cell.rectY.area();
+        } else {
+          score -= cell.rectX.area();
+        }
+      }
     }
-    return scoreX;
-  }
-  scoreY(): number {
-    let scoreY = this.h * this.h;
-    for (let y = 0; y < this.h; y++) {
-      scoreY -= (cellAt(this.x, this.y + y) as Cell).rectX.w;
-    }
-    return scoreY;
+    return score;
   }
 }
 
@@ -56,7 +57,7 @@ class Cell {
     public rectY = new Rect(),
   ) { }
   score(): number {
-    return Math.abs(this.rectX.scoreX() - this.rectY.scoreY());
+    return Math.abs(this.rectX.score() - this.rectY.score());
   }
   private _cutX(r1 = this.rectX, r2 = this.rectY): Rect[] {
     if (r1.w === 1) {
@@ -91,7 +92,7 @@ class Cell {
   }
   cut() {
     let newRects: Rect[];
-    if (this.rectX.scoreX() < this.rectY.scoreY()) {
+    if (this.rectX.score() < this.rectY.score()) {
       rects.delete(this.rectX);
       newRects = this._cutX();
       newRects.forEach(r => {
@@ -319,38 +320,24 @@ const optimize = () => {
   let r1: Rect, r2: Rect, merged: Rect[];
 
   i = 0;
-  while (i < validRects.length - 1) {
-    j = i + 1;
+  while (i < validRects.length) {
+    j = 0;
     r1 = validRects[i];
     while (j < validRects.length) {
-      // console.log(i, j);
-      r2 = validRects[j];
-      for (const [send, receive] of cases) {
-        merged = mergeTopLeft(send(r1), send(r2));
-        if (merged.length) {
-          // console.log('merging r1, r2', i.toString(16), j.toString(16));
-          validRects.splice(j, 1);
-          validRects.splice(i, 1);
-          validRects.push(...merged.map(r => receive(r)));
-          // draw();
-          i = -1;
-          break;
-        }
-      }
-      if (i === -1) {
-        break;
-      }
-      // rm next duplication
-      for (const [send, receive] of cases) {
-        merged = mergeTopLeft(send(r2), send(r1));
-        if (merged.length) {
-          // console.log('merging r2, r1', i.toString(16), j.toString(16));
-          validRects.splice(j, 1);
-          validRects.splice(i, 1);
-          validRects.push(...merged.map(r => receive(r)));
-          // draw();
-          i = -1;
-          break;
+      if (i !== j) {
+        // console.log(i, j);
+        r2 = validRects[j];
+        for (const [send, receive] of cases) {
+          merged = mergeTopLeft(send(r1), send(r2));
+          if (merged.length) {
+            // console.log('merging', i.toString(16), j.toString(16));
+            validRects.splice(Math.max(i, j), 1);
+            validRects.splice(Math.min(i, j), 1);
+            validRects.push(...merged.map(r => receive(r)));
+            // draw();
+            i = -1;
+            break;
+          }
         }
       }
       if (i === -1) {
