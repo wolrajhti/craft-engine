@@ -28,21 +28,21 @@ grid = [
   'XXXXXXXXXXXXXXXXXX',
 ];
 
-grid = [
-  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-  'X XXXXXXXXXXXXXX                  X',
-  'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
-  'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
-  'X   X      XXXXX    XXXXXXXXXXXXXXX',
-  'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
-  'XX    XXXX XXX         XXXXX  XXXXX',
-  'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
-  'XXX    XXX     XXXXXX  XXXX    XXX',
-  'XXXX   XXX     XXXXXX  XXXXX XX XXX',
-  'XXXXX          XXXXXX   XXXX    XXX',
-  'XXXXXX    XXXXXXXXXXXXX         XXX',
-  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-];
+// grid = [
+//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+//   'X XXXXXXXXXXXXXX                  X',
+//   'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
+//   'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
+//   'X   X      XXXXX    XXXXXXXXXXXXXXX',
+//   'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
+//   'XX    XXXX XXX         XXXXX  XXXXX',
+//   'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
+//   'XXX    XXX     XXXXXX  XXXX    XXX',
+//   'XXXX   XXX     XXXXXX  XXXXX XX XXX',
+//   'XXXXX          XXXXXX   XXXX    XXX',
+//   'XXXXXX    XXXXXXXXXXXXX         XXX',
+//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+// ];
 
 class Rect {
   constructor(
@@ -111,49 +111,75 @@ class Cell {
     }
     if (r1.x < r2.x) {
       if (r2.x < r1.x + r1.w - 1) {
-        //      Y
-        // [XXX]Y[XXX]
-        //      Y
+        //      2
+        // [111]2[111]
+        //      2
         const head = new Rect(r1.x, r1.y, r2.x - r1.x, 1);
         const tail = new Rect(r2.x + 1, r1.y, r1.w - (r2.x - r1.x + 1), 1);
         return [head, tail];
       } else {
-        //      Y
-        // [XXX]Y
-        //      Y
+        //      2
+        // [111]2
+        //      2
         const head = new Rect(r1.x, r1.y, r1.w - 1, 1);
         return [head];
       }
     } else {
-      // Y
-      // Y[XXX]
-      // Y
+      // 2
+      // 2[111]
+      // 2
       const tail = new Rect(r1.x + 1, r1.y, r1.w - 1, 1);
       return [tail];
     }
   }
-  private _cutY(): Rect[] {
-    return this._cutX(this.rectY.turnLeft(), this.rectX.turnLeft())
+  private _cutY(r1 = this.rectX, r2 = this.rectY): Rect[] {
+    return this._cutX(r2.turnLeft(), r1.turnLeft())
       .map(r => r.turnRight());
   }
   cut() {
     let newRects: Rect[];
     if (this.rectX.score() < this.rectY.score()) {
-      rects.delete(this.rectX);
-      newRects = this._cutX();
-      newRects.forEach(r => {
-        for (let x = 0; x < r.w; x++) {
-          (cellAt(r.x + x, r.y) as Cell).rectX = r;
-        }
-      });
+      if (this.rectX.x < this.rectY.x &&
+        this.rectY.x < this.rectX.x + this.rectX.w - 1 &&
+        (this.rectX.y === this.rectY.y || this.rectX.y === this.rectY.y + this.rectY.h - 1)
+      ) {
+        rects.delete(this.rectY);
+        newRects = this._cutY();
+        newRects.forEach(r => {
+          for (let y = 0; y < r.h; y++) {
+            (cellAt(r.x, r.y + y) as Cell).rectY = r;
+          }
+        });
+      } else {
+        rects.delete(this.rectX);
+        newRects = this._cutX();
+        newRects.forEach(r => {
+          for (let x = 0; x < r.w; x++) {
+            (cellAt(r.x + x, r.y) as Cell).rectX = r;
+          }
+        });
+      }
     } else {
-      rects.delete(this.rectY);
-      newRects = this._cutY();
-      newRects.forEach(r => {
-        for (let y = 0; y < r.h; y++) {
-          (cellAt(r.x, r.y + y) as Cell).rectY = r;
-        }
-      });
+      if (this.rectY.y < this.rectX.y &&
+        this.rectX.y < this.rectY.y + this.rectY.h - 1 &&
+        (this.rectY.x === this.rectX.x || this.rectY.x === this.rectX.x + this.rectX.w - 1)
+      ) {
+        rects.delete(this.rectX);
+        newRects = this._cutX();
+        newRects.forEach(r => {
+          for (let x = 0; x < r.w; x++) {
+            (cellAt(r.x + x, r.y) as Cell).rectX = r;
+          }
+        });
+      } else {
+        rects.delete(this.rectY);
+        newRects = this._cutY();
+        newRects.forEach(r => {
+          for (let y = 0; y < r.h; y++) {
+            (cellAt(r.x, r.y + y) as Cell).rectY = r;
+          }
+        });
+      }
     }
     newRects.forEach(newRect => rects.add(newRect));
   }
