@@ -28,21 +28,53 @@ grid = [
   'XXXXXXXXXXXXXXXXXX',
 ];
 
-// grid = [
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-//   'X XXXXXXXXXXXXXX                  X',
-//   'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
-//   'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
-//   'X   X      XXXXX    XXXXXXXXXXXXXXX',
-//   'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
-//   'XX    XXXX XXX         XXXXX  XXXXX',
-//   'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
-//   'XXX    XXX     XXXXXX  XXXX    XXX',
-//   'XXXX   XXX     XXXXXX  XXXXX XX XXX',
-//   'XXXXX          XXXXXX   XXXX    XXX',
-//   'XXXXXX    XXXXXXXXXXXXX         XXX',
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-// ];
+grid = [
+  'XXXXXXXXXXXXXXXXXXX',
+  'X   XXXXXXXXXXXXXXX',
+  'XX XXXXXXXXXXXXXXXX',
+  'XX       XXXXXXXXXX',
+  'XX XXXXX XXXXXXXXXX',
+  'X   XXXX XXXXXXXXXX',
+  'XXXXXXXX          X',
+  'X   XXXX XXXXXXXXXX',
+  'XX XXXXX XXXXXXXXXX',
+  'XX       XXXXXXXXXX',
+  'XX XXXXXXXXXXXXXXXX',
+  'X   XXXXXXXXXXXXXXX',
+  'XXXXXXXXXXXXXXXXXXX',
+];
+
+grid = [
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  'X XXXXXXXXXXXXXX                  X',
+  'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
+  'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
+  'X   X      XXXXX    XXXXXXXXXXXXXXX',
+  'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
+  'XX    XXXX XXX         XXXXX  XXXXX',
+  'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
+  'XXX    XXX     XXXXXX  XXXX    XXXX',
+  'XXXX   XXX     XXXXXX  XXXXX XX XXX',
+  'XXXXX          XXXXXX   XXXX    XXX',
+  'XXXXXX    XXXXXXXXXXXXX         XXX',
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+];
+
+grid = [
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  'X                                 X',
+  'X                   XXXXXXXX      X',
+  'X                   XXXXXXXX      X',
+  'X                   XXXXXXXXXXXXXXX',
+  'X                   XXXXXXXXXXXXXXX',
+  'XX                              XXX',
+  'XX     XXX                      XXX',
+  'XXX    XXX     XXXXXX           XXX',
+  'XXX            XXXXXX           XXX',
+  'XX             XXXXXXX          XXX',
+  'XX        XXXXXXXXXXXX          XXX',
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+];
 
 class Rect {
   constructor(
@@ -138,48 +170,30 @@ class Cell {
   }
   cut() {
     let newRects: Rect[];
-    if (this.rectX.score() < this.rectY.score()) {
-      if (this.rectX.x < this.rectY.x &&
-        this.rectY.x < this.rectX.x + this.rectX.w - 1 &&
-        (this.rectX.y === this.rectY.y || this.rectX.y === this.rectY.y + this.rectY.h - 1)
-      ) {
-        rects.delete(this.rectY);
-        newRects = this._cutY();
-        newRects.forEach(r => {
-          for (let y = 0; y < r.h; y++) {
-            (cellAt(r.x, r.y + y) as Cell).rectY = r;
-          }
-        });
-      } else {
-        rects.delete(this.rectX);
-        newRects = this._cutX();
-        newRects.forEach(r => {
-          for (let x = 0; x < r.w; x++) {
-            (cellAt(r.x + x, r.y) as Cell).rectX = r;
-          }
-        });
-      }
+    const xLtY = this.rectX.score() < this.rectY.score();
+    const xTopOrBottom = this.rectX.x < this.rectY.x &&
+      this.rectY.x < this.rectX.x + this.rectX.w - 1 &&
+      (this.rectX.y === this.rectY.y || this.rectX.y === this.rectY.y + this.rectY.h - 1);
+    const yLeftOrRight = this.rectY.y < this.rectX.y &&
+      this.rectX.y < this.rectY.y + this.rectY.h - 1 &&
+      (this.rectY.x === this.rectX.x || this.rectY.x === this.rectX.x + this.rectX.w - 1);
+
+    if (xLtY && xTopOrBottom || !xLtY && !yLeftOrRight) {
+      rects.delete(this.rectY);
+      newRects = this._cutY();
+      newRects.forEach(r => {
+        for (let y = 0; y < r.h; y++) {
+          (cellAt(r.x, r.y + y) as Cell).rectY = r;
+        }
+      });
     } else {
-      if (this.rectY.y < this.rectX.y &&
-        this.rectX.y < this.rectY.y + this.rectY.h - 1 &&
-        (this.rectY.x === this.rectX.x || this.rectY.x === this.rectX.x + this.rectX.w - 1)
-      ) {
-        rects.delete(this.rectX);
-        newRects = this._cutX();
-        newRects.forEach(r => {
-          for (let x = 0; x < r.w; x++) {
-            (cellAt(r.x + x, r.y) as Cell).rectX = r;
-          }
-        });
-      } else {
-        rects.delete(this.rectY);
-        newRects = this._cutY();
-        newRects.forEach(r => {
-          for (let y = 0; y < r.h; y++) {
-            (cellAt(r.x, r.y + y) as Cell).rectY = r;
-          }
-        });
-      }
+      rects.delete(this.rectX);
+      newRects = this._cutX();
+      newRects.forEach(r => {
+        for (let x = 0; x < r.w; x++) {
+          (cellAt(r.x + x, r.y) as Cell).rectX = r;
+        }
+      });
     }
     newRects.forEach(newRect => rects.add(newRect));
   }
