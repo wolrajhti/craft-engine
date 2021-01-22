@@ -1,3 +1,49 @@
+
+let grid: string[];
+
+grid = [
+  'XXXXXX    X     X',
+  'X        XXX     ',
+  '  X   X          ',
+  '  XX XX    XXXX  ',
+  '  XX        XXX  ',
+  '     XX          ',
+  '  XXXXX          ',
+  '              XXX',
+];
+
+grid = [
+  'XXXXXXXXXXXXXXXXXX',
+  'XXXXXXXXXXX      X',
+  'X XXXXXXX      XXX',
+  'X  XXXX      XXXXX',
+  'X   X      XXXXXXX',
+  'X    XXXXXXXXXXXXX',
+  'XX    XXXX   XXXXX',
+  'XX     XXXX XXXXXX',
+  'XXX    XXX     XXX',
+  'XXXX   XXX  XX XXX',
+  'XXXXX  XXX     XXX',
+  'XXXXXX XX      XXX',
+  'XXXXXXXXXXXXXXXXXX',
+];
+
+grid = [
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  'X XXXXXXXXXXXXXX                  X',
+  'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
+  'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
+  'X   X      XXXXX    XXXXXXXXXXXXXXX',
+  'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
+  'XX    XXXX XXX         XXXXX  XXXXX',
+  'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
+  'XXX    XXX     XXXXXX  XXXX    XXX',
+  'XXXX   XXX     XXXXXX  XXXXX XX XXX',
+  'XXXXX          XXXXXX   XXXX    XXX',
+  'XXXXXX    XXXXXXXXXXXXX         XXX',
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+];
+
 class Rect {
   constructor(
     public x = 0,
@@ -130,35 +176,6 @@ const setCellAt = (x: number, y: number, cell: Cell): void => {
 
 const rects = new Set<Rect>();
 
-let grid: string[];
-
-grid = [
-  'XXXXXX    X     X',
-  'X        XXX     ',
-  '  X   X          ',
-  '  XX XX    XXXX  ',
-  '  XX        XXX  ',
-  '     XX          ',
-  '  XXXXX          ',
-  '              XXX',
-];
-
-grid = [
-  'XXXXXXXXXXXXXXXXXX',
-  'XXXXXXXXXXX      X',
-  'X XXXXXXX      XXX',
-  'X  XXXX      XXXXX',
-  'X   X      XXXXXXX',
-  'X    XXXXXXXXXXXXX',
-  'XX    XXXX   XXXXX',
-  'XX     XXXX XXXXXX',
-  'XXX    XXX     XXX',
-  'XXXX   XXX  XX XXX',
-  'XXXXX  XXX     XXX',
-  'XXXXXX XX      XXX',
-  'XXXXXXXXXXXXXXXXXX',
-];
-
 const width = (): number => {
   return grid[0].length;
 };
@@ -204,7 +221,7 @@ for (let x = 0; x < width(); x++) {
 const todos: Cell[] = [];
 cells.forEach(row => row.forEach(cell => todos.push(cell)));
 
-console.log(todos.length, 'empty cells\n');
+const count = todos.length;
 
 let validRects: Rect[] = [];
 
@@ -236,17 +253,17 @@ const draw = () => {
   console.log(result);
 }
 
-console.log('input');
+console.log('INPUT GRID');
 draw();
 
 validRects = [...new Set(todos.map(cell => cell.rectX))];
 
-console.log('raw horizontal lines');
+console.log('RAW HORIZONTAL LINES');
 draw();
 
 validRects = [...new Set(todos.map(cell => cell.rectY))];
 
-console.log('raw vertical lines');
+console.log('RAW VERTICAL LINES');
 draw();
 
 // while
@@ -257,7 +274,7 @@ while (todos.length) {
 
 validRects = [...rects];
 
-console.log('optimized lines');
+console.log('OPTIMIZED LINES');
 draw();
 
 const mergeTopLeft = (r1: Rect, r2: Rect): Rect[] => {
@@ -351,8 +368,10 @@ const optimize = () => {
 
 optimize();
 
-console.log('optimized rectangles');
+console.log('OPTIMIZED RECTANGLES');
 draw();
+
+console.log(`FINAL RESULT\nfrom ${count} empty cells to ${validRects.length} rectangles (-${(100 * (1 - validRects.length / count)).toFixed(1)}%)`);
 
 function t(r: Rect) {
   if (!r.mirrorX().mirrorX().equals(r)) {
