@@ -253,17 +253,17 @@ const draw = () => {
   console.log(result);
 }
 
-console.log('INPUT GRID');
+console.log('INPUT GRID (I)');
 draw();
 
 validRects = [...new Set(todos.map(cell => cell.rectX))];
 
-console.log('RAW HORIZONTAL LINES');
+console.log('RAW HORIZONTAL LINES (H = f(I))');
 draw();
 
 validRects = [...new Set(todos.map(cell => cell.rectY))];
 
-console.log('RAW VERTICAL LINES');
+console.log('RAW VERTICAL LINES (V = g(I))');
 draw();
 
 // while
@@ -274,7 +274,7 @@ while (todos.length) {
 
 validRects = [...rects];
 
-console.log('OPTIMIZED LINES');
+console.log('OPTIMIZED LINES (L = h(H, V))');
 draw();
 
 const mergeTopLeft = (r1: Rect, r2: Rect): Rect[] => {
@@ -368,7 +368,7 @@ const optimize = () => {
 
 optimize();
 
-console.log('OPTIMIZED RECTANGLES');
+console.log('OPTIMIZED RECTANGLES (R = i(L))');
 draw();
 
 console.log(`FINAL RESULT\nfrom ${count} empty cells to ${validRects.length} rectangles (-${(100 * (1 - validRects.length / count)).toFixed(1)}%)`);
