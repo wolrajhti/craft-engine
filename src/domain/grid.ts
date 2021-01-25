@@ -1,6 +1,48 @@
 import { Cell } from './cell';
 import { Rect } from './rect';
 
+interface EmptyCase {}
+interface SymCase {
+  transform(r: Rect): Rect;
+}
+interface ASymCase extends SymCase {
+  send(r: Rect): Rect;
+  receive(r: Rect): Rect;
+}
+type Case = EmptyCase | SymCase | ASymCase;
+
+const CASES: Case[] = [
+  {},
+  {
+    transform: r => r.mirrorX()
+  },
+  {
+    transform: r => r.mirrorY()
+  },
+  {
+    transform: r => r.mirrorX().mirrorY()
+  },
+  {
+    send: r => r.turnLeft(),
+    receive: r => r.turnRight(),
+  },
+  {
+    send: r => r.turnLeft(),
+    receive: r => r.turnRight(),
+    transform: r => r.mirrorX()
+  },
+  {
+    send: r => r.turnLeft(),
+    receive: r => r.turnRight(),
+    transform: r => r.mirrorY()
+  },
+  {
+    send: r => r.turnLeft(),
+    receive: r => r.turnRight(),
+    transform: r => r.mirrorX().mirrorY()
+  }
+];
+
 export class Grid {
   private height = 0;
   private width = 0;
@@ -106,7 +148,7 @@ export class Grid {
       return cell.rectX;
     }
   }
-  draw(token = ' ', rects: Rect[] = []): void {
+  draw(rects: Rect[] = [], token = ' '): void {
     let result = '';
     const padding = rects.length > 16 ? 2 : 1;
     for (let y = 0; y < this.height; y++) {
@@ -134,25 +176,25 @@ export class Grid {
   }
   drawRectX(token = ' '): void {
     this.draw(
-      token,
       [...new Set(
         this._data
           .filter(cell => cell.token === token)
           .map(cell => cell.rectX)
-      )]
+      )],
+      token
     );
   }
   drawRectY(token = ' '): void {
     this.draw(
-      token,
       [...new Set(
         this._data
           .filter(cell => cell.token === token)
           .map(cell => cell.rectY)
-      )]
+      )],
+      token
     );
   }
-  process(token = ' '): Rect[] {
+  chooseLines(token = ' '): Rect[] {
     const todos = [...this._data.filter(cell => cell.token === token)];
     const cuttedRects = new Set<Rect>();
     while (todos.length) {
@@ -169,5 +211,50 @@ export class Grid {
           .map(cell => cell.rectY)
       ])
     ];
+  }
+  mergeRects(rects: Rect[]) {
+    let i: number, j: number;
+    let r1: Rect, r2: Rect, merged: Rect[];
+  
+    i = 0;
+    while (i < rects.length) {
+      j = 0;
+      r1 = rects[i];
+      while (j < rects.length) {
+        if (i !== j) {
+          r2 = rects[j];
+          for (const c of CASES) {
+            if (typeof (c as ASymCase).send === 'function') {
+              r1 = (c as ASymCase).send(r1);
+              r2 = (c as ASymCase).send(r2);
+            }
+            if (typeof (c as SymCase).transform === 'function') {
+              r1 = (c as SymCase).transform(r1);
+              r2 = (c as SymCase).transform(r2);
+            }
+            merged = Rect.MergeTopLeft(r1, r2);
+            if (merged.length) {
+              // console.log('merging', i.toString(16), j.toString(16));
+              rects.splice(Math.max(i, j), 1);
+              rects.splice(Math.min(i, j), 1);
+              if (typeof (c as SymCase).transform === 'function') {
+                merged = merged.map(r => (c as SymCase).transform(r));
+              }
+              if (typeof (c as ASymCase).receive === 'function') {
+                merged = merged.map(r => (c as ASymCase).receive(r));
+              }
+              rects.push(...merged);
+              i = -1;
+              break;
+            }
+          }
+        }
+        if (i === -1) {
+          break;
+        }
+        j++;
+      }
+      i++;
+    }
   }
 }
