@@ -9,16 +9,16 @@ input = [
   ' XXX',
 ];
 
-// input = [
-//   'XXXXXX    X     X',
-//   'X        XXX     ',
-//   '  X   X          ',
-//   '  XX XX    XXXX  ',
-//   '  XX        XXX  ',
-//   '     XX          ',
-//   '  XXXXX          ',
-//   '              XXX',
-// ];
+input = [
+  'XXXXXX    X     X',
+  'X        XXX     ',
+  '  X   X          ',
+  '  XX XX    XXXX  ',
+  '  XX        XXX  ',
+  '     XX          ',
+  '  XXXXX          ',
+  '              XXX',
+];
 
 input = [
   'XXXXXXXXXXXXXXXXXX',
@@ -36,53 +36,53 @@ input = [
   'XXXXXXXXXXXXXXXXXX',
 ];
 
-// input = [
-//   'XXXXXXXXXXXXXXXXXXX',
-//   'X   XXXXXXXXXXXXXXX',
-//   'XX XXXXXXXXXXXXXXXX',
-//   'XX       XXXXXXXXXX',
-//   'XX XXXXX XXXXXXXXXX',
-//   'X   XXXX XXXXXXXXXX',
-//   'XXXXXXXX          X',
-//   'X   XXXX XXXXXXXXXX',
-//   'XX XXXXX XXXXXXXXXX',
-//   'XX       XXXXXXXXXX',
-//   'XX XXXXXXXXXXXXXXXX',
-//   'X   XXXXXXXXXXXXXXX',
-//   'XXXXXXXXXXXXXXXXXXX',
-// ];
+input = [
+  'XXXXXXXXXXXXXXXXXXX',
+  'X   XXXXXXXXXXXXXXX',
+  'XX XXXXXXXXXXXXXXXX',
+  'XX       XXXXXXXXXX',
+  'XX XXXXX XXXXXXXXXX',
+  'X   XXXX XXXXXXXXXX',
+  'XXXXXXXX          X',
+  'X   XXXX XXXXXXXXXX',
+  'XX XXXXX XXXXXXXXXX',
+  'XX       XXXXXXXXXX',
+  'XX XXXXXXXXXXXXXXXX',
+  'X   XXXXXXXXXXXXXXX',
+  'XXXXXXXXXXXXXXXXXXX',
+];
 
-// input = [
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-//   'X XXXXXXXXXXXXXX                  X',
-//   'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
-//   'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
-//   'X   X      XXXXX    XXXXXXXXXXXXXXX',
-//   'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
-//   'XX    XXXX XXX         XXXXX  XXXXX',
-//   'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
-//   'XXX    XXX     XXXXXX  XXXX    XXXX',
-//   'XXXX   XXX     XXXXXX  XXXXX XX XXX',
-//   'XXXXX          XXXXXX   XXXX    XXX',
-//   'XXXXXX    XXXXXXXXXXXXX         XXX',
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-// ];
+input = [
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  'X XXXXXXXXXXXXXX                  X',
+  'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
+  'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
+  'X   X      XXXXX    XXXXXXXXXXXXXXX',
+  'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
+  'XX    XXXX XXX         XXXXX  XXXXX',
+  'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
+  'XXX    XXX     XXXXXX  XXXX    XXXX',
+  'XXXX   XXX     XXXXXX  XXXXX XX XXX',
+  'XXXXX          XXXXXX   XXXX    XXX',
+  'XXXXXX    XXXXXXXXXXXXX         XXX',
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+];
 
-// input = [
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-//   'X                                 X',
-//   'X                   XXXXXXXX      X',
-//   'X                   XXXXXXXX      X',
-//   'X                   XXXXXXXXXXXXXXX',
-//   'X                   XXXXXXXXXXXXXXX',
-//   'XX                              XXX',
-//   'XX     XXX                      XXX',
-//   'XXX    XXX     XXXXXX           XXX',
-//   'XXX            XXXXXX           XXX',
-//   'XX             XXXXXXX          XXX',
-//   'XX        XXXXXXXXXXXX          XXX',
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-// ];
+input = [
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  'X                                 X',
+  'X                   XXXXXXXX      X',
+  'X                   XXXXXXXX      X',
+  'X                   XXXXXXXXXXXXXXX',
+  'X                   XXXXXXXXXXXXXXX',
+  'XX                              XXX',
+  'XX     XXX                      XXX',
+  'XXX    XXX     XXXXXX           XXX',
+  'XXX            XXXXXX           XXX',
+  'XX             XXXXXXX          XXX',
+  'XX        XXXXXXXXXXXX          XXX',
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+];
 
 const g = new Grid();
 g.init(input);
