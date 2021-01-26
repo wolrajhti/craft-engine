@@ -1,4 +1,3 @@
-import { Cell } from './cell';
 import { Rect } from './rect';
 
 interface EmptyCase {}
@@ -44,11 +43,9 @@ const CASES: Case[] = [
 ];
 
 export class Grid {
-  private height = 0;
   private width = 0;
-  private _data: Cell[] = [];
+  private _tokens: string[] = [];
   init(input: string[]): void {
-    this.height = input.length;
     for (let y = 0; y < input.length; y++) {
       if (y === 0) {
         this.width = input[y].length;
@@ -56,30 +53,7 @@ export class Grid {
         throw new Error('wrong width');
       }
       for (let x = 0; x < input[y].length; x++) {
-        const token = input[y][x];
-        // init new cell
-        const cell = new Cell(
-          token,
-          new Rect(x, y, 1, 1),
-          new Rect(x, y, 1, 1)
-        );
-        this.set(cell, x, y);
-        // update rectX
-        if (x > 0) {
-          const cellX = this.get(x - 1, y);
-          if (cellX && cellX.token === token) {
-            cell.rectX = cellX.rectX;
-            cell.rectX.w++;
-          }
-        }
-        // update rectY
-        if (y > 0) {
-          const cellY = this.get(x, y - 1);
-          if (cellY && cellY.token === token) {
-            cell.rectY = cellY.rectY;
-            cell.rectY.h++;
-          }
-        }
+        this._tokens.push(input[y][x]);
       }  
     }
   }
@@ -87,84 +61,128 @@ export class Grid {
     return y * this.width + x;
   }
   private _y(i: number): number {
-    return Math.floor(i / this.width);
+    return (i - this._x(i)) / this.width;
   }
   private _x(i: number): number {
-    return i - this._y(i);
+    return i % this.width;
   }
-  private _set(obj: Cell, x: number, y: number): void {
-    this._data[this.i(x, y)] = obj;
-  }
-  set(obj: Cell, x: number, y: number, w = 1, h = 1): void {
-    for (let dx = 0; dx < w; dx++) {
-      for (let dy = 0; dy < h; dy++) {
-        this._set(obj, x + dx, y + dy);
+  buildRectXs(): Rect[] {
+    const rectXs: Rect[] = [];
+    this._tokens.forEach((token, i) => {
+      if (i % this.width && this._tokens[i - 1] === token) {
+        rectXs.push(rectXs[i - 1]);
+        rectXs[i - 1].w++;
+      } else {
+        rectXs.push(new Rect(this._x(i), this._y(i), 1, 1));
       }
-    }
+    });
+    return rectXs;
   }
-  get(x: number, y: number): Cell {
-    return this._data[this.i(x, y)];
+  buildRectYs(): Rect[] {
+    const rectYs: Rect[] = [];
+    this._tokens.forEach((token, i) => {
+      if (i >= this.width && this._tokens[i - this.width] === token) {
+        rectYs.push(rectYs[i - this.width]);
+        rectYs[i - this.width].h++;
+      } else {
+        rectYs.push(new Rect(this._x(i), this._y(i), 1, 1));
+      }
+    });
+    return rectYs;
   }
-  scoreOfRect(rect: Rect): number {
+  private _scoreOfRect(rects: Rect[], rect: Rect): number {
     let score = rect.area() * rect.area();
-    let cell: Cell;
     for (let x = 0; x < rect.w; x++) {
       for (let y = 0; y < rect.h; y++) {
-        cell = this.get(rect.x + x, rect.y + y);
-        if (cell.rectX === rect) {
-          score -= cell.rectY.area();
-        } else {
-          score -= cell.rectX.area();
-        }
+        score -= rects[this.i(rect.x + x, rect.y + y)].area();
       }
     }
     return score;
   }
-  scoreOfCell(cell: Cell): number {
-    return Math.abs(this.scoreOfRect(cell.rectX) - this.scoreOfRect(cell.rectY));
+  private _scoreOfCell(rectXs: Rect[], rectYs: Rect[], i: number): number {
+    return Math.abs(this._scoreOfRect(rectYs, rectXs[i]) - this._scoreOfRect(rectXs, rectYs[i]));
   }
-  cut(cell: Cell): Rect {
-    const xLtY = this.scoreOfRect(cell.rectX) < this.scoreOfRect(cell.rectY);
-    const xTopOrBottom = cell.rectX.x < cell.rectY.x &&
-      cell.rectY.x < cell.rectX.x + cell.rectX.w - 1 &&
-      (cell.rectX.y === cell.rectY.y || cell.rectX.y === cell.rectY.y + cell.rectY.h - 1);
-    const yLeftOrRight = cell.rectY.y < cell.rectX.y &&
-      cell.rectX.y < cell.rectY.y + cell.rectY.h - 1 &&
-      (cell.rectY.x === cell.rectX.x || cell.rectY.x === cell.rectX.x + cell.rectX.w - 1);
-
-    if (xLtY && xTopOrBottom || !xLtY && !yLeftOrRight) {
-      cell.cutY().forEach(r => {
-        for (let y = 0; y < r.h; y++) {
-          this.get(r.x, r.y + y).rectY = r;
-        }
-      });
-      return cell.rectY;
+  private _cutX(r1: Rect, r2: Rect): Rect[] {
+    if (r1.w === 1) {
+      return [];
+    }
+    if (r1.x < r2.x) {
+      if (r2.x < r1.x + r1.w - 1) {
+        //      2
+        // [111]2[111]
+        //      2
+        const head = new Rect(r1.x, r1.y, r2.x - r1.x, 1);
+        const tail = new Rect(r2.x + 1, r1.y, r1.w - (r2.x - r1.x + 1), 1);
+        return [head, tail];
+      } else {
+        //      2
+        // [111]2
+        //      2
+        const head = new Rect(r1.x, r1.y, r1.w - 1, 1);
+        return [head];
+      }
     } else {
-      cell.cutX().forEach(r => {
-        for (let x = 0; x < r.w; x++) {
-          this.get(r.x + x, r.y).rectX = r;
-        }
-      });
-      return cell.rectX;
+      // 2
+      // 2[111]
+      // 2
+      const tail = new Rect(r1.x + 1, r1.y, r1.w - 1, 1);
+      return [tail];
     }
   }
+  private _cutY(r1: Rect, r2: Rect): Rect[] {
+    return this._cutX(r2.turnLeft(), r1.turnLeft())
+      .map(r => r.turnRight());
+  }
+  private _cut(rectXs: Rect[], rectYs: Rect[], i: number): Rect {
+    const rectX = rectXs[i];
+    const rectY = rectYs[i];
+    const xLtY = this._scoreOfRect(rectYs, rectX) < this._scoreOfRect(rectXs, rectY);
+    const xTopOrBottom = rectX.x < rectY.x &&
+      rectY.x < rectX.x + rectX.w - 1 &&
+      (rectX.y === rectY.y || rectX.y === rectY.y + rectY.h - 1);
+    const yLeftOrRight = rectY.y < rectX.y &&
+      rectX.y < rectY.y + rectY.h - 1 &&
+      (rectY.x === rectX.x || rectY.x === rectX.x + rectX.w - 1);
+
+    if (xLtY && xTopOrBottom || !xLtY && !yLeftOrRight) {
+      this._cutY(rectX, rectY).forEach(r => {
+        for (let y = 0; y < r.h; y++) {
+          rectYs[this.i(r.x, r.y + y)] = r;
+        }
+      });
+      return rectY;
+    } else {
+      this._cutX(rectX, rectY).forEach(r => {
+        for (let x = 0; x < r.w; x++) {
+          rectXs[this.i(r.x + x, r.y)] = r;
+        }
+      });
+      return rectX;
+    }
+  }
+  // TODO merge width drawAll when rects.length === this._tokens.length is always true
   draw(rects: Rect[] = [], token = ' '): void {
+    this.drawAll(rects.filter((r, i) => this._tokens[i] === token), token);
+  }
+  // TODO merge with draw when rects.length === this._tokens.length is always true
+  drawAll(rects: Rect[] = [], token = ' '): void {
+    rects = [...new Set(rects)];
     let result = '';
     const padding = rects.length > 16 ? 2 : 1;
-    for (let y = 0; y < this.height; y++) {
-      for (let x = 0; x < this.width; x++) {
-        if (this._data[this.i(x, y)].token === token) {
-          const i = rects.findIndex(rect => rect.contains(x, y));
-          if (i !== -1) {
-            result += ' ' + i.toString(16).padStart(padding, ' ') + ' ';
-          } else {
-            result += ' ' + ''.padStart(padding, ' ') + ' ';
-          }
+    for (let i = 0; i < this._tokens.length; i++) {
+      if (this._tokens[i] === token) {
+        const index = rects.findIndex(rect => rect.contains(this._x(i), this._y(i)));
+        if (index !== -1) {
+          result += ' ' + index.toString(16).padStart(padding, ' ') + ' ';
         } else {
-          result += ' ' + '■'.padStart(padding, '■') + ' ';
+          result += ' ' + ''.padStart(padding, ' ') + ' ';
         }
+      } else {
+        result += ' ' + '■'.padStart(padding, '■') + ' ';
       }
-      result += '\n';
+      if (!((i + 1) % this.width)) {
+        result += '\n';
+      }
     }
     console.log(rects.length, 'rectangles');
     rects.forEach((rect, i) => {
@@ -174,41 +192,23 @@ export class Grid {
     });
     console.log(result);
   }
-  drawRectX(token = ' '): void {
-    this.draw(
-      [...new Set(
-        this._data
-          .filter(cell => cell.token === token)
-          .map(cell => cell.rectX)
-      )],
-      token
-    );
-  }
-  drawRectY(token = ' '): void {
-    this.draw(
-      [...new Set(
-        this._data
-          .filter(cell => cell.token === token)
-          .map(cell => cell.rectY)
-      )],
-      token
-    );
-  }
-  chooseLines(token = ' '): Rect[] {
-    const todos = [...this._data.filter(cell => cell.token === token)];
+  // TODO must return an array of size this.width * this.height
+  chooseLines(rectXs: Rect[], rectYs: Rect[], token = ' '): Rect[] {
+    const todos: number[] = [];
+    this._tokens.forEach((tkn, i) => {
+      if (tkn === token) {
+        todos.push(i);
+      }
+    });
     const cuttedRects = new Set<Rect>();
     while (todos.length) {
-      todos.sort((c1, c2) => this.scoreOfCell(c1) - this.scoreOfCell(c2));
-      cuttedRects.add(this.cut(todos.pop() as Cell));
+      todos.sort((i, j) => this._scoreOfCell(rectXs, rectYs, i) - this._scoreOfCell(rectXs, rectYs, j));
+      cuttedRects.add(this._cut(rectXs, rectYs, todos.pop() as number));
     }
     return [
       ...new Set([
-        ...this._data
-          .filter(cell => cell.token === token && !cuttedRects.has(cell.rectX))
-          .map(cell => cell.rectX),
-        ...this._data
-          .filter(cell => cell.token === token && !cuttedRects.has(cell.rectY))
-          .map(cell => cell.rectY)
+        ...rectXs.filter((r, i) => this._tokens[i] === token && !cuttedRects.has(r)),
+        ...rectYs.filter((r, i) => this._tokens[i] === token && !cuttedRects.has(r))
       ])
     ];
   }
@@ -239,6 +239,7 @@ export class Grid {
     }
     return false;
   }
+  // TODO must return an array of size this.width * this.height
   mergeRects(rects: Rect[]) {
     let i: number, j: number;
   

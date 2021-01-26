@@ -90,18 +90,20 @@ g.init(input);
 console.log('INPUT GRID (I)');
 g.draw();
 
+const rectXs = g.buildRectXs();
 console.log('RAW HORIZONTAL LINES (H = f(I))');
-g.drawRectX();
+g.draw(rectXs);
 
+const rectYs = g.buildRectYs();
 console.log('RAW VERTICAL LINES (V = g(I))');
-g.drawRectY();
+g.draw(rectYs);
 
-const rects = g.chooseLines();
+const rects = g.chooseLines(rectXs, rectYs);
 console.log('OPTIMIZED LINES (L = h(H, V))');
-g.draw(rects);
+g.drawAll(rects);
 
 g.mergeRects(rects);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
-g.draw(rects);
+g.drawAll(rects);
 
 // console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);
