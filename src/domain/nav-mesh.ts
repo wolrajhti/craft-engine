@@ -84,6 +84,41 @@ input = [
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
 ];
 
+
+// from https://github.com/mikewesthad/navmesh#introduction
+input = [
+  '                              ',
+  '                              ',
+  '                              ',
+  '       XXXXX      XXXXX       ',
+  '       XXXXX      XXXXX       ',
+  '                              ',
+  '                              ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '                              ',
+  '                              ',
+  '       XXXXX      XXXXX       ',
+  '       XXXXX      XXXXX       ',
+  '                              ',
+  '                              ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '                              ',
+  '                              ',
+  '       XXXXX      XXXXX       ',
+  '       XXXXX      XXXXX       ',
+  '                              ',
+  '                              ',
+  '                              ',
+];
+
 const g = new Grid();
 g.init(input);
 
