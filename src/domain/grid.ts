@@ -263,4 +263,44 @@ export class Grid {
       i++;
     }
   }
+  *neighboors(rects: Rect[], r: Rect): Iterable<Rect> {
+    let n: Rect;
+
+    // left
+    if (r.x + r.w < this.width) {
+      let i = r.y;
+      while (i < r.y + r.h) {
+        n = rects[this.i(r.x + r.w, i)];
+        yield n;
+        i = n.y + n.h;
+      }
+    }
+    // bottom
+    if (r.y + r.h < this._tokens.length / this.width) {
+      let i = r.x + r.w - 1;
+      while (r.x <= i) {
+        n = rects[this.i(i, r.y + r.h)];
+        yield n;
+        i = n.x - 1;
+      }
+    }
+    // right
+    if (0 < r.x) {
+      let i = r.y + r.h - 1;
+      while (r.y <= i) {
+        n = rects[this.i(r.x - 1, i)];
+        yield n;
+        i = n.y - 1;
+      }
+    }
+    // top
+    if (0 < r.y) {
+      let i = r.x;
+      while (i < r.x + r.w) {
+        n = rects[this.i(i, r.y - 1)];
+        yield n;
+        i = n.x + n.w;
+      }
+    }
+  }
 }
