@@ -192,25 +192,23 @@ export class Grid {
     });
     console.log(result);
   }
-  // TODO must return an array of size this.width * this.height
-  chooseLines(rectXs: Rect[], rectYs: Rect[], token = ' '): Rect[] {
+  chooseLines(rectXs: Rect[], rectYs: Rect[]): Rect[] {
     const todos: number[] = [];
     this._tokens.forEach((tkn, i) => {
-      if (tkn === token) {
-        todos.push(i);
-      }
+      todos.push(i);
     });
     const cuttedRects = new Set<Rect>();
     while (todos.length) {
       todos.sort((i, j) => this._scoreOfCell(rectXs, rectYs, i) - this._scoreOfCell(rectXs, rectYs, j));
       cuttedRects.add(this._cut(rectXs, rectYs, todos.pop() as number));
     }
-    return [
-      ...new Set([
-        ...rectXs.filter((r, i) => this._tokens[i] === token && !cuttedRects.has(r)),
-        ...rectYs.filter((r, i) => this._tokens[i] === token && !cuttedRects.has(r))
-      ])
-    ];
+    return this._tokens.map((tkn, i) => {
+      if (cuttedRects.has(rectXs[i])) {
+        return rectYs[i];
+      } else {
+        return rectXs[i];
+      }
+    });
   }
   private _applyCase(c: Case, rects: Rect[], i: number, j: number): boolean {
     let r1 = rects[i];
