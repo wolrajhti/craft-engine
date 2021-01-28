@@ -241,16 +241,18 @@ export class Grid {
   mergeRects(rects: Rect[]) {
     let i = 0;
 
-    while (i < rects.length) {
+    while (i !== -1 && i < rects.length) {
       for (const n of this.neighboors(rects, rects[i])) {
-        for (const c of CASES) {
-          if (this._applyCase(c, rects, i, n)) {
-            i = -1;
+        if (this._tokens[i] === this._tokens[n]) {
+          for (const c of CASES) {
+            if (this._applyCase(c, rects, i, n)) {
+              i = -1;
+              break;
+            }
+          }
+          if (i === -1) {
             break;
           }
-        }
-        if (i === -1) {
-          break;
         }
       }
       if (i === -1) {
@@ -269,19 +271,15 @@ export class Grid {
     }
     return -1;
   }
-  *neighboors(rects: Rect[], r: Rect, token = ' '): Iterable<number> {
-    let nIndex: number;
+  *neighboors(rects: Rect[], r: Rect): Iterable<number> {
     let n: Rect;
 
     // left
     if (r.x + r.w < this.width) {
       let i = r.y;
       while (i < r.y + r.h) {
-        nIndex = this.i(r.x + r.w, i);
-        if (this._tokens[nIndex] === token) {
-          yield nIndex;
-        }
-        n = rects[nIndex];
+        n = rects[this.i(r.x + r.w, i)];
+        yield n;
         i = n.y + n.h;
       }
     }
@@ -289,11 +287,8 @@ export class Grid {
     if (r.y + r.h < this._tokens.length / this.width) {
       let i = r.x + r.w - 1;
       while (r.x <= i) {
-        nIndex = this.i(i, r.y + r.h);
-        if (this._tokens[nIndex] === token) {
-          yield nIndex;
-        }
-        n = rects[nIndex];
+        n = rects[this.i(i, r.y + r.h)];
+        yield n;
         i = n.x - 1;
       }
     }
@@ -301,11 +296,8 @@ export class Grid {
     if (0 < r.x) {
       let i = r.y + r.h - 1;
       while (r.y <= i) {
-        nIndex = this.i(r.x - 1, i);
-        if (this._tokens[nIndex] === token) {
-          yield nIndex;
-        }
-        n = rects[nIndex];
+        n = rects[this.i(r.x - 1, i)];
+        yield n;
         i = n.y - 1;
       }
     }
@@ -313,11 +305,8 @@ export class Grid {
     if (0 < r.y) {
       let i = r.x;
       while (i < r.x + r.w) {
-        nIndex = this.i(i, r.y - 1);
-        if (this._tokens[nIndex] === token) {
-          yield nIndex;
-        }
-        n = rects[nIndex];
+        n = rects[this.i(i, r.y - 1)];
+        yield n;
         i = n.x + n.w;
       }
     }
