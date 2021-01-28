@@ -224,15 +224,19 @@ export class Grid {
     let merged = Rect.MergeTopLeft(r1, r2);
     if (merged.length) {
       // console.log('merging', i.toString(16), j.toString(16));
-      rects.splice(Math.max(i, j), 1);
-      rects.splice(Math.min(i, j), 1);
       if (typeof (c as SymCase).transform === 'function') {
         merged = merged.map(r => (c as SymCase).transform(r));
       }
       if (typeof (c as ASymCase).receive === 'function') {
         merged = merged.map(r => (c as ASymCase).receive(r));
       }
-      rects.push(...merged);
+      merged.forEach(r => {
+        for (let x = r.x; x < r.x + r.w; x++) {
+          for (let y = r.y; y < r.y + r.h; y++) {
+            rects[this.i(x, y)] = r;
+          }
+        }
+      });
       return true;
     }
     return false;
@@ -242,10 +246,13 @@ export class Grid {
     let i = 0;
 
     while (i !== -1 && i < rects.length) {
+      console.log('i', i);
       for (const n of this.neighboors(rects, rects[i])) {
+        // console.log('\tn', n);
         if (this._tokens[i] === this._tokens[n]) {
           for (const c of CASES) {
             if (this._applyCase(c, rects, i, n)) {
+              console.log('MERGED !');
               i = -1;
               break;
             }
@@ -256,9 +263,12 @@ export class Grid {
         }
       }
       if (i === -1) {
+        console.log('reset');
         i = 0;
       } else {
+        const j = i;
         i = this.next(rects[i]);
+        console.log(i, j);
       }
     }
   }
@@ -267,19 +277,21 @@ export class Grid {
       return this.i(r.x + r.w, r.y);
     }
     if (r.y + r.h < this._tokens.length / this.width) {
-      return this.i(r.x, r.y + r.h);
+      return this.i(0, r.y + 1);
     }
     return -1;
   }
-  *neighboors(rects: Rect[], r: Rect): Iterable<number> {
-    let n: Rect;
+  neighboors(rects: Rect[], r: Rect): number[] {
+    let nIndex: number, n: Rect;
+    const ns: number[] = []
 
     // left
     if (r.x + r.w < this.width) {
       let i = r.y;
       while (i < r.y + r.h) {
-        n = rects[this.i(r.x + r.w, i)];
-        yield n;
+        nIndex = this.i(r.x + r.w, i);
+        ns.push(nIndex);
+        n = rects[nIndex];
         i = n.y + n.h;
       }
     }
@@ -287,8 +299,9 @@ export class Grid {
     if (r.y + r.h < this._tokens.length / this.width) {
       let i = r.x + r.w - 1;
       while (r.x <= i) {
-        n = rects[this.i(i, r.y + r.h)];
-        yield n;
+        nIndex = this.i(i, r.y + r.h);
+        ns.push(nIndex);
+        n = rects[nIndex];
         i = n.x - 1;
       }
     }
@@ -296,8 +309,9 @@ export class Grid {
     if (0 < r.x) {
       let i = r.y + r.h - 1;
       while (r.y <= i) {
-        n = rects[this.i(r.x - 1, i)];
-        yield n;
+        nIndex = this.i(r.x - 1, i);
+        ns.push(nIndex);
+        n = rects[nIndex];
         i = n.y - 1;
       }
     }
@@ -305,10 +319,13 @@ export class Grid {
     if (0 < r.y) {
       let i = r.x;
       while (i < r.x + r.w) {
-        n = rects[this.i(i, r.y - 1)];
-        yield n;
+        nIndex = this.i(i, r.y - 1);
+        ns.push(nIndex);
+        n = rects[nIndex];
         i = n.x + n.w;
       }
     }
+
+    return ns;
   }
 }
