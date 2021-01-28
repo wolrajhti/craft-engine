@@ -239,37 +239,44 @@ export class Grid {
   }
   // TODO must return an array of size this.width * this.height
   mergeRects(rects: Rect[]) {
-    let i: number, j: number;
-  
-    i = 0;
+    let i = 0;
+
     while (i < rects.length) {
-      j = 0;
-      while (j < rects.length) {
-        if (i !== j) {
-          for (const c of CASES) {
-            if (this._applyCase(c, rects, i, j)) {
-              i = -1;
-              break;
-            }
+      for (const n of this.neighboors(rects, rects[i])) {
+        for (const c of CASES) {
+          if (this._applyCase(c, rects, i, n)) {
+            i = -1;
+            break;
           }
         }
         if (i === -1) {
           break;
         }
-        j++;
       }
       i++;
+      i = this.next(rects[i]);
     }
   }
-  *neighboors(rects: Rect[], r: Rect): Iterable<Rect> {
+  next(r: Rect): number {
+    if (r.x + r.w < this.width) {
+      return this.i(r.x + r.w, r.y);
+    }
+    if (r.y + r.h < this._tokens.length / this.width) {
+      return this.i(r.x, r.y + r.h);
+    }
+    return -1;
+  }
+  *neighboors(rects: Rect[], r: Rect): Iterable<number> {
+    let nIndex: number;
     let n: Rect;
 
     // left
     if (r.x + r.w < this.width) {
       let i = r.y;
       while (i < r.y + r.h) {
-        n = rects[this.i(r.x + r.w, i)];
-        yield n;
+        nIndex = this.i(r.x + r.w, i);
+        yield nIndex;
+        n = rects[nIndex];
         i = n.y + n.h;
       }
     }
@@ -277,8 +284,9 @@ export class Grid {
     if (r.y + r.h < this._tokens.length / this.width) {
       let i = r.x + r.w - 1;
       while (r.x <= i) {
-        n = rects[this.i(i, r.y + r.h)];
-        yield n;
+        nIndex = this.i(i, r.y + r.h);
+        yield nIndex;
+        n = rects[nIndex];
         i = n.x - 1;
       }
     }
@@ -286,8 +294,9 @@ export class Grid {
     if (0 < r.x) {
       let i = r.y + r.h - 1;
       while (r.y <= i) {
-        n = rects[this.i(r.x - 1, i)];
-        yield n;
+        nIndex = this.i(r.x - 1, i);
+        yield nIndex;
+        n = rects[nIndex];
         i = n.y - 1;
       }
     }
@@ -295,8 +304,9 @@ export class Grid {
     if (0 < r.y) {
       let i = r.x;
       while (i < r.x + r.w) {
-        n = rects[this.i(i, r.y - 1)];
-        yield n;
+        nIndex = this.i(i, r.y - 1);
+        yield nIndex;
+        n = rects[nIndex];
         i = n.x + n.w;
       }
     }

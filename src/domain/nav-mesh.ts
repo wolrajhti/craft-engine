@@ -137,8 +137,8 @@ const rects = g.chooseLines(rectXs, rectYs);
 console.log('OPTIMIZED LINES (L = h(H, V))');
 g.draw(rects);
 
-// g.mergeRects(rects);
-// console.log('OPTIMIZED RECTANGLES (R = i(L))');
-// g.drawAll(rects);
+g.mergeRects(rects);
+console.log('OPTIMIZED RECTANGLES (R = i(L))');
+g.drawAll(rects);
 
 // console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);
