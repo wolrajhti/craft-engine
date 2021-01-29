@@ -68,21 +68,21 @@ input = [
 //   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
 // ];
 
-// input = [
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-//   'X                                 X',
-//   'X                   XXXXXXXX      X',
-//   'X                   XXXXXXXX      X',
-//   'X                   XXXXXXXXXXXXXXX',
-//   'X                   XXXXXXXXXXXXXXX',
-//   'XX                              XXX',
-//   'XX     XXX                      XXX',
-//   'XXX    XXX     XXXXXX           XXX',
-//   'XXX            XXXXXX           XXX',
-//   'XX             XXXXXXX          XXX',
-//   'XX        XXXXXXXXXXXX          XXX',
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-// ];
+input = [
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  'X                                 X',
+  'X                   XXXXXXXX      X',
+  'X                   XXXXXXXX      X',
+  'X                   XXXXXXXXXXXXXXX',
+  'X                   XXXXXXXXXXXXXXX',
+  'XX                              XXX',
+  'XX     XXX                      XXX',
+  'XXX    XXX     XXXXXX           XXX',
+  'XXX            XXXXXX           XXX',
+  'XX             XXXXXXX          XXX',
+  'XX        XXXXXXXXXXXX          XXX',
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+];
 
 
 // // from https://github.com/mikewesthad/navmesh#introduction
@@ -139,6 +139,6 @@ g.draw(rects);
 
 g.mergeRects(rects);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
-g.drawAll(rects);
+g.draw(rects);
 
 // console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);

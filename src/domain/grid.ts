@@ -160,13 +160,8 @@ export class Grid {
       return rectX;
     }
   }
-  // TODO merge width drawAll when rects.length === this._tokens.length is always true
   draw(rects: Rect[] = [], token = ' '): void {
-    this.drawAll(rects.filter((r, i) => this._tokens[i] === token), token);
-  }
-  // TODO merge with draw when rects.length === this._tokens.length is always true
-  drawAll(rects: Rect[] = [], token = ' '): void {
-    rects = [...new Set(rects)];
+    rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
     let result = '';
     const padding = rects.length > 16 ? 2 : 1;
     for (let i = 0; i < this._tokens.length; i++) {
@@ -241,45 +236,33 @@ export class Grid {
     }
     return false;
   }
-  // TODO must return an array of size this.width * this.height
   mergeRects(rects: Rect[]) {
     let i = 0;
+    const done = new Set<Rect>();
 
-    while (i !== -1 && i < rects.length) {
-      console.log('i', i);
-      for (const n of this.neighboors(rects, rects[i])) {
-        // console.log('\tn', n);
-        if (this._tokens[i] === this._tokens[n]) {
-          for (const c of CASES) {
-            if (this._applyCase(c, rects, i, n)) {
-              console.log('MERGED !');
-              i = -1;
+    while (i < rects.length) {
+      if (!done.has(rects[i])) {
+        for (const n of this.neighboors(rects, rects[i])) {
+          if (this._tokens[i] === this._tokens[n]) {
+            for (const c of CASES) {
+              if (this._applyCase(c, rects, i, n)) {
+                i = -1;
+                break;
+              }
+            }
+            if (i === -1) {
               break;
             }
-          }
-          if (i === -1) {
-            break;
           }
         }
       }
       if (i === -1) {
-        console.log('reset');
-        i = 0;
+        done.clear();
       } else {
-        const j = i;
-        i = this.next(rects[i]);
-        console.log(i, j);
+        done.add(rects[i]);
       }
+      i++;
     }
-  }
-  next(r: Rect): number {
-    if (r.x + r.w < this.width) {
-      return this.i(r.x + r.w, r.y);
-    }
-    if (r.y + r.h < this._tokens.length / this.width) {
-      return this.i(0, r.y + 1);
-    }
-    return -1;
   }
   neighboors(rects: Rect[], r: Rect): number[] {
     let nIndex: number, n: Rect;
