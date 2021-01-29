@@ -34,9 +34,9 @@ export class Rect {
   area(): number {
     return this.w * this.h;
   }
-  static MergeTopLeft(r1: Rect, r2: Rect): Rect[] {
+  static MergeTopLeft(r1: Rect, r2: Rect, optimize = false): Rect[] {
     if (r1.x === r2.x && r1.y === r2.y - r1.h) {
-      if (r1.w < r2.w && r2.h < r1.w) {
+      if (r1.w < r2.w && r2.h < r1.w && optimize) {
         // 111       111
         // 111    -> 111
         // 222222    111222

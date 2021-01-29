@@ -9,64 +9,64 @@ input = [
   ' XXX',
 ];
 
-// input = [
-//   'XXXXXX    X     X',
-//   'X        XXX     ',
-//   '  X   X          ',
-//   '  XX XX    XXXX  ',
-//   '  XX        XXX  ',
-//   '     XX          ',
-//   '  XXXXX          ',
-//   '              XXX',
-// ];
+input = [
+  'XXXXXX    X     X',
+  'X        XXX     ',
+  '  X   X          ',
+  '  XX XX    XXXX  ',
+  '  XX        XXX  ',
+  '     XX          ',
+  '  XXXXX          ',
+  '              XXX',
+];
 
-// input = [
-//   'XXXXXXXXXXXXXXXXXX',
-//   'XXXXXXXXXXX      X',
-//   'X XXXXXXX      XXX',
-//   'X  XXXX      XXXXX',
-//   'X   X      XXXXXXX',
-//   'X    XXXXXXXXXXXXX',
-//   'XX    XXXX   XXXXX',
-//   'XX     XXXX XXXXXX',
-//   'XXX    XXX     XXX',
-//   'XXXX   XXX  XX XXX',
-//   'XXXXX  XXX     XXX',
-//   'XXXXXX XX      XXX',
-//   'XXXXXXXXXXXXXXXXXX',
-// ];
+input = [
+  'XXXXXXXXXXXXXXXXXX',
+  'XXXXXXXXXXX      X',
+  'X XXXXXXX      XXX',
+  'X  XXXX      XXXXX',
+  'X   X      XXXXXXX',
+  'X    XXXXXXXXXXXXX',
+  'XX    XXXX   XXXXX',
+  'XX     XXXX XXXXXX',
+  'XXX    XXX     XXX',
+  'XXXX   XXX  XX XXX',
+  'XXXXX  XXX     XXX',
+  'XXXXXX XX      XXX',
+  'XXXXXXXXXXXXXXXXXX',
+];
 
-// input = [
-//   'XXXXXXXXXXXXXXXXXXX',
-//   'X   XXXXXXXXXXXXXXX',
-//   'XX XXXXXXXXXXXXXXXX',
-//   'XX       XXXXXXXXXX',
-//   'XX XXXXX XXXXXXXXXX',
-//   'X   XXXX XXXXXXXXXX',
-//   'XXXXXXXX          X',
-//   'X   XXXX XXXXXXXXXX',
-//   'XX XXXXX XXXXXXXXXX',
-//   'XX       XXXXXXXXXX',
-//   'XX XXXXXXXXXXXXXXXX',
-//   'X   XXXXXXXXXXXXXXX',
-//   'XXXXXXXXXXXXXXXXXXX',
-// ];
+input = [
+  'XXXXXXXXXXXXXXXXXXX',
+  'X   XXXXXXXXXXXXXXX',
+  'XX XXXXXXXXXXXXXXXX',
+  'XX       XXXXXXXXXX',
+  'XX XXXXX XXXXXXXXXX',
+  'X   XXXX XXXXXXXXXX',
+  'XXXXXXXX          X',
+  'X   XXXX XXXXXXXXXX',
+  'XX XXXXX XXXXXXXXXX',
+  'XX       XXXXXXXXXX',
+  'XX XXXXXXXXXXXXXXXX',
+  'X   XXXXXXXXXXXXXXX',
+  'XXXXXXXXXXXXXXXXXXX',
+];
 
-// input = [
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-//   'X XXXXXXXXXXXXXX                  X',
-//   'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
-//   'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
-//   'X   X      XXXXX    XXXXXXXXXXXXXXX',
-//   'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
-//   'XX    XXXX XXX         XXXXX  XXXXX',
-//   'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
-//   'XXX    XXX     XXXXXX  XXXX    XXXX',
-//   'XXXX   XXX     XXXXXX  XXXXX XX XXX',
-//   'XXXXX          XXXXXX   XXXX    XXX',
-//   'XXXXXX    XXXXXXXXXXXXX         XXX',
-//   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-// ];
+input = [
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+  'X XXXXXXXXXXXXXX                  X',
+  'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
+  'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
+  'X   X      XXXXX    XXXXXXXXXXXXXXX',
+  'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
+  'XX    XXXX XXX         XXXXX  XXXXX',
+  'XX     XXX XXXXXXXXXX  XXXXX XXXXXX',
+  'XXX    XXX     XXXXXX  XXXX    XXXX',
+  'XXXX   XXX     XXXXXX  XXXXX XX XXX',
+  'XXXXX          XXXXXX   XXXX    XXX',
+  'XXXXXX    XXXXXXXXXXXXX         XXX',
+  'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+];
 
 input = [
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
@@ -86,38 +86,38 @@ input = [
 
 
 // // from https://github.com/mikewesthad/navmesh#introduction
-// input = [
-//   '                              ',
-//   '                              ',
-//   '                              ',
-//   '       XXXXX      XXXXX       ',
-//   '       XXXXX      XXXXX       ',
-//   '                              ',
-//   '                              ',
-//   '   XX         XX         XX   ',
-//   '   XX         XX         XX   ',
-//   '   XX         XX         XX   ',
-//   '   XX         XX         XX   ',
-//   '   XX         XX         XX   ',
-//   '                              ',
-//   '                              ',
-//   '       XXXXX      XXXXX       ',
-//   '       XXXXX      XXXXX       ',
-//   '                              ',
-//   '                              ',
-//   '   XX         XX         XX   ',
-//   '   XX         XX         XX   ',
-//   '   XX         XX         XX   ',
-//   '   XX         XX         XX   ',
-//   '   XX         XX         XX   ',
-//   '                              ',
-//   '                              ',
-//   '       XXXXX      XXXXX       ',
-//   '       XXXXX      XXXXX       ',
-//   '                              ',
-//   '                              ',
-//   '                              ',
-// ];
+input = [
+  '                              ',
+  '                              ',
+  '                              ',
+  '       XXXXX      XXXXX       ',
+  '       XXXXX      XXXXX       ',
+  '                              ',
+  '                              ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '                              ',
+  '                              ',
+  '       XXXXX      XXXXX       ',
+  '       XXXXX      XXXXX       ',
+  '                              ',
+  '                              ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '   XX         XX         XX   ',
+  '                              ',
+  '                              ',
+  '       XXXXX      XXXXX       ',
+  '       XXXXX      XXXXX       ',
+  '                              ',
+  '                              ',
+  '                              ',
+];
 
 const g = new Grid();
 g.init(input);
@@ -138,6 +138,10 @@ console.log('OPTIMIZED LINES (L = h(H, V))');
 g.draw(rects);
 
 g.mergeRects(rects);
+console.log('MERGED RECTANGLES (R = i(L))');
+g.draw(rects);
+
+g.mergeRects(rects, true);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
 g.draw(rects);
 

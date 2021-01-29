@@ -205,7 +205,7 @@ export class Grid {
       }
     });
   }
-  private _applyCase(c: Case, rects: Rect[], i: number, j: number): boolean {
+  private _applyCase(c: Case, rects: Rect[], i: number, j: number, optimize = false): boolean {
     let r1 = rects[i];
     let r2 = rects[j];
     if (typeof (c as ASymCase).send === 'function') {
@@ -216,7 +216,7 @@ export class Grid {
       r1 = (c as SymCase).transform(r1);
       r2 = (c as SymCase).transform(r2);
     }
-    let merged = Rect.MergeTopLeft(r1, r2);
+    let merged = Rect.MergeTopLeft(r1, r2, optimize);
     if (merged.length) {
       // console.log('merging', i.toString(16), j.toString(16));
       if (typeof (c as SymCase).transform === 'function') {
@@ -236,7 +236,7 @@ export class Grid {
     }
     return false;
   }
-  mergeRects(rects: Rect[]) {
+  mergeRects(rects: Rect[], optimize = false) {
     let i = 0;
     const done = new Set<Rect>();
 
@@ -245,7 +245,7 @@ export class Grid {
         for (const n of this.neighboors(rects, rects[i])) {
           if (this._tokens[i] === this._tokens[n]) {
             for (const c of CASES) {
-              if (this._applyCase(c, rects, i, n)) {
+              if (this._applyCase(c, rects, i, n, optimize)) {
                 i = -1;
                 break;
               }
