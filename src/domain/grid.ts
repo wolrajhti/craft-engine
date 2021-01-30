@@ -1,4 +1,5 @@
 import { Rect } from './rect';
+import chalk from 'chalk';
 
 interface EmptyCase {}
 interface SymCase {
@@ -160,18 +161,30 @@ export class Grid {
       return rectX;
     }
   }
+  color(i: number, str: string): string {
+    switch (i % 6) {
+      case 0: return chalk.bgRed.black(str);
+      case 1: return chalk.bgGreen.black(str);
+      case 2: return chalk.bgYellow.black(str);
+      case 3: return chalk.bgBlue.black(str);
+      case 4: return chalk.bgMagenta.black(str);
+      case 5: return chalk.bgCyan.black(str);
+      default: return chalk.bgWhite.black(str);
+    }
+  }
   draw(rects: Rect[] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
-    let result = '';
+    let result = '', tmp = '';
     const padding = rects.length > 16 ? 2 : 1;
     for (let i = 0; i < this._tokens.length; i++) {
       if (this._tokens[i] === token) {
         const index = rects.findIndex(rect => rect.contains(this._x(i), this._y(i)));
         if (index !== -1) {
-          result += ' ' + index.toString(16).padStart(padding, ' ') + ' ';
+          tmp = ' ' + index.toString(16).padStart(padding, ' ') + ' ';
         } else {
-          result += ' ' + ''.padStart(padding, ' ') + ' ';
+          tmp = ' ' + ''.padStart(padding, ' ') + ' ';
         }
+        result += this.color(index, tmp);
       } else {
         result += ' ' + '■'.padStart(padding, '■') + ' ';
       }
