@@ -85,4 +85,24 @@ export class Pathfinder {
 
     return result;
   }
+  fullPath(waypoints: [number, number][]) {
+    const fullPath: [number, number][] = [];
+    for (let i = 0; i < waypoints.length - 1; i++) {
+      let [fromX, fromY] = waypoints[i];
+      const from = this.rects[this.grid.i(fromX, fromY)];
+      const [toX, toY] = from.project(...waypoints[i + 1]);
+      while (fromX !== toX || fromY !== toY) {
+        fullPath.push([fromX, fromY]);
+        if (fromX !== toX) {
+          fromX += (toX - fromX) / Math.abs(toX - fromX);
+        }
+        if (fromY !== toY) {
+          fromY += (toY - fromY) / Math.abs(toY - fromY);
+        }
+      }
+      fullPath.push([fromX, fromY]);
+    }
+    fullPath.push(waypoints[waypoints.length - 1]);
+    return fullPath;
+  }
 }

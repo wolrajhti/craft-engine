@@ -180,7 +180,7 @@ export class Grid {
       default: return chalk.bgWhite.black(str);
     }
   }
-  draw(rects: Rect[] = [], token = ' '): void {
+  draw(rects: Rect[] = [], path: [number, number][] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
     let result = '', tmp = '';
     const padding = rects.length > 256 ? 3 : rects.length > 16 ? 2 : 1;
@@ -192,7 +192,12 @@ export class Grid {
         } else {
           tmp = ' ' + ''.padStart(padding, ' ') + ' ';
         }
-        result += this.color(index, tmp);
+        const pIndex = path.findIndex(([x, y]) => x === this._x(i) && y === this._y(i));
+        if (pIndex !== -1) {
+          result += chalk.bgWhite.red(tmp);
+        } else {
+          result += this.color(index, tmp);
+        }
       } else {
         result += ' ' + '■'.padStart(padding, '■') + ' ';
       }

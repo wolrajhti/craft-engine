@@ -120,6 +120,9 @@ input = [
   '                              ',
 ];
 
+let pf: Pathfinder, path: [number, number][], fullPath: [number, number][];
+let t0: number;
+
 const g = new Grid();
 g.init(input);
 
@@ -128,31 +131,57 @@ g.draw();
 
 const rawRects = g.buildRawRects();
 console.log('RAW RECTANGLES (R = f(I))');
-g.draw(rawRects);
+pf = new Pathfinder(g, rawRects);
+t0 = Date.now();
+path = pf.getPath(0, 0, 15, 28);
+fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
+console.log(`done in ${Date.now() - t0} ms`);
+g.draw(rawRects, fullPath);
 
 const rectXs = g.buildRectXs();
 console.log('RAW HORIZONTAL LINES (H = f(I))');
-g.draw(rectXs);
+pf = new Pathfinder(g, rectXs);
+t0 = Date.now();
+path = pf.getPath(0, 0, 15, 28);
+fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
+console.log(`done in ${Date.now() - t0} ms`);
+g.draw(rectXs, fullPath);
 
 const rectYs = g.buildRectYs();
 console.log('RAW VERTICAL LINES (V = g(I))');
-g.draw(rectYs);
+pf = new Pathfinder(g, rectYs);
+t0 = Date.now();
+path = pf.getPath(0, 0, 15, 28);
+fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
+console.log(`done in ${Date.now() - t0} ms`);
+g.draw(rectYs, fullPath);
 
 const rects = g.chooseLines(rectXs, rectYs);
 console.log('OPTIMIZED LINES (L = h(H, V))');
-g.draw(rects);
+pf = new Pathfinder(g, rects);
+t0 = Date.now();
+path = pf.getPath(0, 0, 15, 28);
+fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
+console.log(`done in ${Date.now() - t0} ms`);
+g.draw(rects, fullPath);
 
 g.mergeRects(rects);
 console.log('MERGED RECTANGLES (R = i(L))');
-g.draw(rects);
+pf = new Pathfinder(g, rects);
+t0 = Date.now();
+path = pf.getPath(0, 0, 15, 28);
+fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
+console.log(`done in ${Date.now() - t0} ms`);
+g.draw(rects, fullPath);
 
 g.mergeRects(rects, true);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
-g.draw(rects);
+pf = new Pathfinder(g, rects);
+t0 = Date.now();
+path = pf.getPath(0, 0, 15, 28);
+fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
+console.log(`done in ${Date.now() - t0} ms`);
+g.draw(rects, fullPath);
 
-const pf = new Pathfinder(g, rects);
-const t0 = Date.now();
-const path = pf.getPath(0, 0, 15, 28);
-console.log(path, `done in ${Date.now() - t0} ms`);
 
 // console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);
