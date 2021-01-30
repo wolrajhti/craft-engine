@@ -278,12 +278,12 @@ export class Grid {
     }
   }
   neighboors(rects: Rect[], r: Rect): number[] {
-    let nIndex: number, n: Rect;
-    const ns: number[] = []
+    let i: number, nIndex: number, n: Rect;
+    const ns: number[] = [];
 
     // left
     if (r.x + r.w < this.width) {
-      let i = r.y;
+      i = r.y;
       while (i < r.y + r.h) {
         nIndex = this.i(r.x + r.w, i);
         ns.push(nIndex);
@@ -293,7 +293,7 @@ export class Grid {
     }
     // bottom
     if (r.y + r.h < this._tokens.length / this.width) {
-      let i = r.x + r.w - 1;
+      i = r.x + r.w - 1;
       while (r.x <= i) {
         nIndex = this.i(i, r.y + r.h);
         ns.push(nIndex);
@@ -303,7 +303,7 @@ export class Grid {
     }
     // right
     if (0 < r.x) {
-      let i = r.y + r.h - 1;
+      i = r.y + r.h - 1;
       while (r.y <= i) {
         nIndex = this.i(r.x - 1, i);
         ns.push(nIndex);
@@ -313,7 +313,7 @@ export class Grid {
     }
     // top
     if (0 < r.y) {
-      let i = r.x;
+      i = r.x;
       while (i < r.x + r.w) {
         nIndex = this.i(i, r.y - 1);
         ns.push(nIndex);
