@@ -1,4 +1,5 @@
 import { Grid } from './grid';
+import { Pathfinder } from './pathfinder';
 
 let input: string[];
 
@@ -125,6 +126,10 @@ g.init(input);
 console.log('INPUT GRID (I)');
 g.draw();
 
+const rawRects = g.buildRawRects();
+console.log('RAW RECTANGLES (R = f(I))');
+g.draw(rawRects);
+
 const rectXs = g.buildRectXs();
 console.log('RAW HORIZONTAL LINES (H = f(I))');
 g.draw(rectXs);
@@ -144,5 +149,10 @@ g.draw(rects);
 g.mergeRects(rects, true);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
 g.draw(rects);
+
+const pf = new Pathfinder(g, rects);
+const t0 = Date.now();
+const path = pf.getPath(0, 0, 15, 28);
+console.log(path, `done in ${Date.now() - t0} ms`);
 
 // console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);

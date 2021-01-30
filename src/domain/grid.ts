@@ -67,6 +67,14 @@ export class Grid {
   private _x(i: number): number {
     return i % this.width;
   }
+  tokenAt(i: number): string {
+    return this._tokens[i];
+  }
+  buildRawRects(): Rect[] {
+    return this._tokens.map((token, i) => {
+      return new Rect(this._x(i), this._y(i), 1, 1);
+    });
+  }
   buildRectXs(): Rect[] {
     const rectXs: Rect[] = [];
     this._tokens.forEach((token, i) => {
@@ -175,7 +183,7 @@ export class Grid {
   draw(rects: Rect[] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
     let result = '', tmp = '';
-    const padding = rects.length > 16 ? 2 : 1;
+    const padding = rects.length > 256 ? 3 : rects.length > 16 ? 2 : 1;
     for (let i = 0; i < this._tokens.length; i++) {
       if (this._tokens[i] === token) {
         const index = rects.findIndex(rect => rect.contains(this._x(i), this._y(i)));

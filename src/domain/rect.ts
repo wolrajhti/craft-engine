@@ -53,4 +53,10 @@ export class Rect {
     }
     return [];
   }
+  project(x: number, y: number): [number, number] {
+    return [
+      Math.max(this.x, Math.min(x, this.x + this.w - 1)),
+      Math.max(this.y, Math.min(y, this.y + this.h - 1))
+    ];
+  }
 }
