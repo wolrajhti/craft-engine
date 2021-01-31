@@ -120,8 +120,26 @@ input = [
   '                              ',
 ];
 
+input = [
+  '           X                X                             X                     ',
+  '           X                X                             X                     ',
+  '           X     XXXXXX     XXXXX     XXXXXXXXXXXXXXX     X        XXX          ',
+  '           X          X         X     XX            X     X       XXX           ',
+  '           X          X         X     XX     XX           X      XXX            ',
+  '           X          X         X     XX     XX           X     XXX       XXXXXX',
+  '           X          X         X     XX     XXXXXXXXXXXXXX    XXX       X      ',
+  '   XXXXXXXXX          X   XXXXXXX     XX                      XXX       XX      ',
+  '                      X               XX                     XXX        XX      ',
+  '                      X               XX                    XXX                 ',
+];
+
 let pf: Pathfinder, path: [number, number][], fullPath: [number, number][];
 let t0: number;
+
+const sx = 10;
+const sy = 6;
+const gx = 74;
+const gy = 6;
 
 const g = new Grid();
 g.init(input);
@@ -133,53 +151,53 @@ const rawRects = g.buildRawRects();
 console.log('RAW RECTANGLES (R = f(I))');
 pf = new Pathfinder(g, rawRects);
 t0 = Date.now();
-path = pf.getPath(0, 0, 15, 28);
-fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
+path = pf.getPath(sx, sy, gx, gy);
+fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
 console.log(`done in ${Date.now() - t0} ms`);
 g.draw(rawRects, fullPath);
 
 const rectXs = g.buildRectXs();
-console.log('RAW HORIZONTAL LINES (H = f(I))');
-pf = new Pathfinder(g, rectXs);
-t0 = Date.now();
-path = pf.getPath(0, 0, 15, 28);
-fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
-console.log(`done in ${Date.now() - t0} ms`);
-g.draw(rectXs, fullPath);
+// console.log('RAW HORIZONTAL LINES (H = f(I))');
+// pf = new Pathfinder(g, rectXs);
+// t0 = Date.now();
+// path = pf.getPath(sx, sy, gx, gy);
+// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// console.log(`done in ${Date.now() - t0} ms`);
+// g.draw(rectXs, fullPath);
 
 const rectYs = g.buildRectYs();
-console.log('RAW VERTICAL LINES (V = g(I))');
-pf = new Pathfinder(g, rectYs);
-t0 = Date.now();
-path = pf.getPath(0, 0, 15, 28);
-fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
-console.log(`done in ${Date.now() - t0} ms`);
-g.draw(rectYs, fullPath);
+// console.log('RAW VERTICAL LINES (V = g(I))');
+// pf = new Pathfinder(g, rectYs);
+// t0 = Date.now();
+// path = pf.getPath(sx, sy, gx, gy);
+// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// console.log(`done in ${Date.now() - t0} ms`);
+// g.draw(rectYs, fullPath);
 
 const rects = g.chooseLines(rectXs, rectYs);
-console.log('OPTIMIZED LINES (L = h(H, V))');
-pf = new Pathfinder(g, rects);
-t0 = Date.now();
-path = pf.getPath(0, 0, 15, 28);
-fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
-console.log(`done in ${Date.now() - t0} ms`);
-g.draw(rects, fullPath);
+// console.log('OPTIMIZED LINES (L = h(H, V))');
+// pf = new Pathfinder(g, rects);
+// t0 = Date.now();
+// path = pf.getPath(sx, sy, gx, gy);
+// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// console.log(`done in ${Date.now() - t0} ms`);
+// g.draw(rects, fullPath);
 
 g.mergeRects(rects);
-console.log('MERGED RECTANGLES (R = i(L))');
-pf = new Pathfinder(g, rects);
-t0 = Date.now();
-path = pf.getPath(0, 0, 15, 28);
-fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
-console.log(`done in ${Date.now() - t0} ms`);
-g.draw(rects, fullPath);
+// console.log('MERGED RECTANGLES (R = i(L))');
+// pf = new Pathfinder(g, rects);
+// t0 = Date.now();
+// path = pf.getPath(sx, sy, gx, gy);
+// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// console.log(`done in ${Date.now() - t0} ms`);
+// g.draw(rects, fullPath);
 
 g.mergeRects(rects, true);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
 pf = new Pathfinder(g, rects);
 t0 = Date.now();
-path = pf.getPath(0, 0, 15, 28);
-fullPath = pf.fullPath([[0, 0], ...path, [15, 28]]);
+path = pf.getPath(sx, sy, gx, gy);
+fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
 console.log(`done in ${Date.now() - t0} ms`);
 g.draw(rects, fullPath);
 

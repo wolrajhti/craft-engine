@@ -182,6 +182,34 @@ export class Grid {
   }
   draw(rects: Rect[] = [], path: [number, number][] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
+    let result = '';
+    for (let i = 0; i < this._tokens.length; i++) {
+      if (this._tokens[i] === token) {
+        const index = rects.findIndex(rect => rect.contains(this._x(i), this._y(i)));
+        const pIndex = path.findIndex(([x, y]) => x === this._x(i) && y === this._y(i));
+        if (pIndex !== -1) {
+          if (pIndex === 0) {
+            result += chalk.bgGray('S');
+          } else if (pIndex === path.length - 1) {
+            result += chalk.bgGray('G');
+          } else {
+            result += chalk.bgWhiteBright(' ');
+          }
+        } else {
+          result += this.color(index, ' ');
+        }
+      } else {
+        result += ' ';
+      }
+      if (!((i + 1) % this.width)) {
+        result += '\n';
+      }
+    }
+    console.log(rects.length, 'cells');
+    console.log(result);
+  }
+  fullDraw(rects: Rect[] = [], path: [number, number][] = [], token = ' '): void {
+    rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
     let result = '', tmp = '';
     const padding = rects.length > 256 ? 3 : rects.length > 16 ? 2 : 1;
     for (let i = 0; i < this._tokens.length; i++) {

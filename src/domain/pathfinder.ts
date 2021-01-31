@@ -102,7 +102,6 @@ export class Pathfinder {
       }
       fullPath.push([fromX, fromY]);
     }
-    fullPath.push(waypoints[waypoints.length - 1]);
     return fullPath;
   }
 }
