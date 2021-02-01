@@ -2,6 +2,7 @@ import { Grid } from './grid';
 import { Pathfinder } from './pathfinder';
 
 let input: string[];
+let sx: number, sy: number, gx: number, gy: number;
 
 input = [
   'XXX ',
@@ -69,6 +70,10 @@ input = [
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
 ];
 
+sx = 2;
+sy = 11;
+gx = 33;
+gy = 3;
 input = [
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   'X                                 X',
@@ -85,8 +90,11 @@ input = [
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
 ];
 
-
-// // from https://github.com/mikewesthad/navmesh#introduction
+// from https://github.com/mikewesthad/navmesh#introduction
+sx = 10;
+sy = 6;
+gx = 24;
+gy = 18;
 input = [
   '                              ',
   '                              ',
@@ -120,6 +128,10 @@ input = [
   '                              ',
 ];
 
+sx = 10;
+sy = 6;
+gx = 74;
+gy = 6;
 input = [
   '           X                X                             X                     ',
   '           X                X                             X                     ',
@@ -135,11 +147,6 @@ input = [
 
 let pf: Pathfinder, path: [number, number][], fullPath: [number, number][];
 let t0: number;
-
-const sx = 10;
-const sy = 6;
-const gx = 74;
-const gy = 6;
 
 const g = new Grid();
 g.init(input);

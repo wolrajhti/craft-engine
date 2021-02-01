@@ -170,13 +170,19 @@ export class Grid {
     }
   }
   color(i: number, str: string): string {
-    switch (i % 6) {
+    switch (i % 12) {
       case 0: return chalk.bgRed.black(str);
       case 1: return chalk.bgGreen.black(str);
       case 2: return chalk.bgYellow.black(str);
       case 3: return chalk.bgBlue.black(str);
       case 4: return chalk.bgMagenta.black(str);
       case 5: return chalk.bgCyan.black(str);
+      case 6: return chalk.bgRedBright.black(str);
+      case 7: return chalk.bgGreenBright.black(str);
+      case 8: return chalk.bgYellowBright.black(str);
+      case 9: return chalk.bgBlueBright.black(str);
+      case 10: return chalk.bgMagentaBright.black(str);
+      case 11: return chalk.bgCyanBright.black(str);
       default: return chalk.bgWhite.black(str);
     }
   }
@@ -189,17 +195,17 @@ export class Grid {
         const pIndex = path.findIndex(([x, y]) => x === this._x(i) && y === this._y(i));
         if (pIndex !== -1) {
           if (pIndex === 0) {
-            result += chalk.bgGray('S');
+            result += chalk.bgGray(' S');
           } else if (pIndex === path.length - 1) {
-            result += chalk.bgGray('G');
+            result += chalk.bgGray(' G');
           } else {
-            result += chalk.bgWhiteBright(' ');
+            result += chalk.bgWhiteBright('  ');
           }
         } else {
-          result += this.color(index, ' ');
+          result += this.color(index, '  ');
         }
       } else {
-        result += ' ';
+        result += '  ';
       }
       if (!((i + 1) % this.width)) {
         result += '\n';
