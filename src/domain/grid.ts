@@ -186,13 +186,13 @@ export class Grid {
       default: return chalk.bgWhite.black(str);
     }
   }
-  draw(rects: Rect[] = [], path: [number, number][] = [], token = ' '): void {
+  draw(rects: Rect[] = [], path: Rect[] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
     let result = '';
     for (let i = 0; i < this._tokens.length; i++) {
       if (this._tokens[i] === token) {
         const index = rects.findIndex(rect => rect.contains(this._x(i), this._y(i)));
-        const pIndex = path.findIndex(([x, y]) => x === this._x(i) && y === this._y(i));
+        const pIndex = path.findIndex(rect => rect.contains(this._x(i), this._y(i)));
         if (pIndex !== -1) {
           if (pIndex === 0) {
             result += chalk.bgGray(' S');

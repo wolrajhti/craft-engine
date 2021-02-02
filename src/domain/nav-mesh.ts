@@ -1,4 +1,5 @@
 import { Grid } from './grid';
+import { Rect } from './rect';
 import { Pathfinder } from './pathfinder';
 
 let input: string[];
@@ -145,7 +146,7 @@ input = [
   '                      X               XX                    XXX                 ',
 ];
 
-let pf: Pathfinder, path: [number, number][], fullPath: [number, number][];
+let pf: Pathfinder, path: Rect[], fullPath: [number, number][];
 let t0: number;
 
 const g = new Grid();
@@ -154,14 +155,14 @@ g.init(input);
 console.log('INPUT GRID (I)');
 g.draw();
 
-const rawRects = g.buildRawRects();
+// const rawRects = g.buildRawRects();
 console.log('RAW RECTANGLES (R = f(I))');
-pf = new Pathfinder(g, rawRects);
+// pf = new Pathfinder(g, rawRects);
 t0 = Date.now();
-path = pf.getPath(sx, sy, gx, gy);
-fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// path = pf.getPath(sx, sy, gx, gy);
+// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
 console.log(`done in ${Date.now() - t0} ms`);
-g.draw(rawRects, fullPath);
+// g.draw(rawRects, fullPath);
 
 const rectXs = g.buildRectXs();
 // console.log('RAW HORIZONTAL LINES (H = f(I))');
@@ -203,10 +204,20 @@ g.mergeRects(rects, true);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
 pf = new Pathfinder(g, rects);
 t0 = Date.now();
-path = pf.getPath(sx, sy, gx, gy);
-fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+path = pf.getPath<Rect>(
+  rects[g.i(sx, sy)],
+  current => current.contains(gx, gy),
+  current => g.neighboors(rects, current)
+              .filter(neighborIndex => g.tokenAt(neighborIndex) === ' ')
+              .map(neighborIndex => rects[neighborIndex]),
+  (current, neighbor) => Math.sqrt(
+    Math.pow(neighbor.cx() - current.cx(), 2) + Math.pow(neighbor.cy() - current.cy(), 2)
+  )
+);
+console.log('COUCOU');
+// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
 console.log(`done in ${Date.now() - t0} ms`);
-g.draw(rects, fullPath);
+g.draw(rects, path);
 
 
 // console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);
