@@ -1,9 +1,10 @@
 import { Grid } from './grid';
 import { Rect } from './rect';
-import { Pathfinder } from './pathfinder';
+import { PathfinderGrid } from './pathfinderGrid';
+import { PathfinderRects } from './pathfinderRects';
 
 let input: string[];
-let sx: number, sy: number, gx: number, gy: number;
+let sx: number, sy: number, ex: number, ey: number;
 
 input = [
   'XXX ',
@@ -73,8 +74,8 @@ input = [
 
 sx = 2;
 sy = 11;
-gx = 33;
-gy = 3;
+ex = 33;
+ey = 3;
 input = [
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   'X                                 X',
@@ -94,8 +95,8 @@ input = [
 // from https://github.com/mikewesthad/navmesh#introduction
 sx = 10;
 sy = 6;
-gx = 24;
-gy = 18;
+ex = 24;
+ey = 18;
 input = [
   '                              ',
   '                              ',
@@ -129,24 +130,27 @@ input = [
   '                              ',
 ];
 
-sx = 10;
-sy = 6;
-gx = 74;
-gy = 6;
-input = [
-  '           X                X                             X                     ',
-  '           X                X                             X                     ',
-  '           X     XXXXXX     XXXXX     XXXXXXXXXXXXXXX     X        XXX          ',
-  '           X          X         X     XX            X     X       XXX           ',
-  '           X          X         X     XX     XX           X      XXX            ',
-  '           X          X         X     XX     XX           X     XXX       XXXXXX',
-  '           X          X         X     XX     XXXXXXXXXXXXXX    XXX       X      ',
-  '   XXXXXXXXX          X   XXXXXXX     XX                      XXX       XX      ',
-  '                      X               XX                     XXX        XX      ',
-  '                      X               XX                    XXX                 ',
-];
+// sx = 10;
+// sy = 6;
+// ex = 74;
+// ey = 6;
+// input = [
+//   '           X                X                             X                     ',
+//   '           X                X                             X                     ',
+//   '           X     XXXXXX     XXXXX     XXXXXXXXXXXXXXX     X        XXX          ',
+//   '           X          X         X     XX            X     X       XXX           ',
+//   '           X          X         X     XX     XX           X      XXX            ',
+//   '           X          X         X     XX     XX           X     XXX       XXXXXX',
+//   '           X          X         X     XX     XXXXXXXXXXXXXX    XXX       X      ',
+//   '   XXXXXXXXX          X   XXXXXXX     XX                      XXX       XX      ',
+//   '                      X               XX                     XXX        XX      ',
+//   '                      X               XX                    XXX                 ',
+// ];
 
-let pf: Pathfinder, path: Rect[], fullPath: [number, number][];
+let pfG: PathfinderGrid;
+let pG: Rect[];
+let pfRs: PathfinderRects;
+let pRs: [number, number][];
 let t0: number;
 
 const g = new Grid();
@@ -159,8 +163,8 @@ g.draw();
 console.log('RAW RECTANGLES (R = f(I))');
 // pf = new Pathfinder(g, rawRects);
 t0 = Date.now();
-// path = pf.getPath(sx, sy, gx, gy);
-// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// path = pf.getPath(sx, sy, ex, ey);
+// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
 console.log(`done in ${Date.now() - t0} ms`);
 // g.draw(rawRects, fullPath);
 
@@ -168,8 +172,8 @@ const rectXs = g.buildRectXs();
 // console.log('RAW HORIZONTAL LINES (H = f(I))');
 // pf = new Pathfinder(g, rectXs);
 // t0 = Date.now();
-// path = pf.getPath(sx, sy, gx, gy);
-// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// path = pf.getPath(sx, sy, ex, ey);
+// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
 // console.log(`done in ${Date.now() - t0} ms`);
 // g.draw(rectXs, fullPath);
 
@@ -177,8 +181,8 @@ const rectYs = g.buildRectYs();
 // console.log('RAW VERTICAL LINES (V = g(I))');
 // pf = new Pathfinder(g, rectYs);
 // t0 = Date.now();
-// path = pf.getPath(sx, sy, gx, gy);
-// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// path = pf.getPath(sx, sy, ex, ey);
+// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
 // console.log(`done in ${Date.now() - t0} ms`);
 // g.draw(rectYs, fullPath);
 
@@ -186,8 +190,8 @@ const rects = g.chooseLines(rectXs, rectYs);
 // console.log('OPTIMIZED LINES (L = h(H, V))');
 // pf = new Pathfinder(g, rects);
 // t0 = Date.now();
-// path = pf.getPath(sx, sy, gx, gy);
-// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// path = pf.getPath(sx, sy, ex, ey);
+// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
 // console.log(`done in ${Date.now() - t0} ms`);
 // g.draw(rects, fullPath);
 
@@ -195,29 +199,21 @@ g.mergeRects(rects);
 // console.log('MERGED RECTANGLES (R = i(L))');
 // pf = new Pathfinder(g, rects);
 // t0 = Date.now();
-// path = pf.getPath(sx, sy, gx, gy);
-// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+// path = pf.getPath(sx, sy, ex, ey);
+// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
 // console.log(`done in ${Date.now() - t0} ms`);
 // g.draw(rects, fullPath);
 
 g.mergeRects(rects, true);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
-pf = new Pathfinder(g, rects);
+pfG = new PathfinderGrid(g, rects);
 t0 = Date.now();
-path = pf.getPath<Rect>(
-  rects[g.i(sx, sy)],
-  current => current.contains(gx, gy),
-  current => g.neighboors(rects, current)
-              .filter(neighborIndex => g.tokenAt(neighborIndex) === ' ')
-              .map(neighborIndex => rects[neighborIndex]),
-  (current, neighbor) => Math.sqrt(
-    Math.pow(neighbor.cx() - current.cx(), 2) + Math.pow(neighbor.cy() - current.cy(), 2)
-  )
-);
+pG = pfG.getPath(sx, sy, ex, ey);
+pfRs = new PathfinderRects(g, rects, pG);
 console.log('COUCOU');
-// fullPath = pf.fullPath([[sx, sy], ...path, [gx, gy]]);
+pRs = pfRs.getPath(sx, sy, ex, ey);
 console.log(`done in ${Date.now() - t0} ms`);
-g.draw(rects, path);
+g.fullDraw(rects, pRs);
 
 
 // console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);

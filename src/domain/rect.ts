@@ -59,10 +59,53 @@ export class Rect {
     }
     return [];
   }
-  project(x: number, y: number): [number, number] {
-    return [
-      Math.max(this.x, Math.min(x, this.x + this.w - 1)),
-      Math.max(this.y, Math.min(y, this.y + this.h - 1))
-    ];
+  projectX(x: number): number {
+    return Math.max(this.x, Math.min(x, this.x + this.w - 1));
+  }
+  projectY(y: number): number {
+    return Math.max(this.y, Math.min(y, this.y + this.h - 1));
+  }
+  borderWith(other: Rect): [number, number][] {
+    let i: number, j: number;
+    const ns: [number, number][] = [];
+
+    // left
+    if (this.x + this.w === other.x) {
+      i = other.projectY(this.y);
+      j = other.projectY(this.y + this.h - 1);
+      while (i < j + 1) {
+        ns.push([other.x, i]);
+        i++;
+      }
+    }
+    // bottom
+    if (this.y + this.h === other.y) {
+      i = other.projectX(this.x + this.w - 1);
+      j = other.projectX(this.x);
+      while (j - 1 < i) {
+        ns.push([i, other.y]);
+        i--;
+      }
+    }
+    // right
+    if (other.x + other.w === this.x) {
+      i = other.projectY(this.y + this.h - 1);
+      j = other.projectY(this.y);
+      while (j - 1 < i) {
+        ns.push([this.x - 1, i]);
+        i--;
+      }
+    }
+    // top
+    if (other.y + other.h === this.y) {
+      i = other.projectX(this.x);
+      j = other.projectX(this.x + this.w - 1);
+      while (i < j + 1) {
+        ns.push([i, this.y - 1]);
+        i++;
+      }
+    }
+
+    return ns;
   }
 }
