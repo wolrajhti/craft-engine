@@ -186,18 +186,27 @@ export class Grid {
       default: return chalk.bgWhite.black(str);
     }
   }
-  draw(rects: Rect[] = [], path: Rect[] = [], token = ' '): void {
+  draw(rects: Rect[] = [], pG: Rect[] = [], pRs: [number, number][] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
     let result = '';
     for (let i = 0; i < this._tokens.length; i++) {
       if (this._tokens[i] === token) {
         const index = rects.findIndex(rect => rect.contains(this._x(i), this._y(i)));
-        const pIndex = path.findIndex(rect => rect.contains(this._x(i), this._y(i)));
-        if (pIndex !== -1) {
-          if (pIndex === 0) {
+        const pGIndex = pG.findIndex(rect => rect.contains(this._x(i), this._y(i)));
+        const pRsIndex = pRs.findIndex(([x, y]) => x === this._x(i) && y === this._y(i));
+        if (pRsIndex !== -1) {
+          if (pRsIndex === 0) {
             result += chalk.bgGray(' S');
-          } else if (pIndex === path.length - 1) {
+          } else if (pRsIndex === pG.length - 1) {
             result += chalk.bgGray(' G');
+          } else {
+            result += chalk.bgWhiteBright.black('||');
+          }
+        } else if (pGIndex !== -1) {
+          if (pGIndex === 0) {
+            result += chalk.bgGray('  ');
+          } else if (pGIndex === pG.length - 1) {
+            result += chalk.bgGray('  ');
           } else {
             result += chalk.bgWhiteBright('  ');
           }

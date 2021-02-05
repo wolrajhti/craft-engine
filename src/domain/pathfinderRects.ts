@@ -24,8 +24,8 @@ export class PathfinderRects extends AbstractPathfinder<xy> {
       return currentRect.borderWith(this.roughPath[currentRectIndex + 1]);
     }
   }
-  getScore(start: xy, current: xy, neighbor: xy, end: xy): number {
-    return Math.sqrt(
+  getScore(start: xy, current: xy, neighbor: xy, end: xy, currentScore: number): number {
+    return currentScore + Math.sqrt(
       Math.pow(neighbor[0] - current[0], 2) + Math.pow(neighbor[1] - current[1], 2)
     )
   }

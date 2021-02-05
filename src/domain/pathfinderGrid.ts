@@ -17,8 +17,8 @@ export class PathfinderGrid extends AbstractPathfinder<Rect> {
       .filter(neighborIndex => this.grid.tokenAt(neighborIndex) === ' ')
       .map(neighborIndex => this.rects[neighborIndex]);
   }
-  getScore(start: Rect, current: Rect, neighbor: Rect, end: Rect): number {
-    return Math.sqrt(
+  getScore(start: Rect, current: Rect, neighbor: Rect, end: Rect, currentScore: number): number {
+    return currentScore + Math.sqrt(
       Math.pow(neighbor.cx() - current.cx(), 2) + Math.pow(neighbor.cy() - current.cy(), 2)
     )
   }

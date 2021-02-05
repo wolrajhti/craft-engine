@@ -153,67 +153,46 @@ let pfRs: PathfinderRects;
 let pRs: [number, number][];
 let t0: number;
 
+const process = (rects: Rect[]) => {
+  t0 = Date.now();
+  pfG = new PathfinderGrid(g, rects);
+  console.log('pG...');
+  pG = pfG.getPath(sx, sy, ex, ey);
+  pfRs = new PathfinderRects(g, rects, pG);
+  console.log('pRs...');
+  pRs = pfRs.getPath(sx, sy, ex, ey);
+  console.log(`done in ${Date.now() - t0} ms`);
+  g.draw(rects, pG, pRs);
+};
+
 const g = new Grid();
 g.init(input);
 
 console.log('INPUT GRID (I)');
 g.draw();
 
-// const rawRects = g.buildRawRects();
+const rawRects = g.buildRawRects();
 console.log('RAW RECTANGLES (R = f(I))');
-// pf = new Pathfinder(g, rawRects);
-t0 = Date.now();
-// path = pf.getPath(sx, sy, ex, ey);
-// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
-console.log(`done in ${Date.now() - t0} ms`);
-// g.draw(rawRects, fullPath);
+process(rawRects);
 
 const rectXs = g.buildRectXs();
-// console.log('RAW HORIZONTAL LINES (H = f(I))');
-// pf = new Pathfinder(g, rectXs);
-// t0 = Date.now();
-// path = pf.getPath(sx, sy, ex, ey);
-// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
-// console.log(`done in ${Date.now() - t0} ms`);
-// g.draw(rectXs, fullPath);
+console.log('RAW HORIZONTAL LINES (H = f(I))');
+process(rectXs);
 
 const rectYs = g.buildRectYs();
-// console.log('RAW VERTICAL LINES (V = g(I))');
-// pf = new Pathfinder(g, rectYs);
-// t0 = Date.now();
-// path = pf.getPath(sx, sy, ex, ey);
-// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
-// console.log(`done in ${Date.now() - t0} ms`);
-// g.draw(rectYs, fullPath);
+console.log('RAW VERTICAL LINES (V = g(I))');
+process(rectYs);
 
 const rects = g.chooseLines(rectXs, rectYs);
-// console.log('OPTIMIZED LINES (L = h(H, V))');
-// pf = new Pathfinder(g, rects);
-// t0 = Date.now();
-// path = pf.getPath(sx, sy, ex, ey);
-// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
-// console.log(`done in ${Date.now() - t0} ms`);
-// g.draw(rects, fullPath);
+console.log('OPTIMIZED LINES (L = h(H, V))');
+process(rects);
 
 g.mergeRects(rects);
-// console.log('MERGED RECTANGLES (R = i(L))');
-// pf = new Pathfinder(g, rects);
-// t0 = Date.now();
-// path = pf.getPath(sx, sy, ex, ey);
-// fullPath = pf.fullPath([[sx, sy], ...path, [ex, ey]]);
-// console.log(`done in ${Date.now() - t0} ms`);
-// g.draw(rects, fullPath);
+console.log('MERGED RECTANGLES (R = i(L))');
+process(rects);
 
 g.mergeRects(rects, true);
 console.log('OPTIMIZED RECTANGLES (R = i(L))');
-pfG = new PathfinderGrid(g, rects);
-t0 = Date.now();
-pG = pfG.getPath(sx, sy, ex, ey);
-pfRs = new PathfinderRects(g, rects, pG);
-console.log('COUCOU');
-pRs = pfRs.getPath(sx, sy, ex, ey);
-console.log(`done in ${Date.now() - t0} ms`);
-g.fullDraw(rects, pRs);
-
+process(rects);
 
 // console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);

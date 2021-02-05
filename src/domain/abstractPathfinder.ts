@@ -1,7 +1,7 @@
 export abstract class AbstractPathfinder<T> {
   abstract isDone(start: T, current: T, end: T): boolean;
   abstract getNeighboors(start: T, current: T, end: T): T[];
-  abstract getScore(start: T, current: T, neighbor: T, end: T): number;
+  abstract getScore(start: T, current: T, neighbor: T, end: T, currentScore: number): number;
   protected _getPath(start: T, end: T): T[] {
     const open: T[] = [start];
     const from = new Map<T, T>();
@@ -15,7 +15,7 @@ export abstract class AbstractPathfinder<T> {
     while (!this.isDone(start, current, end)) {
       for (const neighbor of this.getNeighboors(start, current, end)) {
         if (!close.has(neighbor)) {
-          score = this.getScore(start, current, neighbor, end);
+          score = this.getScore(start, current, neighbor, end, scores.get(current) as number);
           // update open list
           if (!scores.has(neighbor)) {
             from.set(neighbor, current);
