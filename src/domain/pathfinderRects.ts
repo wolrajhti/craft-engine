@@ -5,6 +5,7 @@ import { Rect } from './rect';
 type xy = [number, number];
 
 export class PathfinderRects extends AbstractPathfinder<xy> {
+  private _tuples = new Map<number, Map<number, xy>>();
   constructor(
     private grid: Grid,
     private rects: Rect[],
@@ -12,16 +13,28 @@ export class PathfinderRects extends AbstractPathfinder<xy> {
   ) {
     super();
   }
+  getTupleFor(x: number, y: number): xy {
+    if (this._tuples.has(x)) {
+      if ((this._tuples.get(x) as Map<number, xy>).has(y)) {
+        return (this._tuples.get(x) as Map<number, xy>).get(y) as xy;
+      }
+      (this._tuples.get(x) as Map<number, xy>).set(y, [x, y]);
+      return (this._tuples.get(x) as Map<number, xy>).get(y) as xy;
+    }
+    this._tuples.set(x, new Map([[y, [x, y]]]));
+    return (this._tuples.get(x) as Map<number, xy>).get(y) as xy;
+  }
   isDone(start: xy, current: xy, end: xy): boolean {
-    return current[0] === end[0] && current[1] === end[1];
+    return current === end;
   }
   getNeighboors(start: xy, current: xy, end: xy): xy[] {
     const currentRect = this.rects[this.grid.i(...current)];
     const currentRectIndex = this.roughPath.indexOf(currentRect);
     if (currentRectIndex === this.roughPath.length - 1) {
-      return [end];
+      return [this.getTupleFor(...end)];
     } else {
-      return currentRect.borderWith(this.roughPath[currentRectIndex + 1]);
+      return currentRect.borderWith(this.roughPath[currentRectIndex + 1])
+        .map(([x, y]) => this.getTupleFor(x, y));
     }
   }
   getScore(start: xy, current: xy, neighbor: xy, end: xy, currentScore: number): number {
@@ -31,8 +44,8 @@ export class PathfinderRects extends AbstractPathfinder<xy> {
   }
   getPath(sx: number, sy: number, ex: number, ey: number): xy[] {
     return super._getPath(
-      [sx, sy],
-      [ex, ey]
+      this.getTupleFor(sx, sy),
+      this.getTupleFor(ex, ey)
     );
   }
 }

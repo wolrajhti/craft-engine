@@ -3,17 +3,68 @@ import { Rect } from './rect';
 import { PathfinderGrid } from './pathfinderGrid';
 import { PathfinderRects } from './pathfinderRects';
 
-let input: string[];
-let sx: number, sy: number, ex: number, ey: number;
+const useCase = (
+  input: string[],
+  sx: number, sy: number,
+  ex: number, ey: number
+) => {
+  let pfG: PathfinderGrid;
+  let pG: Rect[];
+  let pfRs: PathfinderRects;
+  let pRs: [number, number][];
+  let t0: number;
+  
+  const process = (rects: Rect[]) => {
+    t0 = Date.now();
+    pfG = new PathfinderGrid(g, rects);
+    console.log('pG...');
+    pG = pfG.getPath(sx, sy, ex, ey);
+    pfRs = new PathfinderRects(g, rects, pG);
+    console.log('pRs...');
+    pRs = pfRs.getPath(sx, sy, ex, ey);
+    console.log(`done in ${Date.now() - t0} ms`);
+    g.draw(rects, pG, pRs);
+  };
+  
+  const g = new Grid();
+  g.init(input);
+  
+  console.log('INPUT GRID (I)');
+  g.draw();
+  
+  const rawRects = g.buildRawRects();
+  console.log('RAW RECTANGLES (R = f(I))');
+  process(rawRects);
+  
+  const rectXs = g.buildRectXs();
+  console.log('RAW HORIZONTAL LINES (H = f(I))');
+  process(rectXs);
+  
+  const rectYs = g.buildRectYs();
+  console.log('RAW VERTICAL LINES (V = g(I))');
+  process(rectYs);
+  
+  const rects = g.chooseLines(rectXs, rectYs);
+  console.log('OPTIMIZED LINES (L = h(H, V))');
+  process(rects);
+  
+  g.mergeRects(rects);
+  console.log('MERGED RECTANGLES (R = i(L))');
+  process(rects);
+  
+  g.mergeRects(rects, true);
+  console.log('OPTIMIZED RECTANGLES (R = i(L))');
+  process(rects);
+}
 
-input = [
+useCase([
   'XXX ',
   'X   ',
   '    ',
   ' XXX',
-];
+], 3, 0, 0, 3);
 
-input = [
+useCase([
   'XXXXXX    X     X',
   'X        XXX     ',
   '  X   X          ',
@@ -22,9 +73,9 @@ input = [
   '     XX          ',
   '  XXXXX          ',
   '              XXX',
-];
+], 1, 1, 10, 6);
 
-input = [
+useCase([
   'XXXXXXXXXXXXXXXXXX',
   'XXXXXXXXXXX      X',
   'X XXXXXXX      XXX',
@@ -38,9 +89,9 @@ input = [
   'XXXXX  XXX     XXX',
   'XXXXXX XX      XXX',
   'XXXXXXXXXXXXXXXXXX',
-];
+], 1, 2, 6, 11);
 
-input = [
+useCase([
   'XXXXXXXXXXXXXXXXXXX',
   'X   XXXXXXXXXXXXXXX',
   'XX XXXXXXXXXXXXXXXX',
@@ -54,13 +105,13 @@ input = [
   'XX XXXXXXXXXXXXXXXX',
   'X   XXXXXXXXXXXXXXX',
   'XXXXXXXXXXXXXXXXXXX',
-];
+], 1, 1, 1, 11);
 
-input = [
+useCase([
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   'X XXXXXXXXXXXXXX                  X',
   'X XXXXXXX  XXXXX    XXXXXXXX    XXX',
-  'X  XXXX    XXXXX    XXXXXXXX  XXXXX',
+  'X  XXXX             XXXXXXXX  XXXXX',
   'X   X      XXXXX    XXXXXXXXXXXXXXX',
   'X    XXXXX XXXXX    XXXXXXXXXXXXXXX',
   'XX    XXXX XXX         XXXXX  XXXXX',
@@ -70,13 +121,9 @@ input = [
   'XXXXX          XXXXXX   XXXX    XXX',
   'XXXXXX    XXXXXXXXXXXXX         XXX',
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-];
+], 1, 1, 33, 1);
 
-sx = 2;
-sy = 11;
-ex = 33;
-ey = 3;
-input = [
+useCase([
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   'X                                 X',
   'X                   XXXXXXXX      X',
@@ -90,14 +137,10 @@ input = [
   'XX             XXXXXXX          XXX',
   'XX        XXXXXXXXXXXX          XXX',
   'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
-];
+], 2, 11, 33, 3);
 
 // from https://github.com/mikewesthad/navmesh#introduction
-sx = 10;
-sy = 6;
-ex = 24;
-ey = 18;
-input = [
+useCase([
   '                              ',
   '                              ',
   '                              ',
@@ -128,71 +171,17 @@ input = [
   '                              ',
   '                              ',
   '                              ',
-];
+], 10, 6, 24, 18);
 
-// sx = 10;
-// sy = 6;
-// ex = 74;
-// ey = 6;
-// input = [
-//   '           X                X                             X                     ',
-//   '           X                X                             X                     ',
-//   '           X     XXXXXX     XXXXX     XXXXXXXXXXXXXXX     X        XXX          ',
-//   '           X          X         X     XX            X     X       XXX           ',
-//   '           X          X         X     XX     XX           X      XXX            ',
-//   '           X          X         X     XX     XX           X     XXX       XXXXXX',
-//   '           X          X         X     XX     XXXXXXXXXXXXXX    XXX       X      ',
-//   '   XXXXXXXXX          X   XXXXXXX     XX                      XXX       XX      ',
-//   '                      X               XX                     XXX        XX      ',
-//   '                      X               XX                    XXX                 ',
-// ];
-
-let pfG: PathfinderGrid;
-let pG: Rect[];
-let pfRs: PathfinderRects;
-let pRs: [number, number][];
-let t0: number;
-
-const process = (rects: Rect[]) => {
-  t0 = Date.now();
-  pfG = new PathfinderGrid(g, rects);
-  console.log('pG...');
-  pG = pfG.getPath(sx, sy, ex, ey);
-  pfRs = new PathfinderRects(g, rects, pG);
-  console.log('pRs...');
-  pRs = pfRs.getPath(sx, sy, ex, ey);
-  console.log(`done in ${Date.now() - t0} ms`);
-  g.draw(rects, pG, pRs);
-};
-
-const g = new Grid();
-g.init(input);
-
-console.log('INPUT GRID (I)');
-g.draw();
-
-const rawRects = g.buildRawRects();
-console.log('RAW RECTANGLES (R = f(I))');
-process(rawRects);
-
-const rectXs = g.buildRectXs();
-console.log('RAW HORIZONTAL LINES (H = f(I))');
-process(rectXs);
-
-const rectYs = g.buildRectYs();
-console.log('RAW VERTICAL LINES (V = g(I))');
-process(rectYs);
-
-const rects = g.chooseLines(rectXs, rectYs);
-console.log('OPTIMIZED LINES (L = h(H, V))');
-process(rects);
-
-g.mergeRects(rects);
-console.log('MERGED RECTANGLES (R = i(L))');
-process(rects);
-
-g.mergeRects(rects, true);
-console.log('OPTIMIZED RECTANGLES (R = i(L))');
-process(rects);
-
-// console.log(`FINAL RESULT\nfrom ${count} empty cells to ${rects.length} rectangles (-${(100 * (1 - rects.length / count)).toFixed(1)}%)`);
+useCase([
+  '           X                X                             X                     ',
+  '           X                X                             X                     ',
+  '           X     XXXXXX     XXXXX     XXXXXXXXXXXXXXX     X        XXX          ',
+  '           X          X         X     XX            X     X       XXX           ',
+  '           X          X         X     XX     XX           X      XXX            ',
+  '           X          X         X     XX     XX           X     XXX       XXXXXX',
+  '           X          X         X     XX     XXXXXXXXXXXXXX    XXX       X      ',
+  '   XXXXXXXXX          X   XXXXXXX     XX                      XXX       XX      ',
+  '                      X               XX                     XXX        XX      ',
+  '                      X               XX                    XXX                 ',
+], 10, 6, 74, 6);
