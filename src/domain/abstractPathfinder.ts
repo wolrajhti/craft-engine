@@ -1,21 +1,23 @@
 export abstract class AbstractPathfinder<T> {
-  abstract isDone(start: T, current: T, end: T): boolean;
-  abstract getNeighboors(start: T, current: T, end: T): T[];
-  abstract getScore(start: T, current: T, neighbor: T, end: T, currentScore: number): number;
-  protected _getPath(start: T, end: T): T[] {
-    const open: T[] = [start];
+  abstract isDone(current: T): boolean;
+  abstract getNeighboors(current: T): T[];
+  abstract getScore(current: T, neighbor: T, currentScore: number): number;
+  protected _getPath(starts: T[]): T[] {
+    const open: T[] = [...starts];
     const from = new Map<T, T>();
-    const scores = new Map<T, number>([[start, 0]]); 
+    const scores = new Map<T, number>(starts.map(start => [start, 0])); 
     const close = new Set<T>();
 
+    open.sort((n1, n2) => (scores.get(n1) as number) - (scores.get(n2) as number));
+
     let current = open.shift() as T;
-    let score = scores.get(current) as number;
+    let score: number;
     
     // find way to goal
-    while (!this.isDone(start, current, end)) {
-      for (const neighbor of this.getNeighboors(start, current, end)) {
+    while (!this.isDone(current)) {
+      for (const neighbor of this.getNeighboors(current)) {
         if (!close.has(neighbor)) {
-          score = this.getScore(start, current, neighbor, end, scores.get(current) as number);
+          score = this.getScore(current, neighbor, scores.get(current) as number);
           // update open list
           if (!scores.has(neighbor)) {
             from.set(neighbor, current);
