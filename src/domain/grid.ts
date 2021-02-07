@@ -196,22 +196,24 @@ export class Grid {
         const pRsIndex = pRs.findIndex(([x, y]) => x === this._x(i) && y === this._y(i));
         if (pRsIndex !== -1) {
           if (pRsIndex === 0) {
-            result += chalk.bgGray(' S');
-          } else if (pRsIndex === pG.length - 1) {
-            result += chalk.bgGray(' G');
+            result += this.color(pGIndex, ' S');
+          } else if (pRsIndex === pRs.length - 1) {
+            result += this.color(pGIndex, ' G');
           } else {
-            result += chalk.bgWhiteBright.black('||');
+            result += this.color(pGIndex, ' X');
           }
         } else if (pGIndex !== -1) {
-          if (pGIndex === 0) {
-            result += chalk.bgGray('  ');
-          } else if (pGIndex === pG.length - 1) {
-            result += chalk.bgGray('  ');
-          } else {
-            result += chalk.bgWhiteBright('  ');
-          }
+          result += this.color(pGIndex, '  ');
+          // if (pGIndex === 0) {
+          //   result += chalk.bgGray('  ');
+          // } else if (pGIndex === pG.length - 1) {
+          //   result += chalk.bgGray('  ');
+          // } else {
+          //   result += chalk.bgWhiteBright('  ');
+          // }
         } else {
-          result += this.color(index, '  ');
+          result += chalk.bgGray('  ');
+          // result += this.color(index, '  ');
         }
       } else {
         result += '  ';

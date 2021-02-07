@@ -17,10 +17,8 @@ const useCase = (
   const process = (rects: Rect[]) => {
     t0 = Date.now();
     pfG = new PathfinderGrid(g, rects);
-    console.log('pG...');
     pG = pfG.getPath(sx, sy, ex, ey);
     pfRs = new PathfinderRects(g, rects, pG);
-    console.log('pRs...');
     pRs = pfRs.getPath(sx, sy, ex, ey);
     console.log(`done in ${Date.now() - t0} ms`);
     g.draw(rects, pG, pRs);
@@ -29,31 +27,31 @@ const useCase = (
   const g = new Grid();
   g.init(input);
   
-  console.log('INPUT GRID (I)');
-  g.draw();
+  // console.log('INPUT GRID (I)');
+  // g.draw();
   
   const rawRects = g.buildRawRects();
-  console.log('RAW RECTANGLES (R = f(I))');
-  process(rawRects);
+  // console.log('RAW RECTANGLES (R = f(I))');
+  // process(rawRects);
   
   const rectXs = g.buildRectXs();
-  console.log('RAW HORIZONTAL LINES (H = f(I))');
-  process(rectXs);
+  // console.log('RAW HORIZONTAL LINES (H = f(I))');
+  // process(rectXs);
   
   const rectYs = g.buildRectYs();
-  console.log('RAW VERTICAL LINES (V = g(I))');
-  process(rectYs);
+  // console.log('RAW VERTICAL LINES (V = g(I))');
+  // process(rectYs);
   
   const rects = g.chooseLines(rectXs, rectYs);
-  console.log('OPTIMIZED LINES (L = h(H, V))');
-  process(rects);
+  // console.log('OPTIMIZED LINES (L = h(H, V))');
+  // process(rects);
   
   g.mergeRects(rects);
-  console.log('MERGED RECTANGLES (R = i(L))');
-  process(rects);
+  // console.log('MERGED RECTANGLES (R = i(L))');
+  // process(rects);
   
   g.mergeRects(rects, true);
-  console.log('OPTIMIZED RECTANGLES (R = i(L))');
+  // console.log('OPTIMIZED RECTANGLES (R = i(L))');
   process(rects);
 }
 
