@@ -6,6 +6,12 @@ export class Rect {
     public h = 0,
   ) {
   }
+  get x2(): number {
+    return this.x + this.w - 1;
+  }
+  get y2(): number {
+    return this.y + this.h - 1;
+  }
   turnLeft(): Rect {
     return new Rect(-this.y - this.h, this.x, this.h, this.w);
   }
@@ -65,44 +71,44 @@ export class Rect {
   projectY(y: number): number {
     return Math.max(this.y, Math.min(y, this.y + this.h - 1));
   }
-  borderWith(other: Rect): [number, number][] {
+  commonEdgeWith(other: Rect): [number, number][] {
     let i: number, j: number;
     const ns: [number, number][] = [];
 
     // left
     if (this.x + this.w === other.x) {
       i = other.projectY(this.y);
-      j = other.projectY(this.y + this.h - 1);
-      while (i < j + 1) {
-        ns.push([other.x, i]);
-        i++;
+      j = other.projectY(this.y2);
+      ns.push([other.x - 1, i], [other.x, i]);
+      if (j !== i) {
+        ns.push([other.x - 1, j], [other.x, j]);
       }
     }
     // bottom
     if (this.y + this.h === other.y) {
-      i = other.projectX(this.x + this.w - 1);
+      i = other.projectX(this.x2);
       j = other.projectX(this.x);
-      while (j - 1 < i) {
-        ns.push([i, other.y]);
-        i--;
+      ns.push([i, other.y - 1], [i, other.y]);
+      if (j !== i) {
+        ns.push([j, other.y - 1], [j, other.y]);
       }
     }
     // right
     if (other.x + other.w === this.x) {
-      i = other.projectY(this.y + this.h - 1);
+      i = other.projectY(this.y2);
       j = other.projectY(this.y);
-      while (j - 1 < i) {
-        ns.push([this.x - 1, i]);
-        i--;
+      ns.push([this.x, i], [this.x - 1, i]);
+      if (j !== i) {
+        ns.push([this.x, j], [this.x - 1, j]);
       }
     }
     // top
     if (other.y + other.h === this.y) {
       i = other.projectX(this.x);
-      j = other.projectX(this.x + this.w - 1);
-      while (i < j + 1) {
-        ns.push([i, this.y - 1]);
-        i++;
+      j = other.projectX(this.x2);
+      ns.push([i, this.y], [i, this.y - 1]);
+      if (j !== i) {
+        ns.push([j, this.y], [j, this.y - 1]);
       }
     }
 

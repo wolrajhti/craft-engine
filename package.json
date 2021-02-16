@@ -6,7 +6,7 @@
   "scripts": {
     "prestart": "tsc && webpack",
     "start": "node .",
-    "test": "jest --no-cache",
+    "test": "jest --no-cache -- ./__tests__/domain/rect.ts",
     "test:coverage": "jest --coverage",
     "test:clearCache": "jest --clearCache",
     "nav-mesh": "tsc ./src/domain/nav-mesh.ts --downlevelIteration --esModuleInterop --target ES5 && node ./src/domain/nav-mesh.js"
