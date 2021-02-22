@@ -1,4 +1,6 @@
 import { Rect } from './rect';
+import { Vector2 } from './vector2';
+
 import chalk from 'chalk';
 
 interface EmptyCase {}
@@ -186,14 +188,14 @@ export class Grid {
       default: return chalk.bgWhite.black(str);
     }
   }
-  draw(rects: Rect[] = [], pG: Rect[] = [], pRs: [number, number][] = [], token = ' '): void {
+  draw(rects: Rect[] = [], pG: Rect[] = [], pRs: Vector2[] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
     let result = '';
     for (let i = 0; i < this._tokens.length; i++) {
       if (this._tokens[i] === token) {
         const index = rects.findIndex(rect => rect.contains(this._x(i), this._y(i)));
         const pGIndex = pG.findIndex(rect => rect.contains(this._x(i), this._y(i)));
-        const pRsIndex = pRs.findIndex(([x, y]) => x === this._x(i) && y === this._y(i));
+        const pRsIndex = pRs.findIndex(v => v.x === this._x(i) && v.y === this._y(i));
         if (pRsIndex !== -1) {
           if (pRsIndex === 0) {
             result += this.color(pGIndex, ' S');
@@ -204,16 +206,10 @@ export class Grid {
           }
         } else if (pGIndex !== -1) {
           result += this.color(pGIndex, '  ');
-          // if (pGIndex === 0) {
-          //   result += chalk.bgGray('  ');
-          // } else if (pGIndex === pG.length - 1) {
-          //   result += chalk.bgGray('  ');
-          // } else {
-          //   result += chalk.bgWhiteBright('  ');
-          // }
+        } else if (pG.length === 0) {
+          result += this.color(index, '  ');
         } else {
           result += chalk.bgGray('  ');
-          // result += this.color(index, '  ');
         }
       } else {
         result += '  ';
@@ -225,7 +221,7 @@ export class Grid {
     console.log(rects.length, 'cells');
     console.log(result);
   }
-  fullDraw(rects: Rect[] = [], path: [number, number][] = [], token = ' '): void {
+  fullDraw(rects: Rect[] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
     let result = '', tmp = '';
     const padding = rects.length > 256 ? 3 : rects.length > 16 ? 2 : 1;
@@ -237,12 +233,7 @@ export class Grid {
         } else {
           tmp = ' ' + ''.padStart(padding, ' ') + ' ';
         }
-        const pIndex = path.findIndex(([x, y]) => x === this._x(i) && y === this._y(i));
-        if (pIndex !== -1) {
-          result += chalk.bgWhite.red(tmp);
-        } else {
-          result += this.color(index, tmp);
-        }
+        result += this.color(index, tmp);
       } else {
         result += ' ' + '■'.padStart(padding, '■') + ' ';
       }

@@ -1,7 +1,6 @@
 import { Grid } from './grid';
 import { Rect } from './rect';
 import { PathfinderGrid } from './pathfinderGrid';
-import { PathfinderRects } from './pathfinderRects';
 
 const useCase = (
   input: string[],
@@ -10,18 +9,14 @@ const useCase = (
 ) => {
   let pfG: PathfinderGrid;
   let pG: Rect[];
-  let pfRs: PathfinderRects;
-  let pRs: [number, number][];
   let t0: number;
   
   const process = (rects: Rect[]) => {
     t0 = Date.now();
     pfG = new PathfinderGrid(g, rects);
     pG = pfG.getPath(sx, sy, ex, ey);
-    pfRs = new PathfinderRects(g, rects, pG);
-    pRs = pfRs.getPath(sx, sy, ex, ey);
     console.log(`done in ${Date.now() - t0} ms`);
-    g.draw(rects, pG, pRs);
+    g.draw(rects, pG); // comment pG to see all cells
   };
   
   const g = new Grid();
