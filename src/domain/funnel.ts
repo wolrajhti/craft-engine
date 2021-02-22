@@ -1,52 +1,119 @@
 import { Rect } from './rect';
+import { Vector2 } from './vector2';
 
-type xy = [number, number];
+class Link extends Vector2 {
+  constructor(
+    x: number, y: number,
+    public left?: Link,
+    public right?: Link
+  ) {
+    super(x, y);
+  }
+}
 
 export class Funnel {
-  private _tuples = new Map<number, Map<number, xy>>();
-  getTupleFor(x: number, y: number): xy {
-    if (this._tuples.has(x)) {
-      if ((this._tuples.get(x) as Map<number, xy>).has(y)) {
-        return (this._tuples.get(x) as Map<number, xy>).get(y) as xy;
-      }
-      (this._tuples.get(x) as Map<number, xy>).set(y, [x, y]);
-      return (this._tuples.get(x) as Map<number, xy>).get(y) as xy;
-    }
-    this._tuples.set(x, new Map([[y, [x, y]]]));
-    return (this._tuples.get(x) as Map<number, xy>).get(y) as xy;
-  }
   constructor(
     private readonly rects: Rect[],
-    private readonly start: xy,
-    private readonly end: xy,
+    private readonly start: Vector2,
+    private readonly end: Vector2,
   ) {}
-  buildLeft(): xy[] {
-    // 111111111|     
-    // 111111111|2222222
-    // 1 start 1|222 nte|pte 33333
-    // 111111111|2222222|333333333
-    //          |2222222|333333333
-    //          |222 nbe|pbe end 3
-    const prevTopEdges = new Map<number, xy>(); // pte
-    const prevBottomEdges = new Map<number, xy>(); // pbe
-    const nextTopEdges = new Map<number, xy>(); // nte
-    const nextBottomEdges = new Map<number, xy>(); // nbe
-    let edges: xy[];
-    // append 
+  getEntryPoints(
+    k: Vector2, l: Vector2, m: Vector2,
+    q: Vector2, r: Vector2, s: Vector2
+  ) {
+    // +-----K           K-----+
+    // |     |           |     |
+    // |     L +-----+   |     L +-----+
+    // |     | |     |   |     | |     |
+    // |     R +-----+   |     | S-----+
+    // |     |           |     |
+    // +-----+           +-----+
+    // +-----+
+    // |     |
+    // |     | M-----+
+    // |  K  | |     |
+    // |     | S-----+
+    // |     |
+    // +-----+
+    // +-----+           +-----+
+    // |     |           |     |
+    // |     L +-----+   |     | M-----+
+    // |     | |     |   |     | |     |
+    // |     R +-----+   |     R +-----+
+    // |     |           |     |
+    // +-----K           K-----+
+    // calcul de KM, KL, KS, KR
+    // calcul de QM, QL, QS, QR
+    // M est valide quand KL.cross(KM) > 0 && KM.cross(KR) > 0, sinon T
+    // S est valide quand QS.cross(QR) > 0 && QL.cross(QS) > 0, sinon B
+    const km = m.sub(k);
+    const kl = l.sub(k);
+    const kr = r.sub(k);
+    const ql = l.sub(q);
+    const qs = s.sub(q);
+    const qr = r.sub(q);
+    if (kl.cross(km) >= 0 && km.cross(kr) >= 0) {
+      if (qs.cross(qr) >= 0 && ql.cross(qs) >= 0) {
+        return [m, s];
+      } else {
+        return [m, r];
+      }
+    } else if (qs.cross(qr) >= 0 && ql.cross(qs) >= 0) {
+      return [l, s];
+    } else {
+      return [l, r];
+    }
+  }
+  buildCandidates(): {
+    left: Vector2[],
+    right: Vector2[],
+  } {
+    let edges: Vector2[];
+    const left: Vector2[] = [];
+    const right: Vector2[] = [];
     for (let i = 0; i < this.rects.length - 1; i++) {
       edges = this.rects[i].commonEdgeWith(this.rects[i + 1]);
       if (edges.length === 2) {
-        nextTopEdges.set(i, edges[0]);
-        prevTopEdges.set(i + 1, edges[1]);
+        left.push(edges[0], edges[1]);
+        right.push(edges[0], edges[1]);
       } else {
-        nextTopEdges.set(i, edges[0]);
-        prevTopEdges.set(i + 1, edges[1]);
-        nextBottomEdges.set(i, edges[2]);
-        prevBottomEdges.set(i + 1, edges[3]);
+        left.push(edges[0], edges[1]);
+        right.push(edges[2], edges[3]);
       }
     }
-    let edge: xy;
-    edge = nextTopEdges.get(0)
-    if (nextTopEdges.get(0)[0] !== this.start[0] ||)
+    return {left, right};
+  }
+  build(): Link {
+    const candidates = this.buildCandidates();
+    let i = 0;
+    let j = 0;
+    let apex = new Link(this.start.x, this.start.y);
+    const endLink = new Link(this.end.x, this.end.y);
+    let leftLink = apex;
+    let rightLink = apex;
+    let left: Vector2;
+    let right: Vector2;
+    while (i < candidates.left.length || j < candidates.right.length) {
+      console.log(i, j);
+      [left, right] = this.getEntryPoints(
+        leftLink, candidates.left[i], i === candidates.left.length - 1 ? this.end : candidates.left[i + 1],
+        rightLink, candidates.right[j], j === candidates.right.length - 1 ? this.end : candidates.right[j + 1]
+      );
+      if (left.equals(candidates.left[i + 1])) {
+        i = Math.min(candidates.left.length - 1, i + 1);
+      }
+      if (right.equals(candidates.right[j + 1])) {
+        j = Math.min(candidates.right.length - 1, j + 1)
+      }
+      leftLink.left = new Link(left.x, left.y);
+      rightLink.right = new Link(right.x, left.y);
+      leftLink = leftLink.left;
+      rightLink = rightLink.right;
+      i = Math.min(candidates.left.length - 1, i + 1);
+      j = Math.min(candidates.right.length - 1, j + 1);
+    }
+    leftLink.left = new Link(this.end.x, this.end.y);
+    rightLink.right = leftLink.left;
+    return apex;
   }
 }
