@@ -6,7 +6,10 @@
   "scripts": {
     "prestart": "tsc && webpack",
     "start": "node .",
-    "test": "jest --no-cache -- ./__tests__/domain/rect.ts",
+    "test": "jest --no-cache",
+    "test:rect": "jest --no-cache -- ./__tests__/domain/rect.ts",
+    "test:funnel": "jest --no-cache -- ./__tests__/domain/funnel.ts",
+    "test:vector2": "jest --no-cache -- ./__tests__/domain/vector2.ts",
     "test:coverage": "jest --coverage",
     "test:clearCache": "jest --clearCache",
     "nav-mesh": "tsc ./src/domain/nav-mesh.ts --downlevelIteration --esModuleInterop --target ES5 && node ./src/domain/nav-mesh.js"
