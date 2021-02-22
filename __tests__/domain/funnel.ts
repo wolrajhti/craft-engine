@@ -96,7 +96,7 @@ describe('Funnel', () => {
 
       [left, right] = funnel.getEntryPoints(
         left, candidates.left[6], candidates.left[7],
-        right, candidates.right[7], candidates.right[7],
+        right, candidates.right[7], end,
       );
       expect(left.equals(candidates.left[7])).toBeTruthy();
       expect(right.equals(candidates.right[7])).toBeTruthy();
