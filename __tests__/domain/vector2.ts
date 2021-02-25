@@ -19,4 +19,13 @@ describe('Vector2', () => {
       expect((inter as Vector2).equals(new Vector2(125, 25))).toBeTruthy();
     });
   });
+  describe('normalize', () => {
+    const a = new Vector2(20, 20);
+    test('cas 1: normalize by its norm', () => {
+      expect(a.normalize(a.len()).equals(a)).toBeTruthy();
+    });
+    test('cas 1: basic diagonal', () => {
+      expect(a.normalize().equals(new Vector2(1, 1).normalize())).toBeTruthy();
+    });
+  })
 });

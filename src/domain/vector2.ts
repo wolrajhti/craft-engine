@@ -27,12 +27,14 @@ export class Vector2 {
   len(): number {
     return Vector2.len(this);
   }
-  static normalize(u: Vector2, by: number = 1): void {
-    const coef = by / this.lenRaw(u.x, u.y);
-    u.x *= coef;
-    u.y *= coef;
+  static normalizeRaw(x: number, y: number, by: number = 1): Vector2 {
+    const coef = by / this.lenRaw(x, y);
+    return this.mulRaw(x, y, coef);
   }
-  normalize(by: number = 1): void {
+  static normalize(u: Vector2, by: number = 1): Vector2 {
+    return this.normalizeRaw(u.x, u.y, by);
+  }
+  normalize(by: number = 1): Vector2 {
     return Vector2.normalize(this, by);
   }
   static equalsRaw(x1: number, y1: number, x2: number, y2: number): boolean {
@@ -61,6 +63,15 @@ export class Vector2 {
   }
   sub(other: Vector2): Vector2 {
     return Vector2.sub(this, other);
+  }
+  static mulRaw(x: number, y: number, by: number): Vector2 {
+    return new Vector2(x * by, y * by);
+  }
+  static mul(u: Vector2, by: number): Vector2 {
+    return this.mulRaw(u.x, u.y, by);
+  }
+  mul(by: number): Vector2 {
+    return Vector2.mul(this, by);
   }
   static intersectionTimesRaw(
     fx: number, fy: number, tx: number, ty: number,
