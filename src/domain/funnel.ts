@@ -44,8 +44,14 @@ export class Funnel {
     // +-----K           K-----+
     // calcul de KM, KL, KS, KR
     // calcul de QM, QL, QS, QR
-    // M est valide quand KL.cross(KM) > 0 && KM.cross(KR) > 0, sinon T
-    // S est valide quand QS.cross(QR) > 0 && QL.cross(QS) > 0, sinon B
+    // M est valide quand :
+    //   - M est à droite de L (KL.cross(KM) > 0)
+    //   - R est à droite de M (KM.cross(KR) > 0),
+    // sinon L
+    // S est valide quand :
+    //   - S est à droite de L (QL.cross(QS) > 0)
+    //   - R est à droite de S (QS.cross(QR) > 0),
+    // sinon R
     const km = m.sub(k);
     const kl = l.sub(k);
     const kr = r.sub(k);
