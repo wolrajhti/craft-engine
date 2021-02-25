@@ -20,12 +20,12 @@ describe('Funnel', () => {
     //                           11  13  15  17  19  21  23  25  27  29  31  33
     //
     // 0                                               E     L R
-    // 1                                                       R
-    // 2                    |L
-    // 3       S            |            L|                L|L
-    // 4                    |R            |                 |
-    // 5                                  |                R|
-    // 6                                  |R
+    // 1                                                        
+    // 2                    | 
+    // 3           T        |             |                 |T
+    // 4                    |             |                 |
+    // 5                                  |                 |
+    // 6                                  | 
     const start = new Vector2(4, 3);
     const end = new Vector2(21, 0);
     const rects = [
@@ -60,51 +60,15 @@ describe('Funnel', () => {
       expect(Vector2.equalsRaw(candidates.right[7].x, candidates.right[7].y, 26, 0)).toBeTruthy();
     });
 
-    test('getEntryPoints R1 - R2', () => {
-      const candidates = funnel.buildCandidates();
-
-      let left = start;
-      let right = start;
-
-      [left, right] = funnel.getEntryPoints(
-        left, candidates.left[0], candidates.left[1],
-        right, candidates.right[0], candidates.right[1]
-      );
-      expect(left.equals(candidates.left[1])).toBeTruthy();
-      expect(right.equals(candidates.right[1])).toBeTruthy();
-
-      [left, right] = funnel.getEntryPoints(
-        left, candidates.left[2], candidates.left[3],
-        right, candidates.right[2], candidates.right[3],
-      );
-      expect(left.equals(candidates.left[2])).toBeTruthy();
-      expect(right.equals(candidates.right[3])).toBeTruthy();
-
-      [left, right] = funnel.getEntryPoints(
-        left, candidates.left[3], candidates.left[4],
-        right, candidates.right[4], candidates.right[5],
-      );
-      expect(left.equals(candidates.left[4])).toBeTruthy();
-      expect(right.equals(candidates.right[4])).toBeTruthy();
-
-      [left, right] = funnel.getEntryPoints(
-        left, candidates.left[5], candidates.left[6],
-        right, candidates.right[5], candidates.right[6],
-      );
-      expect(left.equals(candidates.left[5])).toBeTruthy();
-      expect(right.equals(candidates.right[6])).toBeTruthy();
-
-      [left, right] = funnel.getEntryPoints(
-        left, candidates.left[6], candidates.left[7],
-        right, candidates.right[7], end,
-      );
-      expect(left.equals(candidates.left[7])).toBeTruthy();
-      expect(right.equals(candidates.right[7])).toBeTruthy();
+    test('build', () => {
+      funnel.build();
+      expect(funnel.tail.length).toBe(2);
+      expect(funnel.tail[0].equals(start)).toBeTruthy();
+      expect(funnel.tail[1].equals(new Vector2(25, 3))).toBeTruthy();
+      expect(funnel.left.length).toBe(1);
+      expect(funnel.left[0].equals(new Vector2(25, 0))).toBeTruthy();
+      expect(funnel.right.length).toBe(1);
+      expect(funnel.right[0].equals(new Vector2(26, 0))).toBeTruthy();
     });
-
-    // test('build', () => {
-    //   const apex = funnel.build();
-    //   console.log(apex);
-    // });
   });
 });
