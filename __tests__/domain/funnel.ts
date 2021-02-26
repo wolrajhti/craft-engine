@@ -19,7 +19,7 @@ describe('Funnel', () => {
     //     0 1 2 3 4 5 6 7 8 9 10  12  14  16  18  20  22  24  26  28  30  32
     //                           11  13  15  17  19  21  23  25  27  29  31  33
     //
-    // 0                                               E     L R
+    // 0                                               T     T
     // 1                                                        
     // 2                    | 
     // 3           T        |             |                 |T
@@ -62,13 +62,13 @@ describe('Funnel', () => {
 
     test('build', () => {
       funnel.build();
-      expect(funnel.tail.length).toBe(2);
+      expect(funnel.left.length).toBe(0);
+      expect(funnel.right.length).toBe(0);
+      expect(funnel.tail.length).toBe(4);
       expect(funnel.tail[0].equals(start)).toBeTruthy();
       expect(funnel.tail[1].equals(new Vector2(25, 3))).toBeTruthy();
-      expect(funnel.left.length).toBe(1);
-      expect(funnel.left[0].equals(new Vector2(25, 0))).toBeTruthy();
-      expect(funnel.right.length).toBe(1);
-      expect(funnel.right[0].equals(new Vector2(26, 0))).toBeTruthy();
+      expect(funnel.tail[2].equals(new Vector2(25, 0))).toBeTruthy();
+      expect(funnel.tail[3].equals(end)).toBeTruthy();
     });
   });
 });
