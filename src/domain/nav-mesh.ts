@@ -1,6 +1,8 @@
 import { Grid } from './grid';
 import { Rect } from './rect';
 import { PathfinderGrid } from './pathfinderGrid';
+import { Funnel } from './funnel';
+import { Vector2 } from './vector2';
 
 const useCase = (
   input: string[],
@@ -10,13 +12,16 @@ const useCase = (
   let pfG: PathfinderGrid;
   let pG: Rect[];
   let t0: number;
+  let f: Funnel;
   
   const process = (rects: Rect[]) => {
     t0 = Date.now();
     pfG = new PathfinderGrid(g, rects);
     pG = pfG.getPath(sx, sy, ex, ey);
+    f = new Funnel(pG, new Vector2(sx, sy), new Vector2(ex, ey));
+    f.build();
     console.log(`done in ${Date.now() - t0} ms`);
-    g.draw(rects, pG); // comment pG to see all cells
+    g.draw(rects, pG, f.tail); // comment pG to see all cells
   };
   
   const g = new Grid();
