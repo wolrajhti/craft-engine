@@ -69,39 +69,41 @@ export class Funnel {
   }
   appendEdge(nl: Vector2, nr: Vector2): void {
     // console.log(`nl: ${nl.x}, ${nl.y}, nr: ${nr.x}, ${nr.y}`);
-    const nlTighterLeftSideIndex = this.tighterLeftSideIndex(nl);
-    const nlTighterLeftSideOfRightIndex = this.tighterLeftSideIndex(nl, this.right, true);
-    // console.log(
-    //   `\n\nlTighterLeftSideIndex: ${nlTighterLeftSideIndex}`,
-    //   `\n\nlTighterLeftSideOfRightIndex: ${nlTighterLeftSideOfRightIndex}`,
-    // );
-    if (nlTighterLeftSideIndex !== -1) {
-      if (nlTighterLeftSideOfRightIndex !== -1) {
-        // update the tail
-        this.tail.push(...this.right.splice(0, nlTighterLeftSideOfRightIndex + 1));
-        this.left.splice(0, this.left.length);
-      } else {
-        this.left.splice(nlTighterLeftSideIndex, this.left.length - nlTighterLeftSideIndex, nl);
-      }
+    if (this.right.length && nl.equals(this.right[this.right.length - 1])) {
+      this.tail.push(...this.right.splice(0, this.right.length));
+      this.left.splice(0, this.left.length);
     } else {
-      this.left.push(nl);
+      const nlTighterLeftSideIndex = this.tighterLeftSideIndex(nl);
+      if (nlTighterLeftSideIndex !== -1) {
+        const nlTighterLeftSideOfRightIndex = this.tighterLeftSideIndex(nl, this.right, true);
+        if (nlTighterLeftSideOfRightIndex !== -1) {
+          // update the tail
+          this.tail.push(...this.right.splice(0, nlTighterLeftSideOfRightIndex + 1));
+          this.left.splice(0, this.left.length, nl);
+        } else {
+          this.left.splice(nlTighterLeftSideIndex, this.left.length - nlTighterLeftSideIndex, nl);
+        }
+      } else {
+        this.left.push(nl);
+      }
     }
-    const nrTighterRightSideIndex = this.tighterRightSideIndex(nr);
-    const nrTighterRightSideOfLeftIndex = this.tighterRightSideIndex(nr, this.left, true);
-    // console.log(
-    //   `\n\nrTighterRightSideIndex: ${nrTighterRightSideIndex}`,
-    //   `\n\nrTighterRightSideOfLeftIndex: ${nrTighterRightSideOfLeftIndex}`,
-    // );
-    if (nrTighterRightSideIndex !== -1) {
-      if (nrTighterRightSideOfLeftIndex !== - 1) {
-        // update the tail
-        this.tail.push(...this.left.splice(0, nrTighterRightSideOfLeftIndex + 1));
-        this.right.splice(0, this.right.length);
-      } else {
-        this.right.splice(nrTighterRightSideIndex, this.right.length - nrTighterRightSideIndex, nr);
-      }
+    if (this.left.length && nr.equals(this.left[this.left.length - 1])) {
+      this.tail.push(...this.left.splice(0, this.left.length));
+      this.right.splice(0, this.right.length);
     } else {
-      this.right.push(nr);
+      const nrTighterRightSideIndex = this.tighterRightSideIndex(nr);
+      if (nrTighterRightSideIndex !== -1) {
+        const nrTighterRightSideOfLeftIndex = this.tighterRightSideIndex(nr, this.left, true);
+        if (nrTighterRightSideOfLeftIndex !== - 1) {
+          // update the tail
+          this.tail.push(...this.left.splice(0, nrTighterRightSideOfLeftIndex + 1));
+          this.right.splice(0, this.right.length, nr);
+        } else {
+          this.right.splice(nrTighterRightSideIndex, this.right.length - nrTighterRightSideIndex, nr);
+        }
+      } else {
+        this.right.push(nr);
+      }
     }
   }
   build(): void {
