@@ -10,43 +10,48 @@ export class Funnel {
     private readonly start: Vector2,
     private readonly end: Vector2,
   ) {}
-  tighterLeftSideIndex(w: Vector2, coords = this.left, findLastIndex = false): number {
-    let u: Vector2;
-    let v: Vector2;
-    let lastIndex = -1;
-    for (let i = 0; i < coords.length; i++) {
-      u = i === 0 ? this.tail[this.tail.length - 1] : coords[i - 1];
-      v = coords[i];
-      // test if w is on the right of v from u (uv.cross(uw) > 0)
-      if (v.sub(u).cross(w.sub(u)) >= 0) {
-        // uw is tighter than uv so v and all next items should be discarded
-        if (!findLastIndex) {
-          return i;
-        } else {
-          lastIndex = i;
-        }
-      }
-    };
-    return lastIndex;
+  testSide(u: Vector2, v: Vector2, w: Vector2): boolean {
+    return v.sub(u).cross(w.sub(u)) >= 0;
   }
-  tighterRightSideIndex(w: Vector2, coords = this.right, findLastIndex = false): number {
+  tighterIndex(w: Vector2, coords: Vector2[], left = false, findLastIndex = false): number {
     let u: Vector2;
     let v: Vector2;
-    let lastIndex = -1;
-    for (let i = 0; i < coords.length; i++) {
-      u = i === 0 ? this.tail[this.tail.length - 1] : coords[i - 1];
-      v = coords[i];
-      // test if v is on the right of w from u (uw.cross(uv) > 0)
-      if (w.sub(u).cross(v.sub(u)) >= 0) {
-        // uw is tighter than uv so v and all next items should be discarded
-        if (!findLastIndex) {
-          return i;
-        } else {
-          lastIndex = i;
+    if (findLastIndex) {
+      if (left) {
+        for (let i = coords.length - 1; -1 < i; i--) {
+          u = i === 0 ? this.tail[this.tail.length - 1] : coords[i - 1];
+          v = coords[i];
+          if (this.testSide(u, w, v)) {
+            return i;
+          }
+        }
+      } else {
+        for (let i = coords.length - 1; -1 < i; i--) {
+          u = i === 0 ? this.tail[this.tail.length - 1] : coords[i - 1];
+          v = coords[i];
+          if (this.testSide(u, v, w)) {
+            return i;
+          }
         }
       }
-    };
-    return lastIndex;
+    } else if (left) {
+      for (let i = 0; i < coords.length; i++) {
+        u = i === 0 ? this.tail[this.tail.length - 1] : coords[i - 1];
+        v = coords[i];
+        if (this.testSide(u, w, v)) {
+          return i;
+        }
+      };
+    } else {
+      for (let i = 0; i < coords.length; i++) {
+        u = i === 0 ? this.tail[this.tail.length - 1] : coords[i - 1];
+        v = coords[i];
+        if (this.testSide(u, v, w)) {
+          return i;
+        }
+      };
+    }
+    return -1;
   }
   buildCandidates(): {
     left: Vector2[],
@@ -67,15 +72,27 @@ export class Funnel {
     }
     return {left, right};
   }
+  getFirstIndexOnTheLeftOfLeftSide(nl: Vector2): number {
+    return this.tighterIndex(nl, this.left);
+  }
+  getLastIndexOnTheLeftOfRightSide(nl: Vector2): number {
+    return this.tighterIndex(nl, this.right, false, true);
+  }
+  getFirstIndexOnTheRightOfRightSide(nr: Vector2): number {
+    return this.tighterIndex(nr, this.right, true);
+  }
+  getLastIndexOnTheRightOfLeftSide(nr: Vector2): number {
+    return this.tighterIndex(nr, this.right, true, true);
+  }
   appendEdge(nl: Vector2, nr: Vector2): void {
     // console.log(`nl: ${nl.x}, ${nl.y}, nr: ${nr.x}, ${nr.y}`);
     if (this.right.length && nl.equals(this.right[this.right.length - 1])) {
       this.tail.push(...this.right.splice(0, this.right.length));
       this.left.splice(0, this.left.length);
     } else {
-      const nlTighterLeftSideIndex = this.tighterLeftSideIndex(nl);
+      const nlTighterLeftSideIndex = this.tighterIndex(nl, this.left);
       if (nlTighterLeftSideIndex !== -1) {
-        const nlTighterLeftSideOfRightIndex = this.tighterLeftSideIndex(nl, this.right, true);
+        const nlTighterLeftSideOfRightIndex = this.tighterIndex(nl, this.right, false, true);
         if (nlTighterLeftSideOfRightIndex !== -1) {
           // update the tail
           this.tail.push(...this.right.splice(0, nlTighterLeftSideOfRightIndex + 1));
@@ -91,9 +108,9 @@ export class Funnel {
       this.tail.push(...this.left.splice(0, this.left.length));
       this.right.splice(0, this.right.length);
     } else {
-      const nrTighterRightSideIndex = this.tighterRightSideIndex(nr);
+      const nrTighterRightSideIndex = this.tighterIndex(nr, this.right, true);
       if (nrTighterRightSideIndex !== -1) {
-        const nrTighterRightSideOfLeftIndex = this.tighterRightSideIndex(nr, this.left, true);
+        const nrTighterRightSideOfLeftIndex = this.tighterIndex(nr, this.left, true, true);
         if (nrTighterRightSideOfLeftIndex !== - 1) {
           // update the tail
           this.tail.push(...this.left.splice(0, nrTighterRightSideOfLeftIndex + 1));
