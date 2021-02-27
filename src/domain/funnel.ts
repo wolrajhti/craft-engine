@@ -72,54 +72,27 @@ export class Funnel {
     }
     return {left, right};
   }
-  getFirstIndexOnTheLeftOfLeftSide(nl: Vector2): number {
-    return this.tighterIndex(nl, this.left);
-  }
-  getLastIndexOnTheLeftOfRightSide(nl: Vector2): number {
-    return this.tighterIndex(nl, this.right, false, true);
-  }
-  getFirstIndexOnTheRightOfRightSide(nr: Vector2): number {
-    return this.tighterIndex(nr, this.right, true);
-  }
-  getLastIndexOnTheRightOfLeftSide(nr: Vector2): number {
-    return this.tighterIndex(nr, this.right, true, true);
-  }
-  appendEdge(nl: Vector2, nr: Vector2): void {
-    // console.log(`nl: ${nl.x}, ${nl.y}, nr: ${nr.x}, ${nr.y}`);
-    if (this.right.length && nl.equals(this.right[this.right.length - 1])) {
-      this.tail.push(...this.right.splice(0, this.right.length));
-      this.left.splice(0, this.left.length);
+  appendNext(
+    n: Vector2,
+    left = false,
+    side = left ? this.right : this.left,
+    otherSide = left ? this.left : this.right,
+  ): void {
+    if (otherSide.length && n.equals(otherSide[otherSide.length - 1])) {
+      this.tail.push(...otherSide.splice(0, otherSide.length));
+      side.splice(0, side.length);
     } else {
-      const nlTighterLeftSideIndex = this.tighterIndex(nl, this.left);
-      if (nlTighterLeftSideIndex !== -1) {
-        const nlTighterLeftSideOfRightIndex = this.tighterIndex(nl, this.right, false, true);
-        if (nlTighterLeftSideOfRightIndex !== -1) {
-          // update the tail
-          this.tail.push(...this.right.splice(0, nlTighterLeftSideOfRightIndex + 1));
-          this.left.splice(0, this.left.length, nl);
+      const sideTighterIndex = this.tighterIndex(n, side, left);
+      if (sideTighterIndex !== -1) {
+        const otherSideTighterIndex = this.tighterIndex(n, otherSide, left, true);
+        if (otherSideTighterIndex !== -1) {
+          this.tail.push(...otherSide.splice(0, otherSideTighterIndex + 1));
+          side.splice(0, side.length, n);
         } else {
-          this.left.splice(nlTighterLeftSideIndex, this.left.length - nlTighterLeftSideIndex, nl);
+          side.splice(sideTighterIndex, side.length - sideTighterIndex, n);
         }
       } else {
-        this.left.push(nl);
-      }
-    }
-    if (this.left.length && nr.equals(this.left[this.left.length - 1])) {
-      this.tail.push(...this.left.splice(0, this.left.length));
-      this.right.splice(0, this.right.length);
-    } else {
-      const nrTighterRightSideIndex = this.tighterIndex(nr, this.right, true);
-      if (nrTighterRightSideIndex !== -1) {
-        const nrTighterRightSideOfLeftIndex = this.tighterIndex(nr, this.left, true, true);
-        if (nrTighterRightSideOfLeftIndex !== - 1) {
-          // update the tail
-          this.tail.push(...this.left.splice(0, nrTighterRightSideOfLeftIndex + 1));
-          this.right.splice(0, this.right.length, nr);
-        } else {
-          this.right.splice(nrTighterRightSideIndex, this.right.length - nrTighterRightSideIndex, nr);
-        }
-      } else {
-        this.right.push(nr);
+        side.push(n);
       }
     }
   }
@@ -128,13 +101,18 @@ export class Funnel {
     for (let i = 0; i < this.rects.length - 1; i++) {
       edges = this.rects[i].commonEdgeWith(this.rects[i + 1]);
       if (edges.length === 2) {
-        this.appendEdge(edges[0], edges[0]);
-        this.appendEdge(edges[1], edges[1]);
+        this.appendNext(edges[0]);
+        this.appendNext(edges[0], true);
+        this.appendNext(edges[1]);
+        this.appendNext(edges[1], true);
       } else {
-        this.appendEdge(edges[0], edges[2]);
-        this.appendEdge(edges[1], edges[3]);
+        this.appendNext(edges[0]);
+        this.appendNext(edges[2], true);
+        this.appendNext(edges[1]);
+        this.appendNext(edges[3], true);
       }
     }
-    this.appendEdge(this.end, this.end);
+    this.appendNext(this.end);
+    this.appendNext(this.end, true);
   }
 }
