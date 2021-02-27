@@ -78,22 +78,22 @@ export class Funnel {
     side = left ? this.right : this.left,
     otherSide = left ? this.left : this.right,
   ): void {
-    if (otherSide.length && n.equals(otherSide[otherSide.length - 1])) {
-      this.tail.push(...otherSide.splice(0, otherSide.length));
+    const otherSideTighterIndex = this.tighterIndex(n, otherSide, left, true);
+    if (otherSideTighterIndex !== -1) {
+      // we add to the tail the part of otherSide before otherSideTighterIndex
+      this.tail.push(...otherSide.splice(0, otherSideTighterIndex + 1));
+      // we empty side
       side.splice(0, side.length);
     } else {
       const sideTighterIndex = this.tighterIndex(n, side, left);
       if (sideTighterIndex !== -1) {
-        const otherSideTighterIndex = this.tighterIndex(n, otherSide, left, true);
-        if (otherSideTighterIndex !== -1) {
-          this.tail.push(...otherSide.splice(0, otherSideTighterIndex + 1));
-          side.splice(0, side.length, n);
-        } else {
-          side.splice(sideTighterIndex, side.length - sideTighterIndex, n);
-        }
-      } else {
-        side.push(n);
+        // we discard the part of side after sideTighterIndex
+        side.splice(sideTighterIndex, side.length - sideTighterIndex);
       }
+    }
+    if (!this.tail[this.tail.length - 1].equals(n)) {
+      // we add n to side only if it is not already on the tail
+      side.push(n);
     }
   }
   build(): void {
