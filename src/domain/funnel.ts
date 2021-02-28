@@ -11,7 +11,7 @@ export class Funnel {
     private readonly end: Vector2,
   ) {}
   testSide(u: Vector2, v: Vector2, w: Vector2): boolean {
-    return v.sub(u).cross(w.sub(u)) >= 0;
+    return v.equals(w) || v.sub(u).cross(w.sub(u)) > 0;
   }
   tighterIndex(w: Vector2, coords: Vector2[], left = false, findLastIndex = false): number {
     let u: Vector2;
@@ -78,10 +78,22 @@ export class Funnel {
     side = left ? this.right : this.left,
     otherSide = left ? this.left : this.right,
   ): void {
+    // console.log(`\nn = ${n.x}, ${n.y} (${left ? 'on right' : 'on left'})`);
     const otherSideTighterIndex = this.tighterIndex(n, otherSide, left, true);
     if (otherSideTighterIndex !== -1) {
       // we add to the tail the part of otherSide before otherSideTighterIndex
-      this.tail.push(...otherSide.splice(0, otherSideTighterIndex + 1));
+      otherSide
+        .splice(0, otherSideTighterIndex + 1)
+        .forEach(v => {
+          if (
+            this.tail.length > 1 &&
+            this.tail[this.tail.length - 2].sub(v).cross(this.tail[this.tail.length - 1].sub(v)) === 0
+            ) {
+            this.tail.splice(-1, 1, v);
+          } else {
+            this.tail.push(v);
+          }
+        });
       // we empty side
       side.splice(0, side.length);
     } else {
@@ -95,6 +107,9 @@ export class Funnel {
       // we add n to side only if it is not already on the tail
       side.push(n);
     }
+    // console.log('\ttail = ' + this.tail.map(v => `${v.x}, ${v.y}`).join('; '));
+    // console.log('\tleft = ' + this.left.map(v => `${v.x}, ${v.y}`).join('; '));
+    // console.log('\tright = ' + this.right.map(v => `${v.x}, ${v.y}`).join('; '));
   }
   build(): void {
     let edges: Vector2[];
