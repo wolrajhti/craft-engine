@@ -1,7 +1,7 @@
 import { Rect } from './rect';
 import { Vector2 } from './vector2';
 
-import chalk from 'chalk';
+// import chalk from 'chalk';
 
 interface EmptyCase {}
 interface SymCase {
@@ -172,21 +172,22 @@ export class Grid {
     }
   }
   color(i: number, str: string): string {
-    switch (i % 12) {
-      case 0: return chalk.bgRed.black(str);
-      case 1: return chalk.bgGreen.black(str);
-      case 2: return chalk.bgYellow.black(str);
-      case 3: return chalk.bgBlue.black(str);
-      case 4: return chalk.bgMagenta.black(str);
-      case 5: return chalk.bgCyan.black(str);
-      case 6: return chalk.bgRedBright.black(str);
-      case 7: return chalk.bgGreenBright.black(str);
-      case 8: return chalk.bgYellowBright.black(str);
-      case 9: return chalk.bgBlueBright.black(str);
-      case 10: return chalk.bgMagentaBright.black(str);
-      case 11: return chalk.bgCyanBright.black(str);
-      default: return chalk.bgWhite.black(str);
-    }
+    return str;
+    // switch (i % 12) {
+    //   case 0: return chalk.bgRed.black(str);
+    //   case 1: return chalk.bgGreen.black(str);
+    //   case 2: return chalk.bgYellow.black(str);
+    //   case 3: return chalk.bgBlue.black(str);
+    //   case 4: return chalk.bgMagenta.black(str);
+    //   case 5: return chalk.bgCyan.black(str);
+    //   case 6: return chalk.bgRedBright.black(str);
+    //   case 7: return chalk.bgGreenBright.black(str);
+    //   case 8: return chalk.bgYellowBright.black(str);
+    //   case 9: return chalk.bgBlueBright.black(str);
+    //   case 10: return chalk.bgMagentaBright.black(str);
+    //   case 11: return chalk.bgCyanBright.black(str);
+    //   default: return chalk.bgWhite.black(str);
+    // }
   }
   draw(rects: Rect[] = [], pG: Rect[] = [], pRs: Vector2[] = [], token = ' '): void {
     rects = [...new Set(rects.filter((r, i) => this._tokens[i] === token))];
@@ -209,7 +210,8 @@ export class Grid {
         } else if (pG.length === 0) {
           result += this.color(index, '  ');
         } else {
-          result += chalk.bgGray('  ');
+          // result += chalk.bgGray('  ');
+          result += '  ';
         }
       } else {
         result += '  ';
