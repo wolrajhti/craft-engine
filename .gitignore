@@ -1,5 +1,4 @@
 coverage
 dist
 client/public/js
-src/**/*.js
 node_modules

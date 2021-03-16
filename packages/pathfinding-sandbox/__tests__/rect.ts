@@ -1,4 +1,4 @@
-import { Rect } from '../../src/domain/rect';
+import { Rect } from '../src/rect';
 
 describe('Rect', () => {
   describe('commonEdgeWith', () => {

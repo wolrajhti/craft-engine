@@ -1,6 +1,6 @@
-import { Funnel } from '../../src/domain/funnel';
-import { Rect } from '../../src/domain/rect';
-import { Vector2 } from '../../src/domain/vector2';
+import { Funnel } from '../src/domain/funnel';
+import { Rect } from '../src/domain/rect';
+import { Vector2 } from '../src/domain/vector2';
 
 describe('Funnel', () => {
   describe('cas 1', () => {
