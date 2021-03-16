@@ -18,8 +18,17 @@ export class Vector2 {
   cross(other: Vector2): number {
     return Vector2.cross(this, other);
   }
+  static len2Raw(x: number, y: number): number {
+    return Math.pow(x, 2) + Math.pow(y, 2);
+  }
+  static len2(u: Vector2): number {
+    return this.len2Raw(u.x, u.y);
+  }
+  len2(): number {
+    return Vector2.len2(this);
+  }
   static lenRaw(x: number, y: number): number {
-    return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+    return Math.sqrt(this.len2Raw(x, y));
   }
   static len(u: Vector2): number {
     return this.lenRaw(u.x, u.y);
@@ -83,6 +92,14 @@ export class Vector2 {
       this.crossRaw(tx - fx, ty - fy, fx - sx, fy - sy) / det
     );
   }
+  static intersectionTimes(
+    from: Vector2, to: Vector2, start: Vector2, end: Vector2
+  ): Vector2 | undefined {
+    return this.intersectionTimesRaw(from.x, from.y, to.x, to.y, start.x, start.y, end.x, end.y);
+  }
+  intersectionTimes(to: Vector2, start: Vector2, end: Vector2): Vector2 | undefined {
+    return Vector2.intersectionTimes(this, to, start, end);
+  }
   static intersectionRaw(
     fx: number, fy: number, tx: number, ty: number,
     sx: number, sy: number, ex: number, ey: number
@@ -99,5 +116,20 @@ export class Vector2 {
   }
   intersection(to: Vector2, start: Vector2, end: Vector2): Vector2 | undefined {
     return Vector2.intersection(this, to, start, end);
+  }
+  angle(other?: Vector2): number {
+    if (other) {
+       const a1 = this.angle();
+       const a2 = other.angle();
+       if (a2 < a1) {
+        return a2 + 2 * Math.PI - a1;
+       } else {
+        return a2 - a1;
+       }
+    } else if (this.y > 0) {
+      return Math.acos(this.x / this.len());
+    } else {
+      return 2 * Math.PI - Math.acos(this.x / this.len());
+    }
   }
 }
