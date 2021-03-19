@@ -267,7 +267,7 @@ export class Grid {
       }
     });
   }
-  private _applyCase(c: Case, rects: Rect[], i: number, j: number, optimize = false): boolean {
+  private _applyCase(c: Case, rects: Rect[], i: number, j: number, optimize = false): number {
     let r1 = rects[i];
     let r2 = rects[j];
     if (typeof (c as ASymCase).send === 'function') {
@@ -294,34 +294,31 @@ export class Grid {
           }
         }
       });
-      return true;
+      return Math.min(...merged.map(r => this.i(r.x, r.y)));
     }
-    return false;
+    return -1;
   }
+  private _merge(rects: Rect[], i: number, optimize = false): number {
+    let nextI: number;
+        for (const n of this.neighboors(rects, rects[i])) {
+          if (this._tokens[i] === this._tokens[n]) {
+            for (const c of CASES) {
+          if ((nextI = this._applyCase(c, rects, i, n, optimize)) !== -1) {
+            return nextI - 1;
+              }
+            }
+            }
+          }
+    return i;
+        }
   mergeRects(rects: Rect[], optimize = false) {
     let i = 0;
     const done = new Set<Rect>();
 
     while (i < rects.length) {
       if (!done.has(rects[i])) {
-        for (const n of this.neighboors(rects, rects[i])) {
-          if (this._tokens[i] === this._tokens[n]) {
-            for (const c of CASES) {
-              if (this._applyCase(c, rects, i, n, optimize)) {
-                i = -1;
-                break;
-              }
-            }
-            if (i === -1) {
-              break;
-            }
-          }
-        }
-      }
-      if (i === -1) {
-        done.clear();
-      } else {
         done.add(rects[i]);
+        i = this._merge(rects, i, optimize);
       }
       i++;
     }
