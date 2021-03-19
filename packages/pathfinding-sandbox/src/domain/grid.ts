@@ -267,9 +267,7 @@ export class Grid {
       }
     });
   }
-  private _applyCase(c: Case, rects: Rect[], i: number, j: number, optimize = false): number {
-    let r1 = rects[i];
-    let r2 = rects[j];
+  private _applyCase(c: Case, r1: Rect, r2: Rect, optimize = false): Rect[] {
     if (typeof (c as ASymCase).send === 'function') {
       r1 = (c as ASymCase).send(r1);
       r2 = (c as ASymCase).send(r2);
@@ -287,30 +285,29 @@ export class Grid {
       if (typeof (c as ASymCase).receive === 'function') {
         merged = merged.map(r => (c as ASymCase).receive(r));
       }
-      merged.forEach(r => {
-        for (let x = r.x; x < r.x + r.w; x++) {
-          for (let y = r.y; y < r.y + r.h; y++) {
-            rects[this.i(x, y)] = r;
-          }
-        }
-      });
-      return Math.min(...merged.map(r => this.i(r.x, r.y)));
     }
-    return -1;
+    return merged;
   }
   private _merge(rects: Rect[], i: number, optimize = false): number {
-    let nextI: number;
-        for (const n of this.neighboors(rects, rects[i])) {
-          if (this._tokens[i] === this._tokens[n]) {
-            for (const c of CASES) {
-          if ((nextI = this._applyCase(c, rects, i, n, optimize)) !== -1) {
-            return nextI - 1;
+    let merged: Rect[];
+    for (const n of this.neighboors(rects, rects[i])) {
+      if (this._tokens[i] === this._tokens[n]) {
+        for (const c of CASES) {
+          if ((merged = this._applyCase(c, rects[i], rects[n], optimize)).length !== 0) {
+            merged.forEach(r => {
+              for (let x = r.x; x < r.x + r.w; x++) {
+                for (let y = r.y; y < r.y + r.h; y++) {
+                  rects[this.i(x, y)] = r;
+                }
               }
-            }
-            }
+            });
+            return Math.min(...merged.map(r => this.i(r.x, r.y))) - 1;
           }
-    return i;
         }
+      }
+    }
+    return i;
+  }
   mergeRects(rects: Rect[], optimize = false) {
     let i = 0;
     const done = new Set<Rect>();
