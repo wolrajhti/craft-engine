@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "webpack --watch",
     "build": "webpack --production",
+    "build:nav-mesh": "tsc --project tsconfig.nav-mesh.json",
     "test": "jest --no-cache",
     "test:coverage": "jest --coverage",
-    "test:clearCache": "jest --clearCache"
+    "test:clearCache": "jest --clearCache",
+    "nav-mesh": "npm run build:nav-mesh && node ./dist/nav-mesh.js"
   },
   "repository": {
     "type": "git",
