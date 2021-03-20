@@ -13,6 +13,8 @@ interface ASymCase extends SymCase {
 }
 type Case = EmptyCase | SymCase | ASymCase;
 
+// let COUNT = 0;
+
 const CASES: Case[] = [
   {},
   {
@@ -268,6 +270,7 @@ export class Grid {
     });
   }
   private _applyCase(c: Case, r1: Rect, r2: Rect, optimize = false): Rect[] {
+    // COUNT++;
     if (typeof (c as ASymCase).send === 'function') {
       r1 = (c as ASymCase).send(r1);
       r2 = (c as ASymCase).send(r2);
@@ -300,6 +303,7 @@ export class Grid {
   mergeAllRects(rects: Rect[], optimize = false) {
     let i = 0;
     const done = new Set<Rect>();
+    // const coupleDone = new Map<Rect, Set<Rect>>();
     let merged: Rect[];
 
     while (i < rects.length) {
@@ -307,6 +311,22 @@ export class Grid {
         done.add(rects[i]);
         for (const n of this.neighboors(rects, rects[i])) {
           if (this._tokens[i] === this._tokens[n]) {
+            // skip test couple has been already done
+            // TODO only test 'next' rectangle (left and bottom)
+            // if (coupleDone.has(rects[i])) {
+            //   if ((coupleDone.get(rects[i]) as Set<Rect>).has(rects[n])) {
+            //     continue;
+            //   } else {
+            //     (coupleDone.get(rects[i]) as Set<Rect>).add(rects[n]);
+            //   }
+            // } else {
+            //   coupleDone.set(rects[i], new Set([rects[n]]));
+            // }
+            // if (coupleDone.has(rects[n])) {
+            //   (coupleDone.get(rects[n]) as Set<Rect>).add(rects[i]);
+            // } else {
+            //   coupleDone.set(rects[n], new Set([rects[i]]));
+            // }
             merged = this.mergeRects(rects[i], rects[n], optimize);
             if (merged.length) {
               merged.forEach(r => {
@@ -324,6 +344,7 @@ export class Grid {
       }
       i++;
     }
+    // console.log(COUNT);
   }
   neighboors(rects: Rect[], r: Rect): number[] {
     let i: number, nIndex: number, n: Rect;
