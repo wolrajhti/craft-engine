@@ -46,11 +46,11 @@ const useCase = (
   // console.log('OPTIMIZED LINES (L = h(H, V))');
   // process(rects);
   
-  g.mergeRects(rects);
+  g.mergeAllRects(rects);
   // console.log('MERGED RECTANGLES (R = i(L))');
   // process(rects);
   
-  g.mergeRects(rects, true);
+  g.mergeAllRects(rects, true);
   // console.log('OPTIMIZED RECTANGLES (R = i(L))');
   process(rects);
 }

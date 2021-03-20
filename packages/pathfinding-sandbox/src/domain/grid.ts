@@ -288,7 +288,7 @@ export class Grid {
     }
     return merged;
   }
-  private _applyCases(r1: Rect, r2: Rect, optimize = false): Rect[] {
+  mergeRects(r1: Rect, r2: Rect, optimize = false): Rect[] {
     let merged: Rect[];
     for (const c of CASES) {
       if ((merged = this._applyCase(c, r1, r2, optimize)).length !== 0) {
@@ -297,7 +297,7 @@ export class Grid {
     }
     return [];
   }
-  mergeRects(rects: Rect[], optimize = false) {
+  mergeAllRects(rects: Rect[], optimize = false) {
     let i = 0;
     const done = new Set<Rect>();
     let merged: Rect[];
@@ -307,7 +307,7 @@ export class Grid {
         done.add(rects[i]);
         for (const n of this.neighboors(rects, rects[i])) {
           if (this._tokens[i] === this._tokens[n]) {
-            merged = this._applyCases(rects[i], rects[n], optimize);
+            merged = this.mergeRects(rects[i], rects[n], optimize);
             if (merged.length) {
               merged.forEach(r => {
                 for (let x = r.x; x < r.x + r.w; x++) {
