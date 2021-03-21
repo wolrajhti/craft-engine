@@ -103,6 +103,34 @@ export class Grid {
     });
     return rectYs;
   }
+  buildIndexedRectXs(): [Rect[], number[]] {
+    const rectXs: Rect[] = [];
+    const index: number[] = [];
+    this._tokens.forEach((token, i) => {
+      if (i % this.width && this._tokens[i - 1] === token) {
+        index.push(index[i - 1]);
+        rectXs[index[i - 1]].w++;
+      } else {
+        index.push(rectXs.length);
+        rectXs.push(new Rect(this._x(i), this._y(i), 1, 1));
+      }
+    });
+    return [rectXs, index];
+  }
+  buildIndexedRectYs(): [Rect[], number[]] {
+    const rectYs: Rect[] = [];
+    const index: number[] = [];
+    this._tokens.forEach((token, i) => {
+      if (i >= this.width && this._tokens[i - this.width] === token) {
+        index.push(index[i - this.width]);
+        rectYs[index[i - this.width]].h++;
+      } else {
+        index.push(rectYs.length);
+        rectYs.push(new Rect(this._x(i), this._y(i), 1, 1));
+      }
+    });
+    return [rectYs, index];
+  }
   private _scoreOfRect(rects: Rect[], rect: Rect): number {
     let score = rect.area() * rect.area();
     for (let x = 0; x < rect.w; x++) {
