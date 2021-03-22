@@ -14,6 +14,8 @@ describe('Grid', () => {
       const r2 = new Rect(1, 2, 1, 5);
       expect(g.mergeRects(r1, r2).map(r => r.toString()).join(', '))
         .toBe(g.mergeRects(r2, r1).map(r => r.toString()).join(', '));
+      expect(g.mergeRects(r1, r2, true).map(r => r.toString()).join(', '))
+        .toBe(g.mergeRects(r2, r1, true).map(r => r.toString()).join(', '));
     });
     test('', () => {
       // 21
@@ -26,6 +28,8 @@ describe('Grid', () => {
       const r2 = new Rect(1, 2, 1, 5);
       expect(g.mergeRects(r1, r2).map(r => r.toString()).join(', '))
         .toBe(g.mergeRects(r2, r1).map(r => r.toString()).join(', '));
+      expect(g.mergeRects(r1, r2, true).map(r => r.toString()).join(', '))
+        .toBe(g.mergeRects(r2, r1, true).map(r => r.toString()).join(', '));
     });
     test('', () => {
       // 21111
@@ -40,6 +44,8 @@ describe('Grid', () => {
       const r2 = new Rect(1, 2, 1, 7);
       expect(g.mergeRects(r1, r2).map(r => r.toString()).join(', '))
         .toBe(g.mergeRects(r2, r1).map(r => r.toString()).join(', '));
+      expect(g.mergeRects(r1, r2, true).map(r => r.toString()).join(', '))
+        .toBe(g.mergeRects(r2, r1, true).map(r => r.toString()).join(', '));
     });
     test('', () => {
       //   1111
@@ -52,6 +58,8 @@ describe('Grid', () => {
       const r2 = new Rect(-6, 6, 6, 1);
       expect(g.mergeRects(r1, r2).map(r => r.toString()).join(', '))
         .toBe(g.mergeRects(r2, r1).map(r => r.toString()).join(', '));
+      expect(g.mergeRects(r1, r2, true).map(r => r.toString()).join(', '))
+        .toBe(g.mergeRects(r2, r1, true).map(r => r.toString()).join(', '));
     });
     test('', () => {
       //   1111
@@ -66,6 +74,19 @@ describe('Grid', () => {
       const r2 = new Rect(-6, 6, 6, 3);
       expect(g.mergeRects(r1, r2).map(r => r.toString()).join(', '))
         .toBe(g.mergeRects(r2, r1).map(r => r.toString()).join(', '));
+      expect(g.mergeRects(r1, r2, true).map(r => r.toString()).join(', '))
+        .toBe(g.mergeRects(r2, r1, true).map(r => r.toString()).join(', '));
+    });
+    test('', () => {
+      // 111111111111111111111111111111
+      //  22222222222222222222222222222
+      const g = new Grid();
+      const r1 = new Rect(0, 0, 30, 1);
+      const r2 = new Rect(1, 1, 29, 1);
+      expect(g.mergeRects(r1, r2).map(r => r.toString()).join(', '))
+        .toBe(g.mergeRects(r2, r1).map(r => r.toString()).join(', '));
+      expect(g.mergeRects(r1, r2, true).map(r => r.toString()).join(', '))
+        .toBe(g.mergeRects(r2, r1, true).map(r => r.toString()).join(', '));
     });
   });
 });

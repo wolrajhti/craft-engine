@@ -307,7 +307,12 @@ export class Grid {
       r1 = (c as SymCase).transform(r1);
       r2 = (c as SymCase).transform(r2);
     }
-    let merged = Rect.MergeTopLeft(r1, r2, optimize);
+    let merged: Rect[];
+    if (r1.x < r2.x || r1.y < r2.y) {
+      merged = Rect.MergeTopLeft(r1, r2, optimize);
+    } else {
+      merged = Rect.MergeTopLeft(r2, r1, optimize);
+    }
     if (merged.length) {
       // console.log('merging', i.toString(16), j.toString(16));
       if (typeof (c as SymCase).transform === 'function') {
